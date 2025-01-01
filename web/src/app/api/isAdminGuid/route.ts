@@ -11,8 +11,6 @@ export async function POST(request: Request)
         })
     }
 
-    console.log("Calling mysql2 select test", guid);
-
     const result : any = await new Promise((resolve, reject) => {
         var DB = CreateConnection();
 
@@ -26,8 +24,6 @@ export async function POST(request: Request)
             }
         });
     });
-
-    console.log("POST /api/isAdminGuid", result);
 
     if(Array.isArray(result) && result.length > 0) {
         console.log("Guid exists");
