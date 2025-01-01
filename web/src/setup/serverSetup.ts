@@ -1,6 +1,5 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { v4 as uuidv4 } from "uuid";
-import { QueryResult } from "mysql2";
 
 export function Setup() {
     console.log("Setting up the app");
@@ -21,8 +20,6 @@ async function MariaDbSetup()
         console.log("[ERROR] Table creation failed");
         return;
     }
-
-    var admins : QueryResult = [];
 
     DB.execute("DELETE FROM Admins");
 
