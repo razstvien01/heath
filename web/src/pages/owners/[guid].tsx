@@ -5,8 +5,8 @@ export default function OwnerManagementPage({ guid } : { guid : String }) {
     return (
         <div>
             <h1>Owner Management Page {guid}</h1>
-            <Input placeholder="Username"/>
-            <Input placeholder="Password" type="password"/>
+      <Input placeholder="Username" />
+      <Input placeholder="Password" type="password" />
         </div>
     )
 };
