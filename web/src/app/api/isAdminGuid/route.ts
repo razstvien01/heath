@@ -11,19 +11,25 @@ export async function POST(request: Request)
         })
     }
 
+    console.log("GUID", guid);  
+
     const result : any = await new Promise((resolve, reject) => {
         var DB = CreateConnection();
 
         DB.query("SELECT * FROM Admins WHERE ownerManagementGuid = ?", [guid], 
         function(err, results) {
             if(err) {
+                console.log('ERR', err);
                 reject(err);
             }
             else {
+                console.log('RESOLVED', results);
                 resolve(results);
             }
         });
     });
+
+    console.log(result);
 
     if(Array.isArray(result) && result.length > 0) {
         console.log("Guid exists");
