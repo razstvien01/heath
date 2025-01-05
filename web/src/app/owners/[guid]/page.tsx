@@ -2,7 +2,7 @@ import OwnerCrud from "@/components/pages/ownerCrud";
 import { notFound } from "next/navigation";
 
 async function isAdminGuid(guid : string) {
-  const isAdminGuidUrl = process.env.BASE_URL + "/api/isAdminGuid";
+  const isAdminGuidUrl = process.env.NEXT_PUBLIC_API_URL + "/api/isAdminGuid";
 
   const formData = new FormData();
   formData.append("guid", guid);
