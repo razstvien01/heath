@@ -28,7 +28,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
     }, [loggedInState])
 
     const confirmAdminLogin = async () => {
-        const confirmAdminUrl = process.env.NEXT_PUBLIC_BASE_URL + "/api/confirmAdminLogin";
+        const confirmAdminUrl = process.env.NEXT_PUBLIC_API_URL + "/api/admin/confirmAdminLogin";
 
         const formData = new FormData();
         formData.append("guid", guid);
@@ -48,7 +48,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
     }
 
     const fetchOwners = async () => {
-        const getOwnersUrl = process.env.NEXT_PUBLIC_BASE_URL + "/api/ownersList";
+        const getOwnersUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/ownersList";
         fetch(getOwnersUrl, {
             method: "POST",
         })
@@ -59,7 +59,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
     }
 
     const addOwner = async () => {
-        const fetchUrl = process.env.NEXT_PUBLIC_BASE_URL + "/api/addOwner";
+        const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/addOwner";
 
         const formData = new FormData();
         formData.append("username", addOwnerNameInput);
