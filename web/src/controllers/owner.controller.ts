@@ -1,4 +1,5 @@
 import { CreateConnection } from "@/config/mariadbConfig";
+import { v4 as uuidv4 } from "uuid";
 
 class OwnerController {
   private username: string | null;
@@ -20,8 +21,24 @@ class OwnerController {
         "(?, PASSWORD(?), ?)",
       [this.username, this.password, uuidv4()]
     );
-    
+
     return result != null;
+  }
+
+  public async getOwners(): Promise<any> {
+    const result: any = await new Promise((resolve, reject) => {
+      var DB = CreateConnection();
+
+      DB.query("SELECT * FROM Owners", function (err, results) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(results);
+        }
+      });
+    });
+    
+    return result;
   }
 }
 
