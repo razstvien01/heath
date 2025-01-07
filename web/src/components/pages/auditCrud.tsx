@@ -4,40 +4,41 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 
-export default function OwnerCrud({ guid }: { guid: string }) {
+export default function AuditCrud({ guid }: { guid: string }) {
     const [loggedInState, setLoggedInState] = useState(false);
     const [invalidLoginState, setInvalidLoginState] = useState(false);
-    const [adminUsername, setAdminUsername] = useState("");
-    const [adminPassword, setAdminPassword] = useState("");
+    const [ownerUsername, setOwnerUsername] = useState("");
+    const [ownerPassword, setOwnerPassword] = useState("");
 
-    const [addOwnerNameInput, setAddOwnerNameInput] = useState("");
-    const [addOwnerPasswordInput, setAddOwnerPasswordInput] = useState("");
+    const [addAuditNameInput, setAuditNameInput] = useState("");
 
-    interface Owner {
+    interface Audit {
         id: number | null | undefined;
         name: string;
-        managementGuid: string;
+        entries: number;
+        publicGuid: string;
+        ownerGuid: string;
     }
 
-    const [ownerList, setOwnerList] = useState<Owner[]>([]);
+    const [auditList, setAuditList] = useState<Audit[]>([]);
 
     useEffect(() => {
         if (loggedInState) {
-            fetchOwners();
+            fetchAudits();
         }
     }, [loggedInState])
 
-    const confirmAdminLogin = async () => {
-        const confirmAdminUrl = process.env.NEXT_PUBLIC_API_URL + "/api/admin/confirmAdminLogin";
+    const confirmOwnerLogin = async () => {
+        const confirmAdminUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/confirmOwnerLogin";
 
         const formData = new FormData();
         formData.append("guid", guid);
-        formData.append("username", adminUsername);
-        formData.append("password", adminPassword);
+        formData.append("username", ownerUsername);
+        formData.append("password", ownerPassword);
 
         const res = await fetch(confirmAdminUrl, {
             method: "POST",
-            body: formData,
+            body: formData
         });
 
         if (res.ok) {
@@ -47,23 +48,28 @@ export default function OwnerCrud({ guid }: { guid: string }) {
         }
     }
 
-    const fetchOwners = async () => {
-        const getOwnersUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/ownersList";
+    const fetchAudits = async () => {
+        const getOwnersUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/auditList";
+
+        const formData = new FormData();
+        formData.append("guid", guid);
+
         fetch(getOwnersUrl, {
             method: "POST",
+            body: formData
         })
             .then(res => res.json())
             .then(data => {
-                setOwnerList(data)
+                setAuditList(data)
             })
     }
 
-    const addOwner = async () => {
-        const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/addOwner";
+    const addAudit = async () => {
+        const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/addAudit";
 
         const formData = new FormData();
-        formData.append("username", addOwnerNameInput);
-        formData.append("password", addOwnerPasswordInput);
+        formData.append("guid", guid);
+        formData.append("name", addAuditNameInput);
 
         const res = await fetch(fetchUrl, {
             method: "POST",
@@ -71,33 +77,30 @@ export default function OwnerCrud({ guid }: { guid: string }) {
         })
 
         if (res.ok) {
-            fetchOwners();
+            fetchAudits();
         }
     }
 
     const onAdminUserNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAdminUsername(e.target.value);
+        setOwnerUsername(e.target.value);
     }
 
     const onAdminPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAdminPassword(e.target.value);
+        setOwnerPassword(e.target.value);
     }
 
-    const onAddOwnerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAddOwnerNameInput(e.target.value);
+    const onAddAuditNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setAuditNameInput(e.target.value);
     }
 
-    const onAddOwnerPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAddOwnerPasswordInput(e.target.value);
-    }
 
     return (
         <div>
             {!loggedInState && (
                 <div className="space-y-2 px-5 place-content-center h-screen w-screen">
-                    <Input value={adminUsername} onChange={onAdminUserNameChange} placeholder="Username" />
-                    <Input value={adminPassword} onChange={onAdminPasswordChange} placeholder="Password" type="password" />
-                    <Button onClick={confirmAdminLogin} className="w-full">Login</Button>
+                    <Input value={ownerUsername} onChange={onAdminUserNameChange} placeholder="Username" />
+                    <Input value={ownerPassword} onChange={onAdminPasswordChange} placeholder="Password" type="password" />
+                    <Button onClick={confirmOwnerLogin} className="w-full">Login</Button>
                     {invalidLoginState && (
                         <p className="text-red-500">Invalid login credentials</p>
                     )}
@@ -105,29 +108,31 @@ export default function OwnerCrud({ guid }: { guid: string }) {
             )}
             {loggedInState && (
                 <div className="flex flex-col h-screen">
-                    <h1 className="h-35">Owners</h1>
+                    <h1 className="h-35">Audits</h1>
 
                     <div className="flex flex-row">
-                        <Input value={addOwnerNameInput} onChange={onAddOwnerNameChange} placeholder="Username" />
-                        <Input value={addOwnerPasswordInput} onChange={onAddOwnerPasswordChange} placeholder="Password" type="password" />
-                        <Button onClick={addOwner}>Add</Button>
+                        <Input value={addAuditNameInput} onChange={onAddAuditNameChange} placeholder="Audit Name" />
+                        <Button onClick={addAudit}>Add Audit</Button>
                     </div>
 
                     <table>
                         <thead>
                             <tr>
-                                <th>Username</th>
-                                <th>Guid</th>
+                                <th>Audit Name</th>
+                                <th>Entries</th>
+                                <th>Public Guid</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {ownerList?.length > 0 ? (
-                                ownerList?.map((owner) => (
-                                    <tr key={owner.id}>
-                                        <td>{owner.name}</td>
-                                        <td>{owner.managementGuid}</td>
+                            {auditList?.length > 0 ? (
+                                auditList?.map((audit) => (
+                                    <tr key={audit.id}>
+                                        <td>{audit.name}</td>
+                                        <td>{audit.entries}</td>
+                                        <td>{audit.publicGuid}</td>
                                         <td>
+                                            <Button>Open</Button>
                                             <Button>Edit</Button>
                                             <Button>Delete</Button>
                                         </td>
@@ -136,7 +141,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
                             ) : (
                                 <tr>
                                     <td colSpan={3} className="text-center">
-                                        No Owners Found
+                                        No Audits Found
                                     </td>
                                 </tr>
                             )}
