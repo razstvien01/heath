@@ -11,7 +11,8 @@ async function MariaDbSetup()
     var DB = CreateConnection();
     var result = DB.execute("CREATE TABLE IF NOT EXISTS Admins (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), password VARCHAR(255), ownerManagementGuid VARCHAR(255))");
     var result = DB.execute("CREATE TABLE IF NOT EXISTS Owners (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), password VARCHAR(255), managementGuid VARCHAR(255))");
-    var result = DB.execute("CREATE TABLE IF NOT EXISTS Audits (id INT AUTO_INCREMENT PRIMARY KEY, ownerId INT, name VARCHAR(255), publicGuid VARCHAR(255), ownerGuid VARCHAR(255), FOREIGN KEY (ownerId) REFERENCES Owners(id))");
+    var result = DB.execute("CREATE TABLE IF NOT EXISTS Audits (id INT AUTO_INCREMENT PRIMARY KEY, ownerId INT NOT NULL, name VARCHAR(255), publicGuid VARCHAR(255), ownerGuid VARCHAR(255), FOREIGN KEY (ownerId) REFERENCES Owners(id))");
+    var result = DB.execute("CREATE TABLE IF NOT EXISTS Records (id INT AUTO_INCREMENT PRIMARY KEY, auditId INT NOT NULL, amount DOUBLE NOT NULL, reason TEXT NOT NULL, receipt MEDIUMBLOB, signature TEXT, approved TINYINT(1), FOREIGN KEY (auditId) REFERENCES Audits(id))");
 
     if(result)
     {
