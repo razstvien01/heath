@@ -4,8 +4,10 @@ import {
   collection,
   doc,
   DocumentData,
+  getDocs,
   setDoc,
   WithFieldValue,
+  deleteDoc,
 } from "firebase/firestore";
 
 class FirestoreRepository<T extends DocumentData> {
@@ -42,17 +44,33 @@ class FirestoreRepository<T extends DocumentData> {
       throw error;
     }
   }
-	
-	async setDocument(documentId: string, data: T): Promise<void> {
-		try {
-			const sanitizedData = this.sanitizeData(data);
-			await setDoc(doc(this.collectionRef, documentId), sanitizedData);
-			console.log(`Document updated with ID: ${documentId}`);
-		} catch (error) {
-			console.error("Error updating document:", error);
-			throw error;
-		}
-	}
+
+  async setDocument(documentId: string, data: T): Promise<void> {
+    try {
+      const sanitizedData = this.sanitizeData(data);
+      await setDoc(doc(this.collectionRef, documentId), sanitizedData);
+      console.log(`Document updated with ID: ${documentId}`);
+    } catch (error) {
+      console.error("Error updating document:", error);
+      throw error;
+    }
+  }
+
+  async truncateCollection(): Promise<void> {
+    try {
+      const snapshot = await getDocs(this.collectionRef);
+      const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref));
+
+      await Promise.all(deletePromises);
+
+      console.log(
+        `All documents in the '${this.collectionName}' collection have been deleted.`
+      );
+    } catch (error) {
+      console.error("Error truncating collection:", error);
+      throw error;
+    }
+  }
 }
 
 export default FirestoreRepository;
