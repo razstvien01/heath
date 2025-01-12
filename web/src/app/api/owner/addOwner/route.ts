@@ -17,7 +17,7 @@ export async function POST(request: Request)
 
     var DB = CreateConnection();
     const result = DB.execute("INSERT INTO Owners (name, password, managementGuid) VALUES " +
-        "(?, PASSWORD(?), ?)", 
+        "(?, SHA2(?, 256), ?)", 
         [username, password, uuidv4()],
     );
 

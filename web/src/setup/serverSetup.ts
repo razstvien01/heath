@@ -23,12 +23,12 @@ async function MariaDbSetup()
         console.log("[ERROR] Table creation failed");
         return;
     }
-
+    
     DB.execute("DELETE FROM Admins");
 
     result = DB.execute("INSERT INTO Admins (name, password, ownerManagementGuid) VALUES " +
-        "(?, PASSWORD(?), ?)," +
-        "(?, PASSWORD(?), ?)",
+        "(?, SHA2(?, 256), ?), " +
+        "(?, SHA2(?, 256), ?);",
         [process.env.MYSQL_ADMIN1_USERNAME, process.env.MYSQL_ADMIN1_PASSWORD, uuidv4(),
          process.env.MYSQL_ADMIN2_USERNAME, process.env.MYSQL_ADMIN2_PASSWORD, uuidv4()],
     );
@@ -39,3 +39,8 @@ async function MariaDbSetup()
         console.log("[ERROR] Admin insert failed");
     }
 }
+
+async function FirebaseSetup()
+{
+    // Firebase setup code
+}   

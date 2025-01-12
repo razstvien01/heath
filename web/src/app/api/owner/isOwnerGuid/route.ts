@@ -2,6 +2,8 @@ import { CreateConnection  } from "@/config/mariadbConfig";
 
 export async function POST(request: Request)
 {
+    
+    console.log("Hello world")
     const formData = await request.formData();
     const guid = formData.get("guid");
     if(guid == null)

@@ -8,7 +8,7 @@ interface PageInfo {
 }
 
 async function isPublicGuid(guid : string) {
-  const isPublicGuidUrl = process.env.BASE_URL + "/api/audit/isPublicGuid";
+  const isPublicGuidUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/isPublicGuid";
 
   const formData = new FormData();
   formData.append("guid", guid);

@@ -17,7 +17,7 @@ export async function POST(request: Request)
     const result : any = await new Promise((resolve, reject) => {
         var DB = CreateConnection();
 
-        DB.query("SELECT * FROM Owners WHERE managementGuid = ? and name = ? and password = PASSWORD(?)", [guid, username, password], 
+        DB.query("SELECT * FROM Owners WHERE managementGuid = ? and name = ? and password = SHA2(?, 256)", [guid, username, password], 
         function(err, results) {
             if(err) {
                 reject(err);
