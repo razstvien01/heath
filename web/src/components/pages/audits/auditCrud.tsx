@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
+import { AuditRow } from "./auditRow";
 
 export default function AuditCrud({ guid }: { guid: string }) {
     const [loggedInState, setLoggedInState] = useState(false);
@@ -11,14 +12,6 @@ export default function AuditCrud({ guid }: { guid: string }) {
     const [ownerPassword, setOwnerPassword] = useState("");
 
     const [addAuditNameInput, setAuditNameInput] = useState("");
-
-    interface Audit {
-        id: number | null | undefined;
-        name: string;
-        entries: number;
-        publicGuid: string;
-        ownerGuid: string;
-    }
 
     const [auditList, setAuditList] = useState<Audit[]>([]);
 
@@ -93,7 +86,6 @@ export default function AuditCrud({ guid }: { guid: string }) {
         setAuditNameInput(e.target.value);
     }
 
-
     return (
         <div>
             {!loggedInState && (
@@ -127,20 +119,11 @@ export default function AuditCrud({ guid }: { guid: string }) {
                         <tbody>
                             {auditList?.length > 0 ? (
                                 auditList?.map((audit) => (
-                                    <tr key={audit.id}>
-                                        <td>{audit.name}</td>
-                                        <td>{audit.entries}</td>
-                                        <td>{audit.publicGuid}</td>
-                                        <td>
-                                            <Button>Open</Button>
-                                            <Button>Edit</Button>
-                                            <Button>Delete</Button>
-                                        </td>
-                                    </tr>
+                                   <AuditRow audit={audit} onSubmitDone={fetchAudits}/>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={3} className="text-center">
+                                    <td colSpan={5} className="text-center">
                                         No Audits Found
                                     </td>
                                 </tr>

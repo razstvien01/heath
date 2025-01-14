@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
-import { OwnerRow } from "./ownerCrud/ownerRow";
+import { OwnerRow } from "./ownerRow";
 
 export default function OwnerCrud({ guid }: { guid: string }) {
     const [loggedInState, setLoggedInState] = useState(false);

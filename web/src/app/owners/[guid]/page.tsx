@@ -1,4 +1,4 @@
-import OwnerCrud from "@/components/pages/ownerCrud";
+import OwnerCrud from "@/components/pages/owners/ownerCrud";
 import { notFound } from "next/navigation";
 
 async function isAdminGuid(guid : string) {
