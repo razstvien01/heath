@@ -37,7 +37,7 @@ export function AuditRow({ audit, onSubmitDone }: { audit : Audit, onSubmitDone 
   }
 
   return (
-    <tr key={audit.id}>
+    <tr key={audit.id} className="text-center">
       {editMode && (
         <>
           <td>
