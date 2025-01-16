@@ -120,7 +120,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
                         <tbody>
                             {ownerList?.length > 0 ? (
                                 ownerList?.map((owner) => (
-                                    <OwnerRow owner={owner} onSubmitDone={fetchOwners}/>
+                                    <OwnerRow owner={owner} onSubmitDone={fetchOwners} onDelete={fetchOwners}/>
                                 ))
                             ) : (
                                 <tr>
