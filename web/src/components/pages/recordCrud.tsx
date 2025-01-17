@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageDialog } from "../ui/imageDialog";
 import { SignatureDialog } from "../ui/signatureDialog";
+import { Edit, SquarePen, Trash } from "lucide-react";
 
 export default function RecordCrud({ guid }: { guid: string }) {
     const [addBalanceInput, setBalanceInput] = useState("");
@@ -108,7 +109,7 @@ export default function RecordCrud({ guid }: { guid: string }) {
                         <SignatureDialog value={signatureInput} onChange={onSignatureInputChange}/>
                     </div>
 
-                    <Button onClick={addRecord}>Add Record</Button>
+                    <Button onClick={addRecord} className="bg-emerald-300"><SquarePen/></Button>
                 </div>
 
                 <table>
@@ -137,8 +138,8 @@ export default function RecordCrud({ guid }: { guid: string }) {
                                     <td>{runningBalance}</td>
                                     <td>
                                         <Button>Open</Button>
-                                        <Button>Edit</Button>
-                                        <Button>Delete</Button>
+                                        <Button className="bg-sky-400"><Edit/></Button>
+                                        <Button className="bg-red-500"><Trash /></Button>
                                     </td>
                                 </tr>
                             ))

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { AuditRow } from "./auditRow";
+import { BookPlus } from "lucide-react";
 
 export default function AuditCrud({ guid }: { guid: string }) {
     const [loggedInState, setLoggedInState] = useState(false);
@@ -104,7 +105,7 @@ export default function AuditCrud({ guid }: { guid: string }) {
 
                     <div className="flex flex-row">
                         <Input value={addAuditNameInput} onChange={onAddAuditNameChange} placeholder="Audit Name" />
-                        <Button onClick={addAudit}>Add Audit</Button>
+                        <Button onClick={addAudit} className="bg-emerald-500"><BookPlus/></Button>
                     </div>
 
                     <table>

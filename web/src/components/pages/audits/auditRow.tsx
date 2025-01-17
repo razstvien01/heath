@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog"
-import { Trash } from "lucide-react"
+import { CircleOff, Edit, Save, Trash } from "lucide-react"
 
 export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onSubmitDone : () => void, onDelete? : () => void }) {
   const [editMode, setEditMode] = useState(false)
@@ -66,8 +66,8 @@ export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onS
           <td>{audit.entries}</td>
           <td>{audit.publicGuid}</td>
           <td>
-            <Button onClick={() => setEditMode(false)}>Cancel</Button>
-            <Button onClick={onSubmit}>Save</Button>
+            <Button onClick={() => setEditMode(false)} className="bg-rose-500"><CircleOff/></Button>
+            <Button onClick={onSubmit} className="bg-emerald-300"><Save/></Button>
           </td>
         </>
       )}
@@ -78,7 +78,7 @@ export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onS
           <td>{audit.publicGuid}</td>
           <td>
             <Button>Open</Button>
-            <Button onClick={() => setEditMode(true)}>Edit</Button>
+            <Button onClick={() => setEditMode(true)} className="bg-sky-400"><Edit/></Button>
             <ConfirmationDialog onYes={onDeleteClicked}>
               <Button className="bg-red-500"><Trash /></Button>
             </ConfirmationDialog>

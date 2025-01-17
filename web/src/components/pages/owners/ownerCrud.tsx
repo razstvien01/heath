@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
 import { OwnerRow } from "./ownerRow";
+import { UserPlus } from "lucide-react";
 
 export default function OwnerCrud({ guid }: { guid: string }) {
     const [loggedInState, setLoggedInState] = useState(false);
@@ -105,7 +106,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
                     <div className="flex flex-row">
                         <Input value={addOwnerNameInput} onChange={onAddOwnerNameChange} placeholder="Username" />
                         <Input value={addOwnerPasswordInput} onChange={onAddOwnerPasswordChange} placeholder="Password" type="password" />
-                        <Button onClick={addOwner}>Add</Button>
+                        <Button onClick={addOwner} className="bg-emerald-500"><UserPlus/></Button>
                     </div>
 
                     <table>
