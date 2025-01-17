@@ -3,8 +3,10 @@
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
+import { ConfirmationDialog } from "@/components/ui/confirmationDialog"
+import { Trash } from "lucide-react"
 
-export function AuditRow({ audit, onSubmitDone }: { audit : Audit, onSubmitDone : () => void }) {
+export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onSubmitDone : () => void, onDelete? : () => void }) {
   const [editMode, setEditMode] = useState(false)
   const [name, setName] = useState("")
   const [id, setId] = useState(0)
@@ -29,6 +31,24 @@ export function AuditRow({ audit, onSubmitDone }: { audit : Audit, onSubmitDone 
     if (res.ok) {
       setEditMode(false);
       onSubmitDone()
+    }
+  }
+
+  const onDeleteClicked = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/deleteAudit";
+
+    const formData = new FormData();
+    formData.append("id", audit.id?.toString() || "");
+
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      body: formData
+    })
+
+    if(res.ok) {
+      if (onDelete) {
+        onDelete();
+      }
     }
   }
 
@@ -59,7 +79,9 @@ export function AuditRow({ audit, onSubmitDone }: { audit : Audit, onSubmitDone 
           <td>
             <Button>Open</Button>
             <Button onClick={() => setEditMode(true)}>Edit</Button>
-            <Button>Delete</Button>
+            <ConfirmationDialog onYes={onDeleteClicked}>
+              <Button className="bg-red-500"><Trash /></Button>
+            </ConfirmationDialog>
           </td>
         </>
       )}

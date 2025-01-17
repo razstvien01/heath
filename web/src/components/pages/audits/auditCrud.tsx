@@ -119,7 +119,7 @@ export default function AuditCrud({ guid }: { guid: string }) {
                         <tbody>
                             {auditList?.length > 0 ? (
                                 auditList?.map((audit) => (
-                                   <AuditRow audit={audit} onSubmitDone={fetchAudits}/>
+                                   <AuditRow audit={audit} onSubmitDone={fetchAudits} onDelete={fetchAudits}/>
                                 ))
                             ) : (
                                 <tr>

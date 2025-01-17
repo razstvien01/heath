@@ -48,7 +48,9 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: { owner : Owner, onS
     })
 
     if(res.ok) {
-      onDelete();
+      if (onDelete) {
+        onDelete();
+      }
     }
   }
 
