@@ -14,7 +14,8 @@ export async function POST(request: Request)
                     else {
                         resolve(results);
                     }
-                });
+                }
+            );
         });
 
         return new Response(JSON.stringify(result), {

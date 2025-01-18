@@ -27,8 +27,6 @@ export async function POST(request: Request)
             });
         });
 
-        console.log("Owner Id retrieved ", ownerId);
-
         if(!Array.isArray(ownerId) || ownerId.length <= 0) {
             return new Response("Invalid Request", {
                 status: 500

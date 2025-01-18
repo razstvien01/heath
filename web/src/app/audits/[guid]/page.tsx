@@ -1,4 +1,4 @@
-import AuditCrud from "@/components/pages/auditCrud";
+import AuditCrud from "@/components/pages/audits/auditCrud";
 import { notFound } from "next/navigation";
 
 async function isAdminGuid(guid : string) {

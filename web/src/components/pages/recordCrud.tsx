@@ -3,8 +3,9 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { SignatureMaker } from "@docuseal/signature-maker-react";
 import { ImageDialog } from "../ui/imageDialog";
+import { SignatureDialog } from "../ui/signatureDialog";
+import { Edit, SquarePen, Trash } from "lucide-react";
 
 export default function RecordCrud({ guid }: { guid: string }) {
     const [addBalanceInput, setBalanceInput] = useState("");
@@ -103,15 +104,12 @@ export default function RecordCrud({ guid }: { guid: string }) {
                     <div className="flex flex-row">
                         <Input value={addBalanceInput} onChange={onAddAuditNameChange} placeholder="Amount" type="number" />
                         <Input value={reasonInput} onChange={onReasonInputChange} placeholder="Reason" />
-                        <Input onChange={onReceiptInputChange} placeholder="Receipt" type="file" accept=".png,.jpg,.jpeg"/>
-                    </div>
-                    <div className="min-h-50">
-                        <SignatureMaker onChange={onSignatureInputChange} withSubmit={false} withDrawn={true}
-                            canvasClass="bg-white border border-base-300 rounded-2xl w-full h-30"
-                        />
+
+                        <Input onChange={onReceiptInputChange} type="file" accept=".png,.jpg,.jpeg" className="icon-upload"/>
+                        <SignatureDialog value={signatureInput} onChange={onSignatureInputChange}/>
                     </div>
 
-                    <Button onClick={addRecord}>Add Record</Button>
+                    <Button onClick={addRecord} className="bg-emerald-300"><SquarePen/></Button>
                 </div>
 
                 <table>
@@ -128,7 +126,7 @@ export default function RecordCrud({ guid }: { guid: string }) {
                     <tbody>
                         {recordList?.length > 0 ? (
                             recordList?.map((audit) => (
-                                <tr key={audit.id}>
+                                <tr key={audit.id} className="text-center">
                                     <td>{audit.amount}</td>
                                     <td>{audit.reason}</td>
                                     <td>{audit.receipt === null ? "No" : (
@@ -140,8 +138,8 @@ export default function RecordCrud({ guid }: { guid: string }) {
                                     <td>{runningBalance}</td>
                                     <td>
                                         <Button>Open</Button>
-                                        <Button>Edit</Button>
-                                        <Button>Delete</Button>
+                                        <Button className="bg-sky-400"><Edit/></Button>
+                                        <Button className="bg-red-500"><Trash /></Button>
                                     </td>
                                 </tr>
                             ))

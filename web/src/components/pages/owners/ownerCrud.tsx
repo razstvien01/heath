@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input"
+import { OwnerRow } from "./ownerRow";
+import { UserPlus } from "lucide-react";
 
 export default function OwnerCrud({ guid }: { guid: string }) {
     const [loggedInState, setLoggedInState] = useState(false);
@@ -12,12 +14,6 @@ export default function OwnerCrud({ guid }: { guid: string }) {
 
     const [addOwnerNameInput, setAddOwnerNameInput] = useState("");
     const [addOwnerPasswordInput, setAddOwnerPasswordInput] = useState("");
-
-    interface Owner {
-        id: number | null | undefined;
-        name: string;
-        managementGuid: string;
-    }
 
     const [ownerList, setOwnerList] = useState<Owner[]>([]);
 
@@ -110,13 +106,14 @@ export default function OwnerCrud({ guid }: { guid: string }) {
                     <div className="flex flex-row">
                         <Input value={addOwnerNameInput} onChange={onAddOwnerNameChange} placeholder="Username" />
                         <Input value={addOwnerPasswordInput} onChange={onAddOwnerPasswordChange} placeholder="Password" type="password" />
-                        <Button onClick={addOwner}>Add</Button>
+                        <Button onClick={addOwner} className="bg-emerald-500"><UserPlus/></Button>
                     </div>
 
                     <table>
                         <thead>
                             <tr>
                                 <th>Username</th>
+                                <th>Password</th>
                                 <th>Guid</th>
                                 <th>Actions</th>
                             </tr>
@@ -124,18 +121,11 @@ export default function OwnerCrud({ guid }: { guid: string }) {
                         <tbody>
                             {ownerList?.length > 0 ? (
                                 ownerList?.map((owner) => (
-                                    <tr key={owner.id}>
-                                        <td>{owner.name}</td>
-                                        <td>{owner.managementGuid}</td>
-                                        <td>
-                                            <Button>Edit</Button>
-                                            <Button>Delete</Button>
-                                        </td>
-                                    </tr>
+                                    <OwnerRow owner={owner} onSubmitDone={fetchOwners} onDelete={fetchOwners}/>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={3} className="text-center">
+                                    <td colSpan={4} className="text-center">
                                         No Owners Found
                                     </td>
                                 </tr>
