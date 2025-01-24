@@ -1,4 +1,4 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request)
 {
@@ -14,21 +14,10 @@ export async function POST(request: Request)
         })
     }
 
-    const result : any = await new Promise((resolve, reject) => {
-        var DB = CreateConnection();
+    const ownerRepository = new OwnerRepository()
+    const result = await ownerRepository.ConfirmOwnerLogin(guid as string, username as string, password as string)
 
-        DB.query("SELECT * FROM Owners WHERE managementGuid = ? and name = ? and password = SHA2(?, 256)", [guid, username, password], 
-        function(err, results) {
-            if(err) {
-                reject(err);
-            }
-            else {
-                resolve(results);
-            }
-        });
-    });
-
-    if(Array.isArray(result) && result.length > 0) {
+    if(result) {
         return new Response("Valid Owner", {
             status: 200
         });

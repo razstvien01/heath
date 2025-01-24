@@ -1,4 +1,5 @@
 import { CreateConnection  } from "@/config/mariadbConfig";
+import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 
 export async function POST(request: Request)
 {
@@ -14,13 +15,8 @@ export async function POST(request: Request)
         })
     }
 
-    var DB = CreateConnection();
-
-    const result = DB.execute("UPDATE Audits SET " +
-        "name = ? " +
-        "WHERE id = ?",
-        [name, id],
-    );
+    const auditRepository = new AuditRepository()
+    const result = auditRepository.UpdateAudit(name as string, Number(id))
 
     if(result) {
         return new Response("Audit updated successfully", {

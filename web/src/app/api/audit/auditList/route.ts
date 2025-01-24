@@ -1,4 +1,5 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
+import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request)
 {
@@ -13,39 +14,18 @@ export async function POST(request: Request)
             })
         }
 
-        const ownerId: any = await new Promise((resolve, reject) => {
-            var DB = CreateConnection();
+        const ownerRepository = new OwnerRepository();
+        const auditRepository = new AuditRepository();
 
-            DB.query("SELECT id FROM Owners WHERE managementGuid = ?", [guid], 
-            function(err, results) {
-                if(err) {
-                    reject(err);
-                }
-                else {
-                    resolve(results);
-                }
-            });
-        });
+        const ownerId = await ownerRepository.GetOwnerIdFromManagementGuid(guid as string)
 
-        if(!Array.isArray(ownerId) || ownerId.length <= 0) {
+        if(!ownerId) {
             return new Response("Invalid Request", {
                 status: 500
             })
         } 
 
-        const result: any = await new Promise((resolve, reject) => {
-            var DB = CreateConnection();
-
-            DB.query("SELECT *, 0 as entries FROM Audits WHERE ownerId = ?", [ownerId[0].id],
-                function (err, results) {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(results);
-                    }
-                });
-        });
+        const result = await auditRepository.GetAuditList(ownerId);
 
         return new Response(JSON.stringify(result), {
             status: 200,

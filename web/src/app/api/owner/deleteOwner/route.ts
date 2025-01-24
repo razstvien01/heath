@@ -1,9 +1,9 @@
 import { CreateConnection  } from "@/config/mariadbConfig";
+import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request)
 {
     const formData = await request.formData();
-
     const guid = formData.get("guid");
 
     if(guid == null)
@@ -13,10 +13,9 @@ export async function POST(request: Request)
         })
     }
 
-    var DB = CreateConnection();
-    const result = DB.execute("DELETE FROM Owners WHERE managementGuid = ?",
-        [guid],
-    );
+    const repository = new OwnerRepository();
+
+    const result = await repository.DeleteOwnerFromManagementGuid(guid as string);
 
     if(result) {
         return new Response("Owner deleted successfully", {

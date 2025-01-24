@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageDialog } from "../ui/imageDialog";
 import { SignatureDialog } from "../ui/signatureDialog";
-import { Edit, SquarePen, Trash } from "lucide-react";
+import { Edit, SquareArrowOutUpRight, SquarePen, Trash } from "lucide-react";
 
 export default function RecordCrud({ guid }: { guid: string }) {
     const [addBalanceInput, setBalanceInput] = useState("");
@@ -137,8 +137,8 @@ export default function RecordCrud({ guid }: { guid: string }) {
                                     )}</td>
                                     <td>{runningBalance}</td>
                                     <td>
-                                        <Button>Open</Button>
-                                        <Button className="bg-sky-400"><Edit/></Button>
+                                        <Button className="bg-sky-400"><SquareArrowOutUpRight/></Button>
+                                        <Button className="bg-amber-500"><Edit/></Button>
                                         <Button className="bg-red-500"><Trash /></Button>
                                     </td>
                                 </tr>
