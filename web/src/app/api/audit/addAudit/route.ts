@@ -1,5 +1,5 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
-import { v4 as uuidv4 } from "uuid";
+import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
+import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request)
 {
@@ -15,33 +15,18 @@ export async function POST(request: Request)
         })
     }
 
-    var DB = CreateConnection();
+    const ownerRepository = new OwnerRepository();
+    const auditRepository = new AuditRepository();
 
-    const ownerId: any = await new Promise((resolve, reject) => {
+    const ownerId = await ownerRepository.GetOwnerIdFromManagementGuid(guid as string);
 
-        DB.query("SELECT id FROM Owners WHERE managementGuid = ?", [guid], 
-        function(err, results) {
-            if(err) {
-                reject(err);
-            }
-            else {
-                resolve(results);
-            }
-        });
-    });
-
-    console.log("Owner Id retrieved ", ownerId);
-
-    if(!Array.isArray(ownerId) || ownerId.length <= 0) {
+    if(!ownerId) {
         return new Response("Invalid Request", {
             status: 500
         })
     } 
 
-    const result = DB.execute("INSERT INTO Audits (ownerId, name, publicGuid, ownerGuid) VALUES " +
-        "(?, ?, ?, ?)", 
-        [ownerId[0].id, name, uuidv4(), uuidv4()],
-    );
+    const result = auditRepository.AddAudit(ownerId, name as string);
 
     if(result) {
         return new Response("Audit inserted successfully", {

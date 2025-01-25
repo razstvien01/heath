@@ -1,4 +1,5 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
+import { RecordRepository } from "@/repositories/mariaDb/RecordRepository";
 
 export async function POST(request: Request)
 {
@@ -23,32 +24,18 @@ export async function POST(request: Request)
         })
     }
 
-    var DB = CreateConnection();
+    const auditRepository = new AuditRepository();
+    const recordRepository = new RecordRepository();
 
-    const auditId: any = await new Promise((resolve, reject) => {
+    const auditId = await auditRepository.GetAuditIdFromGuid(guid as string)
 
-        DB.query("SELECT id FROM Audits WHERE publicGuid = ? or ownerGuid = ?", [guid, guid], 
-        function(err, results) {
-            if(err) {
-                reject(err);
-            }
-            else {
-                resolve(results);
-            }
-        });
-    });
-
-
-    if(!Array.isArray(auditId) || auditId.length <= 0) {
+    if(!auditId) {
         return new Response("Invalid Request", {
             status: 500
         })
     } 
 
-    const result = DB.execute("INSERT INTO Records (auditId, amount, reason, receipt, signature, approved) VALUES " +
-        "(?, ?, ?, ?, ?, ?)", 
-        [auditId[0].id, balance, reason, receipt, signature, 0],
-    );
+    const result = recordRepository.AddRecord(auditId, Number(balance), reason as string, receipt as ArrayBuffer, signature as string)
 
     if(result) {
         return new Response("Record inserted successfully", {

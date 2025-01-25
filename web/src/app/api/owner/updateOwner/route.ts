@@ -1,4 +1,4 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request)
 {
@@ -15,14 +15,8 @@ export async function POST(request: Request)
         })
     }
 
-    var DB = CreateConnection();
-
-    const result = DB.execute("UPDATE Owners SET " +
-        "name = ?, " +
-        "password = PASSWORD(?) " +
-        "WHERE managementGuid = ?",
-        [username, password, guid],
-    );
+    const repository = new OwnerRepository();
+    const result = await repository.UpdateOwner(username as string, password as string, guid as string)
 
     if(result) {
         return new Response("Owner updated successfully", {

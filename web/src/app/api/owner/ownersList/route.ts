@@ -1,22 +1,10 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request)
 {
     try {
-        const result: any = await new Promise((resolve, reject) => {
-            var DB = CreateConnection();
-
-            DB.query("SELECT * FROM Owners",
-                function (err, results) {
-                    if (err) {
-                        reject(err);
-                    }
-                    else {
-                        resolve(results);
-                    }
-                }
-            );
-        });
+        const ownerRepository = new OwnerRepository()
+        const result = await ownerRepository.GetOwnerList()
 
         return new Response(JSON.stringify(result), {
             status: 200,

@@ -1,5 +1,4 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
-import { v4 as uuidv4 } from "uuid";
+import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request)
 {
@@ -15,18 +14,15 @@ export async function POST(request: Request)
         })
     }
 
-    var DB = CreateConnection();
-    const result = DB.execute("INSERT INTO Owners (name, password, managementGuid) VALUES " +
-        "(?, SHA2(?, 256), ?)", 
-        [username, password, uuidv4()],
-    );
+    const repository = new OwnerRepository();
+    const result = await repository.AddOwner(username as string, password as string)
 
     if(result) {
         return new Response("Owner inserted successfully", {
             status: 200
         });
     } else {
-        return new Response("Admin insert failed", {
+        return new Response("Owner insert failed", {
             status: 500
         })
     }

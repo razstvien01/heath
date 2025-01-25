@@ -1,4 +1,4 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 
 export async function POST(request: Request)
 {
@@ -13,10 +13,9 @@ export async function POST(request: Request)
         })
     }
 
-    var DB = CreateConnection();
-    const result = DB.execute("DELETE FROM Audits WHERE id = ?",
-        [id],
-    );
+    const auditRepository = new AuditRepository();
+
+    const result = auditRepository.DeleteAuditById(Number(id))
 
     if(result) {
         return new Response("Audit deleted successfully", {

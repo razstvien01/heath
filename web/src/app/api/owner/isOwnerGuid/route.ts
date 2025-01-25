@@ -1,9 +1,7 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request)
 {
-    
-    console.log("Hello world")
     const formData = await request.formData();
     const guid = formData.get("guid");
     if(guid == null)
@@ -13,23 +11,10 @@ export async function POST(request: Request)
         })
     }
 
-    const result : any = await new Promise((resolve, reject) => {
-        var DB = CreateConnection();
+    const ownerRepository = new OwnerRepository();
+    const result = await ownerRepository.IsOwnerGuid(guid as string)
 
-        DB.query("SELECT * FROM Owners WHERE managementGuid = ?", [guid], 
-        function(err, results) {
-            if(err) {
-                console.log('ERR', err);
-                reject(err);
-            }
-            else {
-                console.log('RESOLVED', results);
-                resolve(results);
-            }
-        });
-    });
-
-    if(Array.isArray(result) && result.length > 0) {
+    if(result) {
         return new Response("Good?", {
             status: 200
         });
