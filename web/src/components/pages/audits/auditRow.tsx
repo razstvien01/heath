@@ -77,7 +77,7 @@ export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onS
           <td>{audit.entries}</td>
           <td>{audit.publicGuid}</td>
           <td>
-            <Button className="bg-sky-400"><SquareArrowOutUpRight/></Button>
+            <Button className="bg-sky-400"><a href={"/records/" + audit.publicGuid}><SquareArrowOutUpRight/></a></Button>
             <Button onClick={() => setEditMode(true)} className="bg-amber-500"><Edit/></Button>
             <ConfirmationDialog onYes={onDeleteClicked}>
               <Button className="bg-red-500"><Trash /></Button>
