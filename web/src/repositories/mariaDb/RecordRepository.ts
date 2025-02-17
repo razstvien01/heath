@@ -39,4 +39,12 @@ export class RecordRepository {
 
         return result;
     }
+
+    async DeleteRecordById(id: number) {
+        var DB = CreateConnection();
+        const result = DB.execute("DELETE FROM Records WHERE id = ?",
+            [id]
+        );
+        return result;
+    }
 }

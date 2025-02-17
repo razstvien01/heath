@@ -7,6 +7,7 @@ import { ImageDialog } from "../../ui/imageDialog";
 import { SignatureDialog } from "../../ui/signatureDialog";
 import { Edit, SquareArrowOutUpRight, SquarePen, Trash } from "lucide-react";
 import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog";
+import { RecordRow } from "./recordRow";
 
 export default function RecordCrud({ guid }: { guid: string }) {
     const [addBalanceInput, setBalanceInput] = useState("");
@@ -16,19 +17,7 @@ export default function RecordCrud({ guid }: { guid: string }) {
     const [signatureInput, setSignatureInput] = useState(null)
     const [runningBalance, setRunningBalance] = useState(0)
 
-    interface AuditRecord {
-        receipt: { data: []} | null;
-        reason: string;
-        signature: string | null;
-        id: number;
-        amount: number;
-        dateCreatedEpoch: number;
-        dateCreated: Date;
-        hasReceipt: boolean;
-        hasSignature: boolean;
-        runningBalance: number;
-    }
-
+    
     const [recordList, setRecordList] = useState<AuditRecord[]>([]);
 
     useEffect(() => {
@@ -59,6 +48,7 @@ export default function RecordCrud({ guid }: { guid: string }) {
                     currentValue.runningBalance = currentBalance
                     currentValue.dateCreated = new Date(currentValue.dateCreatedEpoch * 1000)
                 })
+                setCurrentBalance(currentBalance ?? 0);
                 setRecordList(dataList)
             })
     }
@@ -83,6 +73,10 @@ export default function RecordCrud({ guid }: { guid: string }) {
         })
 
         if (res.ok) {
+            setBalanceInput("")
+            setReasonInput("")
+            setReceiptInput(null)
+            setSignatureInput(null)
             fetchRecords();
         }
     }
@@ -105,28 +99,6 @@ export default function RecordCrud({ guid }: { guid: string }) {
 
     const onSignatureInputChange = (e: { base64: SetStateAction<null>; }) => {
         setSignatureInput(e.base64);
-    }
-
-    const onEditSaved = async (receipt: File | null, signature: string | null, id: number): Promise<void> => {
-        const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/record/editRecord";
-
-        const formData = new FormData();
-        formData.append("id", id.toString());
-        if (receipt) {
-            formData.append("receipt", receipt);
-        }
-        if (signature) {
-            formData.append("signature", signature);
-        }
-
-        const res = await fetch(fetchUrl, {
-            method: "POST",
-            body: formData
-        })
-
-        if (res.ok) {
-            fetchRecords();
-        }
     }
 
     return (
@@ -164,25 +136,7 @@ export default function RecordCrud({ guid }: { guid: string }) {
                     <tbody>
                         {recordList?.length > 0 ? (
                             recordList?.map((audit) => (
-                                <tr key={audit.id} className="text-center">
-                                    <td>{audit.amount}</td>
-                                    <td>{audit.reason}</td>
-                                    <td>{audit.receipt === null ? "No" : (
-                                        <ImageDialog value={audit.receipt.data}/>
-                                    )}</td>
-                                    <td>{audit.signature === null ? "No" :(
-                                        <ImageDialog value={audit.signature}/>
-                                    )}</td>
-                                    <td>{audit.runningBalance}</td>
-                                    <td>{audit.dateCreated.toLocaleString()}</td>
-                                    <td>
-                                        <Button className="bg-sky-400"><SquareArrowOutUpRight/></Button>
-                                        <RecordAddReceiptSignatureDialog onSave={(receipt, signature) => onEditSaved(receipt, signature, audit.id)}>
-                                            <Button className="bg-amber-500"><Edit/></Button>
-                                        </RecordAddReceiptSignatureDialog>
-                                        <Button className="bg-red-500"><Trash/></Button>
-                                    </td>
-                                </tr>
+                                <RecordRow audit={audit} onEditSuccess={fetchRecords} onDeleteSuccess={fetchRecords}></RecordRow>
                             ))
                         ) : (
                             <tr>
