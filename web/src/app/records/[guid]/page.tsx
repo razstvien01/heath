@@ -1,5 +1,5 @@
 import PrivateRecordCrud from "@/components/pages/privateRecordCrud";
-import RecordCrud from "@/components/pages/recordCrud";
+import RecordCrud from "@/components/pages/records/recordCrud";
 import { notFound } from "next/navigation";
 
 interface PageInfo {

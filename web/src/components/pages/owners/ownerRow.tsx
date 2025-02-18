@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
-import { CircleOff, Edit, Save, Trash } from "lucide-react"
+import { CircleOff, Edit, Save, SquareArrowOutUpRight, Trash } from "lucide-react"
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog"
 
 export function OwnerRow({ owner, onSubmitDone, onDelete }: { owner : Owner, onSubmitDone : () => void, onDelete? : () => void }) {
@@ -85,7 +85,8 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: { owner : Owner, onS
           <td>********</td>
           <td>{owner.managementGuid}</td>
           <td>
-            <Button onClick={() => setEditMode(true)} className="bg-sky-400"><Edit/></Button>
+            <Button onClick={() => setEditMode(true)} className="bg-amber-400"><Edit/></Button>
+            <Button className="bg-sky-500"><a href={"/audits/" + owner.managementGuid}><SquareArrowOutUpRight/></a></Button>
             <ConfirmationDialog onYes={onDeleteClicked}>
               <Button className="bg-red-500"><Trash/></Button>
             </ConfirmationDialog>
