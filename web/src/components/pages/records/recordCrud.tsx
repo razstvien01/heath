@@ -3,9 +3,11 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ImageDialog } from "../ui/imageDialog";
-import { SignatureDialog } from "../ui/signatureDialog";
+import { ImageDialog } from "../../ui/imageDialog";
+import { SignatureDialog } from "../../ui/signatureDialog";
 import { Edit, SquareArrowOutUpRight, SquarePen, Trash } from "lucide-react";
+import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog";
+import { RecordRow } from "./recordRow";
 
 export default function RecordCrud({ guid }: { guid: string }) {
     const [addBalanceInput, setBalanceInput] = useState("");
@@ -15,18 +17,7 @@ export default function RecordCrud({ guid }: { guid: string }) {
     const [signatureInput, setSignatureInput] = useState(null)
     const [runningBalance, setRunningBalance] = useState(0)
 
-    interface AuditRecord {
-        receipt: { data: []} | null;
-        reason: string;
-        signature: string | null;
-        id: number | null;
-        amount: number;
-        dateEntered: Date;
-        hasReceipt: boolean;
-        hasSignature: boolean;
-        runningBalance: number;
-    }
-
+    
     const [recordList, setRecordList] = useState<AuditRecord[]>([]);
 
     useEffect(() => {
@@ -44,6 +35,20 @@ export default function RecordCrud({ guid }: { guid: string }) {
         })
             .then(res => res.json())
             .then((dataList) => {
+                let currentBalance: number | null = null
+                dataList.forEach((currentValue: {
+                    dateCreated: Date;
+                    dateCreatedEpoch: number; amount: number | null; runningBalance: number | null; 
+}) => {
+                    if(!currentBalance) {
+                        currentBalance = currentValue.amount
+                    } else {
+                        currentBalance += currentValue.amount ?? 0
+                    }
+                    currentValue.runningBalance = currentBalance
+                    currentValue.dateCreated = new Date(currentValue.dateCreatedEpoch * 1000)
+                })
+                setCurrentBalance(currentBalance ?? 0);
                 setRecordList(dataList)
             })
     }
@@ -68,6 +73,10 @@ export default function RecordCrud({ guid }: { guid: string }) {
         })
 
         if (res.ok) {
+            setBalanceInput("")
+            setReasonInput("")
+            setReceiptInput(null)
+            setSignatureInput(null)
             fetchRecords();
         }
     }
@@ -120,28 +129,14 @@ export default function RecordCrud({ guid }: { guid: string }) {
                             <th>Has Receipt</th>
                             <th>Has Signature</th>
                             <th>Running Balance</th>
+                            <th>Date Entered</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {recordList?.length > 0 ? (
                             recordList?.map((audit) => (
-                                <tr key={audit.id} className="text-center">
-                                    <td>{audit.amount}</td>
-                                    <td>{audit.reason}</td>
-                                    <td>{audit.receipt === null ? "No" : (
-                                        <ImageDialog value={audit.receipt.data}/>
-                                    )}</td>
-                                    <td>{audit.signature === null ? "No" :(
-                                        <ImageDialog value={audit.signature}/>
-                                    )}</td>
-                                    <td>{runningBalance}</td>
-                                    <td>
-                                        <Button className="bg-sky-400"><SquareArrowOutUpRight/></Button>
-                                        <Button className="bg-amber-500"><Edit/></Button>
-                                        <Button className="bg-red-500"><Trash /></Button>
-                                    </td>
-                                </tr>
+                                <RecordRow audit={audit} onEditSuccess={fetchRecords} onDeleteSuccess={fetchRecords}></RecordRow>
                             ))
                         ) : (
                             <tr>

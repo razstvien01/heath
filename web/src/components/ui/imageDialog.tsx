@@ -30,7 +30,7 @@ export function ImageDialog({ value }: { value: [] | string }) {
       }
       reader.readAsDataURL(blob)
     }
-  }, [])
+  }, [value])
 
 
   return (

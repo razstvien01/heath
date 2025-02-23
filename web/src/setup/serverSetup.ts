@@ -57,6 +57,7 @@ async function createTables(DB: any): Promise<boolean> {
       receipt MEDIUMBLOB, 
       signature TEXT, 
       approved TINYINT(1),
+      dateCreated DATETIME,
       FOREIGN KEY (auditId) REFERENCES Audits(id)
     )`,
   ];

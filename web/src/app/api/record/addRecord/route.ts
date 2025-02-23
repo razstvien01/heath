@@ -11,11 +11,14 @@ export async function POST(request: Request)
     const receiptFile = formData.get("receipt");
     const signature = formData.get("signature");
 
-    const receipt = await new Promise((resolve, reject) => {
-        (receiptFile as File).arrayBuffer().then((arrayBuffer) => {
-            resolve(arrayBuffer)
+    let receipt = null
+    if (receiptFile) {
+        receipt = await new Promise((resolve, reject) => {
+            (receiptFile as File).arrayBuffer().then((arrayBuffer) => {
+                resolve(arrayBuffer)
+            })
         })
-    })
+    }
 
     if(guid == null || balance == null || reason == null)
     {
