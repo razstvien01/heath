@@ -5,3 +5,5 @@ interface Audit {
     publicGuid: string;
     ownerGuid: string;
 }
+
+export default Audit;

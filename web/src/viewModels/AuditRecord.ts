@@ -10,3 +10,5 @@ interface AuditRecord {
     hasSignature: boolean;
     runningBalance: number;
 }
+
+export default AuditRecord;

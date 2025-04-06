@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import {  Edit, SquareArrowOutUpRight, Trash } from "lucide-react"
 import { ImageDialog } from "@/components/ui/imageDialog"
 import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog"
+import AuditRecord from "@/viewModels/AuditRecord"
 
 export function RecordRow({ audit, onEditSuccess: onEditSuccess, onDeleteSuccess }: { audit : AuditRecord, onEditSuccess? : () => void, onDeleteSuccess? : () => void }) {
   const onEditSaved = async (receipt: File | null, signature: string | null, id: number): Promise<void> => {

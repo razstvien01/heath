@@ -3,3 +3,5 @@ interface Owner {
     name: string;
     managementGuid: string;
 }
+
+export default Owner;
