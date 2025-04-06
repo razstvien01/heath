@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog"
 import { CircleOff, Edit, Save, SquareArrowOutUpRight, Trash } from "lucide-react"
+import Audit from "@/models/Audit"
 
 export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onSubmitDone : () => void, onDelete? : () => void }) {
   const [editMode, setEditMode] = useState(false)
@@ -14,7 +15,7 @@ export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onS
   useEffect(() => {
     setName(audit.name)
     setId(audit.id ?? 0)
-  }, [])
+  }, [audit.id, audit.name])
 
   const onSubmit = async () => {
     const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/updateAudit";
