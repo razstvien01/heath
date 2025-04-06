@@ -4,6 +4,7 @@ import FirestoreRepository from "@/repositories/firestoreRepository";
 import { v4 as uuidv4 } from "uuid";
 import { hashPassword } from "@/lib/utils";
 import { Config } from "@/config/config";
+import { Connection } from "mysql2";
 
 // Setup function to initialize the app
 export function Setup() {
@@ -27,7 +28,7 @@ async function MariaDbSetup() {
 }
 
 // Function to create tables in MariaDB
-async function createTables(DB: any): Promise<boolean> {
+async function createTables(DB: Connection): Promise<boolean> {
   const createTableQueries = [
     `CREATE TABLE IF NOT EXISTS Admins (
       id INT AUTO_INCREMENT PRIMARY KEY, 
@@ -75,7 +76,7 @@ async function createTables(DB: any): Promise<boolean> {
 }
 
 // Insert admin records into the Admins table
-async function insertAdminRecords(DB: any): Promise<void> {
+async function insertAdminRecords(DB: Connection): Promise<void> {
   try {
     await DB.execute("DELETE FROM Admins");
 
