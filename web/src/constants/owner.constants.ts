@@ -1,6 +1,0 @@
-enum OWNER_METHODS {
-  ADD_OWNER = 'ADD_OWNER',
-  OWNER_LIST = 'OWNER_LIST',
-}
-
-export default OWNER_METHODS;
