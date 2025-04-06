@@ -10,6 +10,6 @@ const MARIADB_CONFIG = {
 
 // Initialize Firebase
 export function CreateConnection() {
-  var connection = mysql.createConnection(MARIADB_CONFIG);
+  const connection = mysql.createConnection(MARIADB_CONFIG);
   return connection;
 }
