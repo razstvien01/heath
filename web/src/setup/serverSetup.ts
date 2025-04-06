@@ -6,9 +6,8 @@ import { hashPassword } from "@/lib/utils";
 import { Config } from "@/config/config";
 import { Connection } from "mysql2";
 
-// Setup function to initialize the app
+//* Setup function to initialize the app
 export function Setup() {
-  console.log("Setting up the app");
   validateEnvironmentVariables();
   MariaDbSetup();
   FirebaseSetup();

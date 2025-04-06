@@ -20,7 +20,7 @@ class FirestoreRepository<T extends DocumentData> {
   }
 
   private sanitizeData(data: T): WithFieldValue<DocumentData> {
-    const sanitized: Record<string, any> = {};
+    const sanitized: Record<string, unknown> = {};
 
     const entries = Object.entries(data as Record<string, any>);
 
