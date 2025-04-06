@@ -120,7 +120,9 @@ async function FirebaseSetup() {
     await adminRepo.truncateCollection();
     await adminRepo.createDocument(admin1);
     await adminRepo.createDocument(admin2);
-    console.log("Admin documents created and inserted data successfully in Firestore");
+    console.log(
+      "Admin documents created and inserted data successfully in Firestore"
+    );
   } catch (error) {
     console.error("Error creating document:", error);
     throw error;
