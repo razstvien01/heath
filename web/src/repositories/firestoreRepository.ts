@@ -22,7 +22,7 @@ class FirestoreRepository<T extends DocumentData> {
   private sanitizeData(data: T): WithFieldValue<DocumentData> {
     const sanitized: Record<string, unknown> = {};
 
-    const entries = Object.entries(data as Record<string, any>);
+    const entries = Object.entries(data as Record<string, unknown>);
 
     for (const [key, value] of entries) {
       if (value !== undefined) {
