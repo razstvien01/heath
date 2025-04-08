@@ -1,19 +1,25 @@
+import { Config } from "@/constants/configConstants";
 import { IMariaDBSetupRepository } from "@/interfaces/IMariaDBSetupRepository";
-import { Connection } from "mysql2";
+import { Connection } from "mysql2/promise";
+import { v4 as uuidv4 } from "uuid";
 
 export class MariaDBSetupRepository implements IMariaDBSetupRepository {
-  createAdminsTable(DB: Connection): boolean {
+  async createAdminsTable(DB: Connection): Promise<void> {
     const query = `CREATE TABLE IF NOT EXISTS Admins (
       id INT AUTO_INCREMENT PRIMARY KEY, 
       name VARCHAR(255), 
       password VARCHAR(255), 
       ownerManagementGuid VARCHAR(255)
     )`;
-    const result = DB.execute(query);
-    if (result) return true;
-    return false;
+
+    try {
+      const result = await DB.execute(query);
+      console.log("Table creation result:", result);
+    } catch (error) {
+      console.error("Error creating Admins table:", error);
+    }
   }
-  createOwnersTable(DB: Connection): void {
+  async createOwnersTable(DB: Connection): Promise<void> {
     const query = `CREATE TABLE IF NOT EXISTS Owners (
       id INT AUTO_INCREMENT PRIMARY KEY, 
       name VARCHAR(255), 
@@ -21,9 +27,14 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       managementGuid VARCHAR(255)
     )`;
 
-    DB.execute(query);
+    try {
+      const result = await DB.execute(query);
+      console.log("Table creation result:", result);
+    } catch (error) {
+      console.error("Error creating Owners table:", error);
+    }
   }
-  createAuditsTable(DB: Connection): void {
+  async createAuditsTable(DB: Connection): Promise<void> {
     const query = `CREATE TABLE IF NOT EXISTS Audits (
       id INT AUTO_INCREMENT PRIMARY KEY, 
       ownerId INT NOT NULL, 
@@ -33,9 +44,14 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       FOREIGN KEY (ownerId) REFERENCES Owners(id)
     )`;
 
-    DB.execute(query);
+    try {
+      const result = await DB.execute(query);
+      console.log("Table creation result:", result);
+    } catch (error) {
+      console.error("Error creating Audits table:", error);
+    }
   }
-  createRecordsTable(DB: Connection): void {
+  async createRecordsTable(DB: Connection): Promise<void> {
     const query = `CREATE TABLE IF NOT EXISTS Records (
       id INT AUTO_INCREMENT PRIMARY KEY, 
       auditId INT NOT NULL, 
@@ -48,9 +64,33 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       FOREIGN KEY (auditId) REFERENCES Audits(id)
     )`;
 
-    DB.execute(query);
+    try {
+      const result = await DB.execute(query);
+      console.log("Table creation result:", result);
+    } catch (error) {
+      console.error("Error creating Records table:", error);
+    }
   }
-  insertAdminRecords(DB: Connection): boolean {
-    throw new Error("Method not implemented.");
+  async insertAdminRecords(DB: Connection): Promise<void> {
+    await DB.execute("TRUNCATE TABLE Admins");
+
+    const insertQuery = `INSERT INTO Admins (name, password, ownerManagementGuid) VALUES 
+        (?, SHA2(?, 256), ?), 
+        (?, SHA2(?, 256), ?);`;
+
+    try {
+      const result = await DB.execute(insertQuery, [
+        Config.MYSQL_ADMIN1_USERNAME,
+        Config.MYSQL_ADMIN1_PASSWORD,
+        uuidv4(),
+        Config.MYSQL_ADMIN2_USERNAME,
+        Config.MYSQL_ADMIN2_PASSWORD,
+        uuidv4(),
+      ]);
+
+      console.log("Inserting records in Admins table result:", result);
+    } catch (error) {
+      console.error("Error inserting records in Admins table:", error);
+    }
   }
 }

@@ -3,7 +3,7 @@ import { AdminProfile } from "@/models/adminProfile";
 import FirestoreRepository from "@/repositories/firestoreRepository";
 import { v4 as uuidv4 } from "uuid";
 import { hashPassword } from "@/lib/utils";
-import { Config } from "@/config/config";
+import { Config } from "@/constants/configConstants";
 import { Connection } from "mysql2";
 
 //* Setup function to initialize the app
