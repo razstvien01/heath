@@ -1,9 +1,9 @@
 import { Connection } from "mysql2"
 
 export interface IMariaDBSetupRepository{
-  createAdminsTable(DB: Connection): Promise<boolean>;
-  createOwnersTable(DB: Connection): Promise<boolean>;
-  createAuditsTable(DB: Connection): Promise<boolean>;
-  createRecordsTable(DB: Connection): Promise<boolean>;
+  createAdminsTable(DB: Connection): void;
+  createOwnersTable(DB: Connection): void;
+  createAuditsTable(DB: Connection): void;
+  createRecordsTable(DB: Connection): void;
   insertAdminRecords(DB: Connection): Promise<boolean>;
 }
