@@ -5,17 +5,18 @@ import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { CircleOff, Edit, Save, SquareArrowOutUpRight, Trash } from "lucide-react"
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog"
+import Owner from "@/models/Owner"
 
 export function OwnerRow({ owner, onSubmitDone, onDelete }: { owner : Owner, onSubmitDone : () => void, onDelete? : () => void }) {
   const [editMode, setEditMode] = useState(false)
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
-  const [guid, setGuid] = useState("")
+  const [, setGuid] = useState("")
 
   useEffect(() => {
     setName(owner.name)
     setGuid(owner.managementGuid)
-  }, [])
+  }, [owner.name, owner.managementGuid])
 
   const onSubmit = async () => {
     const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/updateOwner";
