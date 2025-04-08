@@ -4,103 +4,23 @@ import FirestoreRepository from "@/repositories/firestoreRepository";
 import { v4 as uuidv4 } from "uuid";
 import { hashPassword } from "@/lib/utils";
 import { Config } from "@/constants/configConstants";
-import { Connection } from "mysql2";
+import { MariaDBSetupRepository } from "@/repositories/MariaDBSetupRepository";
 
 //* Setup function to initialize the app
-export function Setup() {
+export async function Setup() {
   validateEnvironmentVariables();
-  MariaDbSetup();
+  
+  const sqlConnection = await CreateConnection();
+  const mariaDBSetupRepo = new MariaDBSetupRepository(sqlConnection);
+  
+  await mariaDBSetupRepo.createAdminsTable();
+  await mariaDBSetupRepo.createAuditsTable();
+  await mariaDBSetupRepo.createOwnersTable();
+  await mariaDBSetupRepo.createRecordsTable();
+  
+  await mariaDBSetupRepo.insertAdminRecords();
+  
   FirebaseSetup();
-}
-
-// MariaDB Setup for creating tables
-async function MariaDbSetup() {
-  const DB = CreateConnection();
-  const tableCreationResults = await createTables(DB);
-
-  if (tableCreationResults) {
-    console.log("Tables created successfully");
-    await insertAdminRecords(DB);
-  } else {
-    console.log("[ERROR] Table creation failed");
-  }
-}
-
-// Function to create tables in MariaDB
-async function createTables(DB: Connection): Promise<boolean> {
-  const createTableQueries = [
-    `CREATE TABLE IF NOT EXISTS Admins (
-      id INT AUTO_INCREMENT PRIMARY KEY, 
-      name VARCHAR(255), 
-      password VARCHAR(255), 
-      ownerManagementGuid VARCHAR(255)
-    )`,
-    `CREATE TABLE IF NOT EXISTS Owners (
-      id INT AUTO_INCREMENT PRIMARY KEY, 
-      name VARCHAR(255), 
-      password VARCHAR(255), 
-      managementGuid VARCHAR(255)
-    )`,
-    `CREATE TABLE IF NOT EXISTS Audits (
-      id INT AUTO_INCREMENT PRIMARY KEY, 
-      ownerId INT NOT NULL, 
-      name VARCHAR(255), 
-      publicGuid VARCHAR(255), 
-      ownerGuid VARCHAR(255),
-      FOREIGN KEY (ownerId) REFERENCES Owners(id)
-    )`,
-    `CREATE TABLE IF NOT EXISTS Records (
-      id INT AUTO_INCREMENT PRIMARY KEY, 
-      auditId INT NOT NULL, 
-      amount DOUBLE NOT NULL, 
-      reason TEXT NOT NULL, 
-      receipt MEDIUMBLOB, 
-      signature TEXT, 
-      approved TINYINT(1),
-      dateCreated DATETIME,
-      FOREIGN KEY (auditId) REFERENCES Audits(id)
-    )`,
-  ];
-
-  try {
-    for (const query of createTableQueries) {
-      const result = await DB.execute(query);
-      if (!result) return false;
-    }
-    return true;
-  } catch (error) {
-    console.error("[ERROR] Table creation failed:", error);
-    return false;
-  }
-}
-
-// Insert admin records into the Admins table
-async function insertAdminRecords(DB: Connection): Promise<void> {
-  try {
-    await DB.execute("DELETE FROM Admins");
-
-    const result = await DB.execute(
-      `INSERT INTO Admins (name, password, ownerManagementGuid) VALUES 
-        (?, SHA2(?, 256), ?), 
-        (?, SHA2(?, 256), ?);`,
-      [
-        Config.MYSQL_ADMIN1_USERNAME,
-        Config.MYSQL_ADMIN1_PASSWORD,
-        uuidv4(),
-        Config.MYSQL_ADMIN2_USERNAME,
-        Config.MYSQL_ADMIN2_PASSWORD,
-        uuidv4(),
-      ]
-    );
-
-    if (result) {
-      console.log("Admin records inserted successfully");
-    } else {
-      console.log("[ERROR] Admin records insert failed");
-    }
-  } catch (error) {
-    console.error("[ERROR] Failed to insert admin records:", error);
-  }
 }
 
 // Firebase Setup to create Admin documents
