@@ -26,7 +26,7 @@ export function RecordAddReceiptSignatureDialog({
 
   const onReceiptInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files && e.target.files.length > 0) {
-          let file = e.target.files[0];
+          const file = e.target.files[0];
           setReceiptInput(file);
       }
   }
@@ -35,7 +35,7 @@ export function RecordAddReceiptSignatureDialog({
     setSignatureInput(e.base64);
   }
 
-  function onSaveClicked(event: React.MouseEvent<HTMLButtonElement>): void {
+  function onSaveClicked(): void {
     if (onSave) {
       onSave(receiptInput, signatureInput);
     }
