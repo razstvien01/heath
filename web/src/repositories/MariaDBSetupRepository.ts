@@ -4,18 +4,60 @@ import { Connection } from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
 
 export class MariaDBSetupRepository implements IMariaDBSetupRepository {
-  private sqlConnection: Connection
-  
-  constructor(sqlConnection: Connection){
+  private sqlConnection: Connection;
+
+  constructor(sqlConnection: Connection) {
     this.sqlConnection = sqlConnection;
   }
-  
+  async dropAdminsTable(): Promise<void> {
+    const query = `DROP TABLE IF EXISTS Admins`;
+
+    try {
+      const result = await this.sqlConnection.execute(query);
+      console.log("Table drop result:", result);
+    } catch (error) {
+      console.error("Error dropping Admins table:", error);
+    }
+  }
+  async dropOwnersTable(): Promise<void> {
+    const query = `DROP TABLE IF EXISTS Owners`;
+
+    try {
+      const result = await this.sqlConnection.execute(query);
+      console.log("Table drop result:", result);
+    } catch (error) {
+      console.error("Error dropping Owners table:", error);
+    }
+  }
+  async dropAuditsTable(): Promise<void> {
+    const query = `DROP TABLE IF EXISTS Audits`;
+
+    try {
+      const result = await this.sqlConnection.execute(query);
+      console.log("Table drop result:", result);
+    } catch (error) {
+      console.error("Error dropping Audits table:", error);
+    }
+  }
+  async dropRecordsTable(): Promise<void> {
+    const query = `DROP TABLE IF EXISTS Records`;
+
+    try {
+      const result = await this.sqlConnection.execute(query);
+      console.log("Table drop result:", result);
+    } catch (error) {
+      console.error("Error dropping Records table:", error);
+    }
+  }
+
   async createAdminsTable(): Promise<void> {
     const query = `CREATE TABLE IF NOT EXISTS Admins (
       id INT AUTO_INCREMENT PRIMARY KEY, 
       name VARCHAR(255), 
       password VARCHAR(255), 
-      ownerManagementGuid VARCHAR(255)
+      ownerManagementGuid VARCHAR(255),
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )`;
 
     try {
@@ -30,7 +72,9 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       id INT AUTO_INCREMENT PRIMARY KEY, 
       name VARCHAR(255), 
       password VARCHAR(255), 
-      managementGuid VARCHAR(255)
+      managementGuid VARCHAR(255),
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )`;
 
     try {
@@ -47,7 +91,9 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       name VARCHAR(255), 
       publicGuid VARCHAR(255), 
       ownerGuid VARCHAR(255),
-      FOREIGN KEY (ownerId) REFERENCES Owners(id)
+      FOREIGN KEY (ownerId) REFERENCES Owners(id),
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )`;
 
     try {
@@ -66,8 +112,9 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       receipt MEDIUMBLOB, 
       signature TEXT, 
       approved TINYINT(1),
-      dateCreated DATETIME,
-      FOREIGN KEY (auditId) REFERENCES Audits(id)
+      FOREIGN KEY (auditId) REFERENCES Audits(id),
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )`;
 
     try {

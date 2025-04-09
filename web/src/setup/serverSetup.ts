@@ -9,17 +9,23 @@ import { MariaDBSetupRepository } from "@/repositories/MariaDBSetupRepository";
 //* Setup function to initialize the app
 export async function Setup() {
   validateEnvironmentVariables();
-  
+
   const sqlConnection = await CreateConnection();
   const mariaDBSetupRepo = new MariaDBSetupRepository(sqlConnection);
-  
+
+  // Drop existing tables
+  // await mariaDBSetupRepo.dropAdminsTable();
+  // await mariaDBSetupRepo.dropRecordsTable();
+  // await mariaDBSetupRepo.dropAuditsTable();
+  // await mariaDBSetupRepo.dropOwnersTable();
+
   await mariaDBSetupRepo.createAdminsTable();
-  await mariaDBSetupRepo.createAuditsTable();
   await mariaDBSetupRepo.createOwnersTable();
+  await mariaDBSetupRepo.createAuditsTable();
   await mariaDBSetupRepo.createRecordsTable();
-  
+
   await mariaDBSetupRepo.insertAdminRecords();
-  
+
   FirebaseSetup();
 }
 
