@@ -1,15 +1,18 @@
 import { CreateConnection } from "@/config/mariadbConfig";
-import { AdminProfile } from "@/models/adminProfile";
-import FirestoreRepository from "@/repositories/firestoreRepository";
-import { v4 as uuidv4 } from "uuid";
-import { hashPassword } from "@/lib/utils";
 import { Config } from "@/constants/configConstants";
 import { MariaDBSetupRepository } from "@/repositories/MariaDBSetupRepository";
+import { DB as firestoreConnection } from "@/config/firebaseConfig";
+import { FirestoreDBSetupRepository } from "@/repositories/FirestoreDBSetupRepository";
 
 //* Setup function to initialize the app
 export async function Setup() {
   validateEnvironmentVariables();
 
+  sqlSetup();
+  firebaseSetup();
+}
+
+async function sqlSetup() {
   const sqlConnection = await CreateConnection();
   const mariaDBSetupRepo = new MariaDBSetupRepository(sqlConnection);
 
@@ -25,34 +28,19 @@ export async function Setup() {
   await mariaDBSetupRepo.createRecordsTable();
 
   await mariaDBSetupRepo.insertAdminRecords();
-
-  FirebaseSetup();
 }
 
-// Firebase Setup to create Admin documents
-async function FirebaseSetup() {
-  const adminRepo = new FirestoreRepository<AdminProfile>("admins");
-
-  const admin1: AdminProfile = createAdminProfile(
-    Config.MYSQL_ADMIN1_USERNAME,
-    Config.MYSQL_ADMIN1_PASSWORD
-  );
-  const admin2: AdminProfile = createAdminProfile(
-    Config.MYSQL_ADMIN2_USERNAME,
-    Config.MYSQL_ADMIN2_PASSWORD
+async function firebaseSetup() {
+  const firestoreDBSetupRepo = new FirestoreDBSetupRepository(
+    firestoreConnection
   );
 
-  try {
-    await adminRepo.truncateCollection();
-    await adminRepo.createDocument(admin1);
-    await adminRepo.createDocument(admin2);
-    console.log(
-      "Admin documents created and inserted data successfully in Firestore"
-    );
-  } catch (error) {
-    console.error("Error creating document:", error);
-    throw error;
-  }
+  await firestoreDBSetupRepo.dropAdminsCollection();
+  await firestoreDBSetupRepo.dropRecordsCollection();
+  await firestoreDBSetupRepo.dropAuditsCollection();
+  await firestoreDBSetupRepo.dropOwnersCollection();
+  
+  await firestoreDBSetupRepo.insertAdminRecords();
 }
 
 // Validate environment variables for Admin credentials
@@ -73,13 +61,4 @@ function validateEnvironmentVariables() {
       "Admin 2 credentials are not properly configured in environment variables"
     );
   }
-}
-
-// Create an Admin profile object
-function createAdminProfile(username: string, password: string): AdminProfile {
-  return {
-    name: username,
-    password: hashPassword(password),
-    ownerManagementGuid: uuidv4(),
-  };
 }
