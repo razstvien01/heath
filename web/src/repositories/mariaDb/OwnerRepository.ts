@@ -25,9 +25,10 @@ export class OwnerRepository {
 
   async DeleteOwnerFromManagementGuid(guid: string) {
     const DB = CreateConnection();
-    const result = (await DB).execute("DELETE FROM Owners WHERE managementGuid = ?", [
-      guid,
-    ]);
+    const result = (await DB).execute(
+      "DELETE FROM Owners WHERE managementGuid = ?",
+      [guid]
+    );
     return result;
   }
 
@@ -44,20 +45,26 @@ export class OwnerRepository {
   async GetOwnerList() {
     const DB = CreateConnection();
     const result: unknown = await new Promise(async (resolve, reject) => {
-      (await DB).query("SELECT * FROM Owners", function (err: Error | null, results: unknown) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(results);
+      (await DB).query(
+        "SELECT * FROM Owners",
+        function (err: Error | null, results: unknown) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(results);
+          }
         }
-      });
+      );
     });
     return result;
   }
 
   async GetOwnerIdFromManagementGuid(guid: string): Promise<number | null> {
     const DB = await CreateConnection();
-    const [rows]: unknown[] = await DB.query("SELECT id FROM Owners WHERE managementGuid = ?", [guid]);
+    const [rows]: unknown[] = await DB.query(
+      "SELECT id FROM Owners WHERE managementGuid = ?",
+      [guid]
+    );
 
     if (Array.isArray(rows) && rows.length > 0) {
       return rows[0].id;

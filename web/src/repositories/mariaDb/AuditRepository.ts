@@ -18,10 +18,11 @@ export class AuditRepository {
       const DB = await CreateConnection();
 
       try {
-        const [results] = await (await DB).query(
-          "SELECT *, 0 as entries FROM Audits WHERE ownerId = ?",
-          [ownerId]
-        );
+        const [results] = await (
+          await DB
+        ).query("SELECT *, 0 as entries FROM Audits WHERE ownerId = ?", [
+          ownerId,
+        ]);
         resolve(results);
       } catch (err) {
         reject(err);
@@ -108,7 +109,7 @@ export class AuditRepository {
       }
     } catch (err) {
       console.error("Error executing query:", err);
-      return null; 
+      return null;
     }
   }
 }

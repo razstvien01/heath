@@ -1,7 +1,7 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 
 export class RecordRepository {
-  AddRecord(
+  async AddRecord(
     auditId: number,
     balance: number,
     reason: string,
@@ -9,7 +9,7 @@ export class RecordRepository {
     signature: string
   ) {
     const DB = CreateConnection();
-    const result = DB.execute(
+    const result = (await DB).execute(
       "INSERT INTO Records (auditId, amount, reason, receipt, signature, approved, dateCreated) VALUES " +
         "(?, ?, ?, ?, ?, ?, ?)",
       [auditId, balance, reason, receipt, signature, 0, new Date()]
@@ -18,28 +18,18 @@ export class RecordRepository {
   }
 
   async GetRecordList(auditId: number) {
-    const result: unknown = await new Promise((resolve, reject) => {
-      const DB = CreateConnection();
+    const DB = CreateConnection();
+    const [results]: unknown[] = await (await DB).query(
+      "SELECT *, UNIX_TIMESTAMP(dateCreated) as dateCreatedEpoch FROM Records WHERE auditId = ?",
+      [auditId]
+    );
 
-      DB.query(
-        "SELECT *, UNIX_TIMESTAMP(dateCreated) as dateCreatedEpoch FROM Records WHERE auditId = ?",
-        [auditId],
-        function (err, results) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        }
-      );
-    });
-
-    return result;
+    return results;
   }
 
   async UpdateRecord(id: number, receipt: ArrayBuffer, signature: string) {
     const DB = CreateConnection();
-    const result = DB.execute(
+    const result = (await DB).execute(
       "UPDATE Records SET " +
         "receipt = ?, " +
         "signature = ? " +
@@ -52,7 +42,7 @@ export class RecordRepository {
 
   async DeleteRecordById(id: number) {
     const DB = CreateConnection();
-    const result = DB.execute("DELETE FROM Records WHERE id = ?", [id]);
+    const result = (await DB).execute("DELETE FROM Records WHERE id = ?", [id]);
     return result;
   }
 }
