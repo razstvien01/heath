@@ -2,17 +2,7 @@ import { CreateConnection } from "@/config/mariadbConfig";
 import { AdminRepository } from "@/repositories/mariaDb/AdminRepository";
 
 export async function POST(request: Request) {
-  const contentType = request.headers.get("Content-Type") || "";
-
-  // Ensure the Content-Type is multipart/form-data
-  if (!contentType.includes("multipart/form-data")) {
-    return new Response("Invalid Content-Type", {
-      status: 400,
-    });
-  }
-
   try {
-    // Parse the form data
     const formData = await request.formData();
     const guid = formData.get("guid");
 
@@ -21,8 +11,6 @@ export async function POST(request: Request) {
         status: 400,
       });
     }
-
-    console.log("GUID:", guid);
 
     const db = await CreateConnection();
     const adminRepo = new AdminRepository(db);
