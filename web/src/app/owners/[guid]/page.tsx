@@ -1,4 +1,5 @@
 import OwnerCrud from "@/components/pages/owners/ownerCrud";
+import axios from "axios";
 import { notFound } from "next/navigation";
 
 async function isAdminGuid(guid: string) {
@@ -8,12 +9,13 @@ async function isAdminGuid(guid: string) {
   const formData = new FormData();
   formData.append("guid", guid);
 
-  const res = await fetch(isAdminGuidUrl, {
-    method: "POST",
-    body: formData,
+  const res = await axios.post(isAdminGuidUrl, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 
-  if (res.ok) {
+  if (res.status === 200) {
     return true;
   }
   return false;

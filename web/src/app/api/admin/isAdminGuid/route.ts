@@ -1,44 +1,48 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { CreateConnection } from "@/config/mariadbConfig";
+import { AdminRepository } from "@/repositories/mariaDb/AdminRepository";
 
-export async function POST(request: Request)
-{
+export async function POST(request: Request) {
+  const contentType = request.headers.get("Content-Type") || "";
+
+  // Ensure the Content-Type is multipart/form-data
+  if (!contentType.includes("multipart/form-data")) {
+    return new Response("Invalid Content-Type", {
+      status: 400,
+    });
+  }
+
+  try {
+    // Parse the form data
     const formData = await request.formData();
     const guid = formData.get("guid");
-    if(guid == null)
-    {
-        return new Response("Bad", {
-            status: 400
-        })
+
+    if (!guid) {
+      return new Response("Bad Request: Missing GUID", {
+        status: 400,
+      });
     }
 
-    console.log("GUID", guid);  
+    console.log("GUID:", guid);
 
-    const result : any = await new Promise((resolve, reject) => {
-        var DB = CreateConnection();
+    const db = await CreateConnection();
+    const adminRepo = new AdminRepository(db);
 
-        DB.query("SELECT * FROM Admins WHERE ownerManagementGuid = ?", [guid], 
-        function(err, results) {
-            if(err) {
-                console.log('ERR', err);
-                reject(err);
-            }
-            else {
-                console.log('RESOLVED', results);
-                resolve(results);
-            }
-        });
-    });
+    const result = await adminRepo.getAdminByOMGUID(guid.toString());
 
-    console.log(result);
-
-    if(Array.isArray(result) && result.length > 0) {
-        console.log("Guid exists");
-        return new Response("Good?", {
-            status: 200
-        });
-    } 
+    if (Array.isArray(result) && result.length > 0) {
+      console.log("GUID exists:", result);
+      return new Response("Good", {
+        status: 200,
+      });
+    }
 
     return new Response("Invalid Link", {
-        status: 404
-    })
+      status: 404,
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return new Response("Internal Server Error", {
+      status: 500,
+    });
+  }
 }
