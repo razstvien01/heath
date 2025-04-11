@@ -17,7 +17,7 @@ async function sqlSetup() {
   const mariaDBSetupRepo = new MariaDBSetupRepository(sqlConnection);
 
   // Drop existing tables
-  // await mariaDBSetupRepo.dropAdminsTable();
+  await mariaDBSetupRepo.dropAdminsTable();
   // await mariaDBSetupRepo.dropRecordsTable();
   // await mariaDBSetupRepo.dropAuditsTable();
   // await mariaDBSetupRepo.dropOwnersTable();

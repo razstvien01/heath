@@ -2,9 +2,9 @@ import { CreateConnection } from "@/config/mariadbConfig";
 import { v4 as uuidv4 } from "uuid";
 
 export class AuditRepository {
-  AddAudit(ownerId: number, name: string) {
-    const DB = CreateConnection();
-    const result = DB.execute(
+  async AddAudit(ownerId: number, name: string) {
+    const DB = await CreateConnection();
+    const result = await DB.execute(
       "INSERT INTO Audits (ownerId, name, publicGuid, ownerGuid) VALUES " +
         "(?, ?, ?, ?)",
       [ownerId, name, uuidv4(), uuidv4()]
@@ -14,47 +14,37 @@ export class AuditRepository {
   }
 
   async GetAuditList(ownerId: number) {
-    const result = await new Promise((resolve, reject) => {
-      const DB = CreateConnection();
+    const result = await new Promise(async (resolve, reject) => {
+      const DB = await CreateConnection();
 
-      DB.query(
-        "SELECT *, 0 as entries FROM Audits WHERE ownerId = ?",
-        [ownerId],
-        function (err, results) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        }
-      );
+      try {
+        const [results] = await (await DB).query(
+          "SELECT *, 0 as entries FROM Audits WHERE ownerId = ?",
+          [ownerId]
+        );
+        resolve(results);
+      } catch (err) {
+        reject(err);
+      }
     });
     return result;
   }
 
-  DeleteAuditById(auditId: number) {
-    const DB = CreateConnection();
-    const result = DB.execute("DELETE FROM Audits WHERE id = ?", [auditId]);
+  async DeleteAuditById(auditId: number) {
+    const DB = await CreateConnection();
+    const result = await DB.execute("DELETE FROM Audits WHERE id = ?", [
+      auditId,
+    ]);
 
     return result;
   }
 
   async IsAuditPublicGuid(guid: string) {
-    const isPublicResult: unknown = await new Promise((resolve, reject) => {
-      const DB = CreateConnection();
-
-      DB.query(
-        "SELECT * FROM Audits WHERE publicGuid = ?",
-        [guid],
-        function (err, results) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        }
-      );
-    });
+    const DB = await CreateConnection();
+    const [isPublicResult]: unknown[] = await DB.query(
+      "SELECT * FROM Audits WHERE publicGuid = ?",
+      [guid]
+    );
 
     if (Array.isArray(isPublicResult) && isPublicResult.length > 0) {
       return true;
@@ -63,22 +53,12 @@ export class AuditRepository {
     }
   }
 
-  async IsAuditPrivateGuid(guid: string) {
-    const isPrivateResult: unknown = await new Promise((resolve, reject) => {
-      const DB = CreateConnection();
-
-      DB.query(
-        "SELECT * FROM Audits WHERE ownerGuid = ?",
-        [guid],
-        function (err, results) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        }
-      );
-    });
+  async IsAuditPrivateGuid(guid: string): Promise<boolean> {
+    const DB = await CreateConnection();
+    const [isPrivateResult]: unknown[] = await DB.query(
+      "SELECT * FROM Audits WHERE ownerGuid = ?",
+      [guid]
+    );
 
     if (Array.isArray(isPrivateResult) && isPrivateResult.length > 0) {
       return true;
@@ -87,10 +67,10 @@ export class AuditRepository {
     }
   }
 
-  UpdateAudit(name: string, id: number) {
-    const DB = CreateConnection();
+  async UpdateAudit(name: string, id: number) {
+    const DB = await CreateConnection();
 
-    const result = DB.execute(
+    const result = await DB.execute(
       "UPDATE Audits SET " + "name = ? " + "WHERE id = ?",
       [name, id]
     );
@@ -98,26 +78,37 @@ export class AuditRepository {
     return result;
   }
 
-  async GetAuditIdFromGuid(guid: string): Promise<number | null> {
-    const DB = CreateConnection();
-    const auditId: unknown = await new Promise((resolve, reject) => {
-      DB.query(
-        "SELECT id FROM Audits WHERE publicGuid = ? or ownerGuid = ?",
-        [guid, guid],
-        function (err, results) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        }
-      );
-    });
+  async GetAuditIdFromGuidd(guid: string): Promise<number | null> {
+    const DB = await CreateConnection();
+    const [rows]: unknown[] = await DB.query(
+      "SELECT id FROM Audits WHERE publicGuid = ? or ownerGuid = ?",
+      [guid, guid]
+    );
 
-    if (Array.isArray(auditId) && auditId.length > 0) {
-      return auditId[0].id;
+    if (Array.isArray(rows) && rows.length > 0) {
+      return rows[0].id;
     } else {
       return null;
+    }
+  }
+
+  async GetAuditIdFromGuid(guid: string): Promise<number | null> {
+    const DB = await CreateConnection();
+
+    try {
+      const [results]: unknown[] = await DB.query(
+        "SELECT id FROM Audits WHERE publicGuid = ? or ownerGuid = ?",
+        [guid, guid]
+      );
+
+      if (Array.isArray(results) && results.length > 0) {
+        return results[0].id;
+      } else {
+        return null;
+      }
+    } catch (err) {
+      console.error("Error executing query:", err);
+      return null; 
     }
   }
 }
