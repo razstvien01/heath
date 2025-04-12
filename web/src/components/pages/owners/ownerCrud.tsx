@@ -236,19 +236,22 @@ export default function OwnerCrud({ guid }: { guid: string }) {
                         <TableHead>Username</TableHead>
                         <TableHead>Password</TableHead>
                         <TableHead>Guid</TableHead>
+                        <TableHead>Date Created</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {ownerList?.length > 0 ? (
-                        ownerList?.map((owner) => (
-                          <OwnerRow
-                            key={owner.id}
-                            owner={owner}
-                            onSubmitDone={fetchOwners}
-                            onDelete={fetchOwners}
-                          />
-                        ))
+                        ownerList
+                          .sort((a, b) => a.name.localeCompare(b.name))
+                          .map((owner) => (
+                            <OwnerRow
+                              key={owner.id}
+                              owner={owner}
+                              onSubmitDone={fetchOwners}
+                              onDelete={fetchOwners}
+                            />
+                          ))
                       ) : (
                         <TableRow>
                           <TableCell
