@@ -1,33 +1,57 @@
 "use client"
 
+import { type ReactNode, useState } from "react"
 import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { DialogClose } from "@radix-ui/react-dialog"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
-export function ConfirmationDialog({ onYes, onNo, children }: { onYes?: () => void, onNo?: () => void, children: React.ReactNode }) {
+interface ConfirmationDialogProps {
+  children: ReactNode
+  onYes: () => void
+  title?: string
+  description?: string
+  cancelText?: string
+  confirmText?: string
+}
+
+export function ConfirmationDialog({
+  children,
+  onYes,
+  title = "Are you sure?",
+  description = "This action cannot be undone.",
+  cancelText = "Cancel",
+  confirmText = "Continue",
+}: ConfirmationDialogProps) {
+  const [open, setOpen] = useState(false)
+
+  const handleConfirm = () => {
+    onYes()
+    setOpen(false)
+  }
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Are you sure?</DialogTitle>
-        </DialogHeader>
-        <DialogFooter>
-          <Button onClick={onYes} className="bg-emerald-500">Yes</Button>
-          <DialogClose>
-            <Button onClick={onNo} className="bg-rose-500">No</Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{cancelText}</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} className="bg-red-500 hover:bg-red-600">
+            {confirmText}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

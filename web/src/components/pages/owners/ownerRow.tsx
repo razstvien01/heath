@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { CircleOff, Edit, ExternalLink, Save, Trash } from "lucide-react";
-// import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
 import Link from "next/link";
 import type Owner from "@/models/Owner";
+import { ConfirmationDialog } from "@/components/ui/confirmationDialog";
 
 interface OwnerRowProps {
   owner: Owner;
@@ -54,28 +54,28 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
     }
   };
 
-  // const onDeleteClicked = async () => {
-  //   setIsLoading(true);
-  //   const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/deleteOwner";
+  const onDeleteClicked = async () => {
+    setIsLoading(true);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/deleteOwner";
 
-  //   const formData = new FormData();
-  //   formData.append("guid", owner.managementGuid);
+    const formData = new FormData();
+    formData.append("guid", owner.managementGuid);
 
-  //   try {
-  //     const res = await fetch(apiUrl, {
-  //       method: "POST",
-  //       body: formData,
-  //     });
+    try {
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        body: formData,
+      });
 
-  //     if (res.ok && onDelete) {
-  //       onDelete();
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to delete owner:", error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+      if (res.ok && onDelete) {
+        onDelete();
+      }
+    } catch (error) {
+      console.error("Failed to delete owner:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <TableRow key={owner.id}>
@@ -174,7 +174,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
                 </Link>
               </Button>
 
-              {/* <ConfirmationDialog onYes={onDeleteClicked}>
+              <ConfirmationDialog onYes={onDeleteClicked}>
                 <Button
                   size="sm"
                   className="bg-red-500 hover:bg-red-600"
@@ -185,7 +185,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
                     Delete
                   </span>
                 </Button>
-              </ConfirmationDialog> */}
+              </ConfirmationDialog>
             </>
           )}
         </div>
