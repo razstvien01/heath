@@ -8,6 +8,7 @@ import { CircleOff, Edit, ExternalLink, Save, Trash } from "lucide-react";
 import Link from "next/link";
 import type Owner from "@/models/Owner";
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog";
+import { updateOwnerReq } from "@/services/ownerService";
 
 interface OwnerRowProps {
   owner: Owner;
@@ -26,10 +27,9 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
   }, [owner.name]);
 
   const onSubmit = async () => {
-    if (!name) return;
-
+    if (!name || !password) return;
+    
     setIsLoading(true);
-    const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/updateOwner";
 
     const formData = new FormData();
     formData.append("username", name);
@@ -37,15 +37,14 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
     formData.append("guid", owner.managementGuid);
 
     try {
-      const res = await fetch(fetchUrl, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await updateOwnerReq(formData);
 
-      if (res.ok) {
+      if (res) {
         setEditMode(false);
         setPassword("");
         onSubmitDone();
+      } else {
+        console.error("Failed to update owner");
       }
     } catch (error) {
       console.error("Failed to update owner:", error);
@@ -116,15 +115,15 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
           {owner?.createdAt
-        ? new Date(owner.createdAt).toLocaleString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })
-        : "N/A"}
+            ? new Date(owner.createdAt).toLocaleString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+              })
+            : "N/A"}
         </span>
       </TableCell>
       <TableCell>

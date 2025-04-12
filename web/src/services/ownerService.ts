@@ -20,9 +20,21 @@ export async function addOwnerReq(formData: FormData) {
   try {
     const res = await axios.post(addOwnerUrl, formData);
 
-    return res.status === 200
+    return res.status === 200;
   } catch (error) {
     console.error("Error adding owner:", error);
+    return null;
+  }
+}
+
+export async function updateOwnerReq(formData: FormData) {
+  const updateOwnerUrl = OwnerRoutes.UPDATE_OWNER_URL;
+  try {
+    const res = await axios.put(updateOwnerUrl, formData);
+
+    return res.status === 200;
+  } catch (error) {
+    console.error("Error updating owner:", error);
     return null;
   }
 }

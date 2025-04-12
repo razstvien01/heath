@@ -1,6 +1,6 @@
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
-export async function POST(request: Request)
+export async function PUT(request: Request)
 {
     const formData = await request.formData();
 
