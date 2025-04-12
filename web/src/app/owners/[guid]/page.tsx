@@ -1,25 +1,6 @@
 import OwnerCrud from "@/components/pages/owners/ownerCrud";
-import axios from "axios";
+import { isAdminGuid } from "@/services/adminService";
 import { notFound } from "next/navigation";
-
-async function isAdminGuid(guid: string) {
-  const isAdminGuidUrl =
-    process.env.NEXT_PUBLIC_API_URL + "/api/admin/isAdminGuid";
-
-  const formData = new FormData();
-  formData.append("guid", guid);
-
-  const res = await axios.post(isAdminGuidUrl, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-
-  if (res.status === 200) {
-    return true;
-  }
-  return false;
-}
 
 export default async function OwnerManagementPage({
   params,
@@ -32,7 +13,7 @@ export default async function OwnerManagementPage({
   if (!isAdminGuidRes) {
     notFound();
   }
-
+  
   return (
     <div>
       <OwnerCrud guid={guid} />

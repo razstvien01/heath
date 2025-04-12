@@ -18,8 +18,7 @@ export async function POST(request: Request) {
     const result = await adminRepo.getAdminByOMGUID(guid.toString());
 
     if (Array.isArray(result) && result.length > 0) {
-      console.log("GUID exists:", result);
-      return new Response("Good", {
+      return new Response("Good, GUID exists", {
         status: 200,
       });
     }

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { OwnerRow } from "./ownerRow";
 import { UserPlus } from "lucide-react";
 import Owner from "@/models/Owner";
+import { AdminRoutes } from "@/constants/adminRoutesConstants";
 
 export default function OwnerCrud({ guid }: { guid: string }) {
   const [loggedInState, setLoggedInState] = useState(false);
@@ -25,8 +26,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
   }, [loggedInState]);
 
   const confirmAdminLogin = async () => {
-    const confirmAdminUrl =
-      process.env.NEXT_PUBLIC_API_URL + "/api/admin/confirmAdminLogin";
+    const confirmAdminUrl = AdminRoutes.CONFIRM_ADMIN_URL;
 
     const formData = new FormData();
     formData.append("guid", guid);
