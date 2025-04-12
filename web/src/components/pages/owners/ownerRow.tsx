@@ -109,8 +109,22 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
         )}
       </TableCell>
       <TableCell>
-        <span className="font-mono text-xs text-muted-foreground truncate max-w-[120px] inline-block">
+        <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
           {owner.managementGuid}
+        </span>
+      </TableCell>
+      <TableCell>
+        <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
+          {owner?.createdAt
+        ? new Date(owner.createdAt).toLocaleString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          })
+        : "N/A"}
         </span>
       </TableCell>
       <TableCell>
