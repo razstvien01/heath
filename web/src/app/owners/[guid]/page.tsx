@@ -1,5 +1,5 @@
 import OwnerCrud from "@/components/pages/owners/ownerCrud";
-import { isAdminGuid } from "@/services/adminService";
+import { isAdminGuidReq } from "@/services/adminService";
 import { notFound } from "next/navigation";
 
 export default async function OwnerManagementPage({
@@ -9,7 +9,7 @@ export default async function OwnerManagementPage({
 }) {
   const { guid } = await params;
 
-  const isAdminGuidRes = await isAdminGuid(guid);
+  const isAdminGuidRes = await isAdminGuidReq(guid);
   if (!isAdminGuidRes) {
     notFound();
   }
