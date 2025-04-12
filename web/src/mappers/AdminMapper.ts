@@ -6,9 +6,7 @@ export default class AdminMapper {
     return {
       id: data.id,
       name: data.name,
-      ownerManagementGuid: data.ownerManagementGuid,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt
+      ownerManagementGuid: data.ownerManagementGuid
     }
   }
 }

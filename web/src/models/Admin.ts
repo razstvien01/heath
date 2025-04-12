@@ -1,10 +1,10 @@
-interface Admin {
-  id: number;
-  name: string;
-  password: string;
-  ownerManagementGuid: string;
-  createdAt: Date;
-  updatedAt: Date;
+class Admin {
+  id: number | undefined;
+  name: string = "";
+  password: string = "";
+  ownerManagementGuid: string = "";
+  createdAt: Date = new Date();
+  updatedAt: Date = new Date();
 }
 
 export default Admin

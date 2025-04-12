@@ -1,9 +1,7 @@
-interface AdminDto {
-  id: number;
-  name: string;
-  ownerManagementGuid: string;
-  createdAt: Date;
-  updatedAt: Date;
+class AdminDto {
+  id?: number;
+  name: string = "";
+  ownerManagementGuid: string = "";
 }
 
-export default AdminDto
+export default AdminDto;

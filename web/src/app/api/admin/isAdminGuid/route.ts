@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Error processing request:", error);
-    return new Response("Internal Server Error", {
+    return new Response("Internal Server Error:", {
       status: 500,
     });
   }
