@@ -8,7 +8,7 @@ import { CircleOff, Edit, ExternalLink, Save, Trash } from "lucide-react";
 import Link from "next/link";
 import type Owner from "@/models/Owner";
 import { ConfirmationDialog } from "@/components/ui/confirmationDialog";
-import { updateOwnerReq } from "@/services/ownerService";
+import { deleteOwnerReq, updateOwnerReq } from "@/services/ownerService";
 
 interface OwnerRowProps {
   owner: Owner;
@@ -28,7 +28,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
 
   const onSubmit = async () => {
     if (!name || !password) return;
-    
+
     setIsLoading(true);
 
     const formData = new FormData();
@@ -55,18 +55,14 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
 
   const onDeleteClicked = async () => {
     setIsLoading(true);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/deleteOwner";
 
     const formData = new FormData();
     formData.append("guid", owner.managementGuid);
 
     try {
-      const res = await fetch(apiUrl, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await deleteOwnerReq(formData);
 
-      if (res.ok && onDelete) {
+      if (res && onDelete) {
         onDelete();
       }
     } catch (error) {

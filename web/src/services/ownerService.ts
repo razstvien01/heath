@@ -38,3 +38,15 @@ export async function updateOwnerReq(formData: FormData) {
     return null;
   }
 }
+
+export async function deleteOwnerReq(formData: FormData){
+  const deleteOwnerUrl = OwnerRoutes.DELETE_OWNER_URL;
+  try {
+    const res = await axios.post(deleteOwnerUrl, formData);
+
+    return res.status === 200;
+  } catch (error) {
+    console.error("Error deleting owner:", error);
+    return null;
+  }
+}
