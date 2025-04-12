@@ -1,38 +1,34 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  CircleOff,
-  Edit,
-  Save,
-  SquareArrowOutUpRight,
-  Trash,
-} from "lucide-react";
-import { ConfirmationDialog } from "@/components/ui/confirmationDialog";
-import Owner from "@/models/Owner";
+import { TableCell, TableRow } from "@/components/ui/table";
+import { CircleOff, Edit, ExternalLink, Save, Trash } from "lucide-react";
+// import { ConfirmationDialog } from "@/components/ui/confirmation-dialog"
+import Link from "next/link";
+import type Owner from "@/models/Owner";
 
-export function OwnerRow({
-  owner,
-  onSubmitDone,
-  onDelete,
-}: {
+interface OwnerRowProps {
   owner: Owner;
   onSubmitDone: () => void;
   onDelete?: () => void;
-}) {
+}
+
+export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [, setGuid] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setName(owner.name);
-    setGuid(owner.managementGuid);
-  }, [owner.name, owner.managementGuid]);
+  }, [owner.name]);
 
   const onSubmit = async () => {
+    if (!name) return;
+
+    setIsLoading(true);
     const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/updateOwner";
 
     const formData = new FormData();
@@ -40,97 +36,160 @@ export function OwnerRow({
     formData.append("password", password);
     formData.append("guid", owner.managementGuid);
 
-    const res = await fetch(fetchUrl, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch(fetchUrl, {
+        method: "POST",
+        body: formData,
+      });
 
-    if (res.ok) {
-      setEditMode(false);
-      onSubmitDone();
-    }
-  };
-
-  const onDeleteClicked = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/deleteOwner";
-
-    const formData = new FormData();
-    formData.append("guid", owner.managementGuid);
-
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (res.ok) {
-      if (onDelete) {
-        onDelete();
+      if (res.ok) {
+        setEditMode(false);
+        setPassword("");
+        onSubmitDone();
       }
+    } catch (error) {
+      console.error("Failed to update owner:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
+  // const onDeleteClicked = async () => {
+  //   setIsLoading(true);
+  //   const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/owner/deleteOwner";
 
-  const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
+  //   const formData = new FormData();
+  //   formData.append("guid", owner.managementGuid);
+
+  //   try {
+  //     const res = await fetch(apiUrl, {
+  //       method: "POST",
+  //       body: formData,
+  //     });
+
+  //     if (res.ok && onDelete) {
+  //       onDelete();
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to delete owner:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
-    <tr key={owner.id}>
-      {editMode && (
-        <>
-          <td>
-            <Input
-              type="text"
-              name="name"
-              value={name}
-              onChange={onNameChange}
-            />
-          </td>
-          <td>
-            <Input
-              type="password"
-              name="password"
-              value={password}
-              onChange={onPasswordChange}
-              placeholder="********"
-            />
-          </td>
-          <td>{owner.managementGuid}</td>
-          <td>
-            <Button onClick={() => setEditMode(false)} className="bg-rose-500">
-              <CircleOff />
-            </Button>
-            <Button onClick={onSubmit} className="bg-emerald-300">
-              <Save />
-            </Button>
-          </td>
-        </>
-      )}
-      {!editMode && (
-        <>
-          <td>{owner.name}</td>
-          <td>********</td>
-          <td>{owner.managementGuid}</td>
-          <td>
-            <Button onClick={() => setEditMode(true)} className="bg-amber-400">
-              <Edit />
-            </Button>
-            <Button className="bg-sky-500">
-              <a href={"/audits/" + owner.managementGuid}>
-                <SquareArrowOutUpRight />
-              </a>
-            </Button>
-            <ConfirmationDialog onYes={onDeleteClicked}>
-              <Button className="bg-red-500">
-                <Trash />
+    <TableRow key={owner.id}>
+      <TableCell>
+        {editMode ? (
+          <Input
+            type="text"
+            name="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="max-w-[200px]"
+          />
+        ) : (
+          owner.name
+        )}
+      </TableCell>
+      <TableCell>
+        {editMode ? (
+          <Input
+            type="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter new password"
+            className="max-w-[200px]"
+          />
+        ) : (
+          <span className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+            ********
+          </span>
+        )}
+      </TableCell>
+      <TableCell>
+        <span className="font-mono text-xs text-muted-foreground truncate max-w-[120px] inline-block">
+          {owner.managementGuid}
+        </span>
+      </TableCell>
+      <TableCell>
+        <div className="flex items-center gap-2 justify-end">
+          {editMode ? (
+            <>
+              <Button
+                size="sm"
+                onClick={() => setEditMode(false)}
+                variant="destructive"
+                disabled={isLoading}
+              >
+                <CircleOff className="h-4 w-4 mr-1" />
+                <span className="sr-only sm:not-sr-only sm:inline-block">
+                  Cancel
+                </span>
               </Button>
-            </ConfirmationDialog>
-          </td>
-        </>
-      )}
-    </tr>
+              <Button
+                size="sm"
+                onClick={onSubmit}
+                className="bg-emerald-500 hover:bg-emerald-600"
+                disabled={isLoading || !name}
+              >
+                {isLoading ? (
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-1" />
+                    <span className="sr-only sm:not-sr-only sm:inline-block">
+                      Save
+                    </span>
+                  </>
+                )}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                size="sm"
+                onClick={() => setEditMode(true)}
+                className="bg-amber-500 hover:bg-amber-600"
+                disabled={isLoading}
+              >
+                <Edit className="h-4 w-4 mr-1" />
+                <span className="sr-only sm:not-sr-only sm:inline-block">
+                  Edit
+                </span>
+              </Button>
+
+              <Button
+                size="sm"
+                className="bg-sky-500 hover:bg-sky-600"
+                asChild
+                disabled={isLoading}
+              >
+                <Link href={`/audits/${owner.managementGuid}`}>
+                  <ExternalLink className="h-4 w-4 mr-1" />
+                  <span className="sr-only sm:not-sr-only sm:inline-block">
+                    Audits
+                  </span>
+                </Link>
+              </Button>
+
+              {/* <ConfirmationDialog onYes={onDeleteClicked}>
+                <Button
+                  size="sm"
+                  className="bg-red-500 hover:bg-red-600"
+                  disabled={isLoading}
+                >
+                  <Trash className="h-4 w-4 mr-1" />
+                  <span className="sr-only sm:not-sr-only sm:inline-block">
+                    Delete
+                  </span>
+                </Button>
+              </ConfirmationDialog> */}
+            </>
+          )}
+        </div>
+      </TableCell>
+    </TableRow>
   );
 }

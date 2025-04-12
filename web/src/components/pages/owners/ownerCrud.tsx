@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OwnerRow } from "./ownerRow";
-import { LogIn, Table, UserPlus } from "lucide-react";
+import { LogIn, UserPlus } from "lucide-react";
 import Owner from "@/models/Owner";
 import { confirmAdminLoginReq } from "@/services/adminService";
 import { addOwnerReq, fetchOwnersReq } from "@/services/ownerService";
@@ -16,12 +16,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import {
-  TableBody,
-  TableCell,
-  TableHead,
+  Table,
   TableHeader,
+  TableBody,
   TableRow,
+  TableHead,
+  TableCell,
 } from "@/components/ui/table";
 
 export default function OwnerCrud({ guid }: { guid: string }) {
@@ -112,7 +114,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
       confirmAdminLogin();
     }
   };
-  
+
   return (
     <div className="container mx-auto py-8 px-4">
       {!loggedInState ? (

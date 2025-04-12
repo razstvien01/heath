@@ -13,16 +13,11 @@ export class AdminRepository implements IAdminRepository {
   async isAdminValid(guid: string, username: string, password: string): Promise<boolean> {
     const query = "SELECT COUNT(*) as count FROM Admins WHERE ownerManagementGuid = ? and name = ? and password = SHA2(?, 256)";
     
-    console.log(guid)
-    console.log(username)
-    console.log(password)
-    // console.log(password)
     try {
       const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(query, [guid, username, password]);
       
       const count = (rows[0] as { count: number })?.count || 0;
       
-      console.log("Counts:", count)
       return count > 0;
     } catch (error) {
       console.error("Error validating admin:", error);

@@ -43,20 +43,14 @@ export class OwnerRepository {
   }
 
   async GetOwnerList() {
-    const DB = CreateConnection();
-    const result: unknown = await new Promise(async (resolve, reject) => {
-      (await DB).query(
-        "SELECT * FROM Owners",
-        function (err: Error | null, results: unknown) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(results);
-          }
-        }
-      );
-    });
-    return result;
+    const DB = await CreateConnection();
+    try {
+      const [rows] = await DB.query("SELECT * FROM Owners"); 
+      return rows;
+    } catch (error) {
+      console.error("Error fetching owner list:", error);
+      throw new Error("Failed to fetch owner list");
+    }
   }
 
   async GetOwnerIdFromManagementGuid(guid: string): Promise<number | null> {
