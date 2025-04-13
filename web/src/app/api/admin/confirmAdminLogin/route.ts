@@ -1,36 +1,39 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { AdminRepository } from "@/repositories/mariaDb/AdminRepository";
+import { AdminSchema } from "@/dto/admin/AdminDto";
 
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const guid = formData.get("guid");
-    const username = formData.get("username");
-    const password = formData.get("password");
 
-    if (guid == null || username == null || password == null) {
-      return new Response("Bad Request", {
+    const input = {
+      ownerManagementGuid: formData.get("guid"),
+      name: formData.get("username"),
+      password: formData.get("password"),
+    };
+
+    const parsed = AdminSchema.safeParse(input);
+    if (!parsed.success) {
+      return new Response(`Bad Request: ${parsed.error.issues[0].message}`, {
         status: 400,
       });
     }
 
+    const { ownerManagementGuid, name, password } = parsed.data;
+
     const db = await CreateConnection();
     const adminRepo = new AdminRepository(db);
 
-    const result = await adminRepo.isAdminValid(
-      guid.toString(),
-      username.toString(),
-      password.toString()
+    const isValid = await adminRepo.isAdminValid(
+      ownerManagementGuid,
+      name,
+      password
     );
-
-    if (result) {
-      return new Response("Valid Admin", {
-        status: 200,
-      });
+    if (!isValid) {
+      return new Response("Invalid Credentials", { status: 400 });
     }
-    return new Response("Bad Request", {
-      status: 400,
-    });
+
+    return new Response("Valid Credentials", { status: 200 });
   } catch (error) {
     console.error("Error processing request:", error);
     return new Response("Internal Server Error", {
