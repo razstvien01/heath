@@ -1,6 +1,4 @@
-import CreateOwnerReqDto from "@/dto/owner/CreateOwnerReqDto";
-import OwnerDto from "@/dto/owner/OwnerDto";
-import UpdateOwnerReqDto from "@/dto/owner/UpdateOwnerReqDto";
+import { CreateOwnerReqDto, OwnerDto, UpdateOwnerReqDto } from "@/dto/owner";
 import Owner from "@/models/Owner";
 
 export default class OwnerMapper {

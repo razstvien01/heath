@@ -53,10 +53,8 @@ export default function OwnerCrud({ guid }: { guid: string }) {
   }, [loggedInState]);
 
   useEffect(() => {
-    // Filter and sort owners whenever the list, search query, or sort parameters change
     let result = [...ownerList];
-
-    // Apply search filter
+    
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
@@ -65,8 +63,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
           owner.managementGuid.toLowerCase().includes(query)
       );
     }
-
-    // Apply sorting
+    
     result.sort((a, b) => {
       if (sortField === "name") {
         return sortDirection === "asc"

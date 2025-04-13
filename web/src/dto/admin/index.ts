@@ -1,0 +1,1 @@
+export type { AdminDto } from "./AdminDto";

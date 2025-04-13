@@ -1,4 +1,4 @@
-import AdminDto from "@/dto/admin/AdminDto";
+import { AdminDto } from "@/dto/admin";
 import Admin from "@/models/Admin";
 
 export default class AdminMapper {
