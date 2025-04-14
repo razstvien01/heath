@@ -29,16 +29,28 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AdminDto } from "@/dto/admin";
 
 type SortField = "name" | "dateCreated";
 type SortDirection = "asc" | "desc";
 
-export default function OwnerCrud({ guid }: { guid: string }) {
+export default function OwnerCrud({
+  guid,
+  admin,
+}: {
+  guid: string;
+  admin: AdminDto;
+}) {
   const [loggedInState, setLoggedInState] = useState(false);
   const [invalidLoginState, setInvalidLoginState] = useState(false);
   const [adminUsername, setAdminUsername] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
-  const [currentAdmin, setCurrentAdmin] = useState(""); // Store logged in admin name
+  const [currentAdmin, setCurrentAdmin] = useState<AdminDto>({
+    id: undefined,
+    name: undefined,
+    password: undefined,
+    ownerManagementGuid: undefined,
+  });
 
   const [addOwnerNameInput, setAddOwnerNameInput] = useState("");
   const [addOwnerPasswordInput, setAddOwnerPasswordInput] = useState("");
@@ -97,7 +109,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
       );
 
       if (res) {
-        setCurrentAdmin(adminUsername); // Store the admin username
+        setCurrentAdmin(admin);
         setAdminUsername("");
         setAdminPassword("");
         setLoggedInState(true);
@@ -177,9 +189,6 @@ export default function OwnerCrud({ guid }: { guid: string }) {
     );
   };
 
-  // Hardcoded admin username if none is provided during login
-  const displayAdminName = currentAdmin || "SystemAdmin";
-
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-white border-b py-4 px-6 shadow-sm">
@@ -192,7 +201,7 @@ export default function OwnerCrud({ guid }: { guid: string }) {
           {loggedInState && (
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium">{displayAdminName}</p>
+                <p className="text-sm font-medium">{currentAdmin.name}</p>
                 <p className="text-xs text-muted-foreground">Administrator</p>
               </div>
               <Avatar className="h-8 w-8 border border-muted">

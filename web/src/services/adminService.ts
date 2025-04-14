@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AdminRoutes } from "@/constants/adminRoutesConstants";
 import axios from "axios";
 
@@ -49,6 +48,8 @@ export async function confirmAdminLoginReq(
 export async function getAdminReq(guid: string) {
   try {
     const formData = new FormData();
+
+    formData.append("guid", guid);
 
     const res = await axios.post(AdminRoutes.FETCH_ADMIN_BY_GUID, formData, {
       headers: {
