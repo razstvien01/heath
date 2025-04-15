@@ -1,17 +1,47 @@
-import OwnerDto from "@/dto/owner/OwnerDto";
+import { CreateConnection } from "@/config/mariadbConfig";
+import { OwnerSchema } from "@/dto/owner/OwnerDto";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
+import { z } from "zod";
 
-export async function GET() {
+export async function GET(): Promise<Response> {
   try {
-    const ownerRepository = new OwnerRepository();
-    const result = (await ownerRepository.GetOwnerList()) as OwnerDto[];
+    const db = await CreateConnection();
+    const ownerRepository = new OwnerRepository(db);
+    const owners = await ownerRepository.GetOwnerList();
 
-    if (Array.isArray(result) && result.length > 0)
-      return new Response(JSON.stringify(result), {
-        status: 200,
+    if (!owners || owners.length === 0) {
+      return new Response(JSON.stringify({ message: "No Owners found" }), {
+        status: 404,
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-    return new Response("No owners found", {
-      status: 404,
+    }
+
+    const ownersValidation = z.array(OwnerSchema).safeParse(owners);
+
+    if (!ownersValidation.success) {
+      console.error(
+        "Invalid owners data from DB",
+        ownersValidation.error.format()
+      );
+
+      return new Response(
+        JSON.stringify({ message: "Currupted owners data" }),
+        {
+          status: 500,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
+    return new Response(JSON.stringify(owners), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   } catch (error) {
     console.error("Error processing request:", error);
