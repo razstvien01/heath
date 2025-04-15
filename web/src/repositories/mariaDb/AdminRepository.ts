@@ -54,7 +54,7 @@ export class AdminRepository implements IAdminRepository {
     const query = "SELECT * FROM Admins WHERE ownerManagementGuid = ?";
 
     try {
-      const [rows]: unknown[] = await this._db.execute(query, [
+      const [rows] = await this._db.execute<RowDataPacket[]>(query, [
         ownerManagementGuid,
       ]);
 

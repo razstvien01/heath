@@ -2,7 +2,7 @@ import { CreateConnection } from "@/config/mariadbConfig";
 import { AdminRepository } from "@/repositories/mariaDb/AdminRepository";
 import { AdminSchema } from "@/dto/admin/AdminDto";
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
 

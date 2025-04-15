@@ -1,15 +1,25 @@
 import { CreateConnection } from "@/config/mariadbConfig";
+import { OwnerDto } from "@/dto/owner";
+import { IOwnerRepository } from "@/interfaces/IOwnerRepository";
+import OwnerMapper from "@/mappers/OwnerMapper";
+import Owner from "@/models/Owner";
+import { Connection, RowDataPacket } from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
 
-export class OwnerRepository {
+export class OwnerRepository implements IOwnerRepository {
+  private readonly _db: Connection;
+
+  constructor(db: Connection) {
+    this._db = db;
+  }
+
   async AddOwner(username: string, password: string) {
-    const DB = CreateConnection();
-    const result = (await DB).execute(
+    const result = this._db.execute(
       "INSERT INTO Owners (name, password, managementGuid) VALUES " +
         "(?, SHA2(?, 256), ?)",
       [username, password, uuidv4()]
     );
-
+    
     return result;
   }
 
@@ -43,13 +53,18 @@ export class OwnerRepository {
   }
 
   async GetOwnerList() {
-    const DB = await CreateConnection();
+    const query = "SELECT * FROM Owners";
     try {
-      const [rows] = await DB.query("SELECT * FROM Owners"); 
-      return rows;
+      const [rows] = await this._db.query<Owner[] & RowDataPacket[]>(query);
+
+      const owners: OwnerDto[] = rows.map((row: Owner) =>
+        OwnerMapper.toOwnerDto(row)
+      );
+
+      return owners;
     } catch (error) {
-      console.error("Error fetching owner list:", error);
-      throw new Error("Failed to fetch owner list");
+      console.log("Error fetching owners:", error);
+      throw new Error("Failed to fetch owners");
     }
   }
 
