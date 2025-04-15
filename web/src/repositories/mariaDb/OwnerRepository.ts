@@ -13,19 +13,24 @@ export class OwnerRepository implements IOwnerRepository {
     this._db = db;
   }
 
-  async AddOwner(username: string, password: string) {
-    const result = this._db.execute(
+  async AddOwner(username: string | undefined, password: string | undefined) {
+    console.log(username)
+    console.log(password)
+    const query =
       "INSERT INTO Owners (name, password, managementGuid) VALUES " +
-        "(?, SHA2(?, 256), ?)",
-      [username, password, uuidv4()]
-    );
-    
-    return result;
+      "(?, SHA2(?, 256), ?)";
+    try {
+      const result = this._db.execute(query, [username, password, uuidv4()]);
+
+      return result;
+    } catch (error) {
+      console.log("Error inserting a new owner:", error);
+      throw new Error("Failed to add a new owner.");
+    }
   }
 
   async ConfirmOwnerLogin(guid: string, username: string, password: string) {
-    const DB = await CreateConnection();
-    const result: unknown[] = await DB.query(
+    const result: unknown[] = await this._db.query(
       "SELECT * FROM Owners WHERE managementGuid = ? and name = ? and password = SHA2(?, 256)",
       [guid, username, password]
     );
@@ -63,7 +68,7 @@ export class OwnerRepository implements IOwnerRepository {
 
       return owners;
     } catch (error) {
-      console.log("Error fetching owners:", error);
+      console.error("Error fetching owners:", error);
       throw new Error("Failed to fetch owners");
     }
   }

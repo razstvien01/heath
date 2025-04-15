@@ -4,7 +4,7 @@ import { FieldPacket, QueryResult } from "mysql2/promise";
 export interface IOwnerRepository {
   AddOwner(
     username: string,
-    password: string
+    password: string | undefined
   ): Promise<[QueryResult, FieldPacket[]]>;
 
   ConfirmOwnerLogin(
