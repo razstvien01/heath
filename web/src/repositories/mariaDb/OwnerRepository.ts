@@ -67,7 +67,7 @@ export class OwnerRepository implements IOwnerRepository {
       );
 
       if (rows.length === 0) {
-        console.log("Owner not found")
+        console.log("Owner not found");
         throw new Error("Owner not found");
       }
 
@@ -83,13 +83,20 @@ export class OwnerRepository implements IOwnerRepository {
   }
 
   async isOwnerGuid(guid: string) {
-    const DB = await CreateConnection();
-    const result: unknown[] = await DB.query(
-      "SELECT * FROM Owners WHERE managementGuid = ?",
-      [guid]
-    );
+    const query =
+      "SELECT COUNT(*) as count FROM Owners WHERE managementGuid = ?";
 
-    return Array.isArray(result) && result.length > 0;
+    try {
+      const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(
+        query,
+        [guid]
+      );
+
+      return rows.length > 0;
+    } catch (error) {
+      console.error("Error validating admin:", error);
+      throw new Error("Failed to validate admin");
+    }
   }
 
   async getOwnerList(filters: OwnerFilterDto): Promise<OwnerDto[]> {

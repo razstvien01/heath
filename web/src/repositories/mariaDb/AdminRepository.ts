@@ -20,9 +20,9 @@ export class AdminRepository implements IAdminRepository {
         [ownerManagementGuid]
       );
 
-      const count = (rows[0] as { count: number })?.count || 0;
+      // const count = (rows[0] as { count: number })?.count || 0;
 
-      return count > 0;
+      return rows.length > 0;
     } catch (error) {
       console.error("Error validating admin:", error);
       throw new Error("Failed to validate admin");

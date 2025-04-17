@@ -8,7 +8,7 @@ export async function DELETE(request: Request): Promise<Response> {
     const guid = formData.get("guid");
 
     if (!guid || typeof guid !== "string") {
-      return new Response("Bad Requesr: Missing or invalid GUID", {
+      return new Response("Bad Request: Missing or invalid GUID", {
         status: 400,
       });
     }

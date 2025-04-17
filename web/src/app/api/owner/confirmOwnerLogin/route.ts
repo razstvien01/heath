@@ -12,6 +12,12 @@ export async function POST(request: Request): Promise<Response> {
       password: formData.get("password"),
     };
 
+    if (!input.name && input.managementGuid && !input.password) {
+      return new Response("The username, guid and password are required.", {
+        status: 400,
+      });
+    }
+
     const parsed = OwnerSchema.safeParse(input);
 
     if (!parsed.success) {
@@ -35,7 +41,7 @@ export async function POST(request: Request): Promise<Response> {
         status: 400,
       });
     }
-    
+
     return new Response("Valid Owner", {
       status: 200,
     });
