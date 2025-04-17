@@ -1,4 +1,4 @@
-import { OwnerDto } from "@/dto/owner";
+import { OwnerDto, OwnerFilterDto } from "@/dto/owner";
 import { FieldPacket, QueryResult } from "mysql2/promise";
 
 export interface IOwnerRepository {
@@ -18,7 +18,7 @@ export interface IOwnerRepository {
   ): Promise<[QueryResult, FieldPacket[]]>;
 
   IsOwnerGuid(guid: string): Promise<boolean>;
-  GetOwnerList(): Promise<OwnerDto[]>;
+  GetOwnerList(filters: OwnerFilterDto): Promise<OwnerDto[]>;
 
   GetOwnerIdFromManagementGuid(guid: string): Promise<number | null>;
   UpdateOwner(

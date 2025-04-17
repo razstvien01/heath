@@ -1,5 +1,5 @@
 import { CreateConnection } from "@/config/mariadbConfig";
-import { OwnerDto } from "@/dto/owner";
+import { OwnerDto, OwnerFilterDto } from "@/dto/owner";
 import { IOwnerRepository } from "@/interfaces/IOwnerRepository";
 import OwnerMapper from "@/mappers/OwnerMapper";
 import Owner from "@/models/Owner";
@@ -14,8 +14,8 @@ export class OwnerRepository implements IOwnerRepository {
   }
 
   async AddOwner(username: string | undefined, password: string | undefined) {
-    console.log(username)
-    console.log(password)
+    console.log(username);
+    console.log(password);
     const query =
       "INSERT INTO Owners (name, password, managementGuid) VALUES " +
       "(?, SHA2(?, 256), ?)";
@@ -57,10 +57,56 @@ export class OwnerRepository implements IOwnerRepository {
     return Array.isArray(result) && result.length > 0;
   }
 
-  async GetOwnerList() {
-    const query = "SELECT * FROM Owners";
+  async GetOwnerList(filters: OwnerFilterDto): Promise<OwnerDto[]> {
+    let query = "SELECT * FROM Owners";
+    const conditions: string[] = [];
+    const values: (string | number)[] = [];
+
+    if (filters.name) {
+      conditions.push("name LIKE ?");
+      values.push(`%${filters.name}%`);
+    }
+
+    if (filters.createdFrom) {
+      conditions.push("createdAt >= ?");
+      values.push(filters.createdFrom);
+    }
+
+    if (filters.createdTo) {
+      conditions.push("createdAt <= ?");
+      values.push(filters.createdTo);
+    }
+
+    if (filters.updatedFrom) {
+      conditions.push("updatedAt >= ?");
+      values.push(filters.updatedFrom);
+    }
+
+    if (filters.updatedTo) {
+      conditions.push("updatedAt <= ?");
+      values.push(filters.updatedTo);
+    }
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    if (filters.orderBy) {
+      const dir =
+        filters.orderDirection?.toUpperCase() === "DESC" ? "DESC" : "ASC";
+      query += ` ORDER BY ${filters.orderBy} ${dir}`;
+    }
+
+    if (filters.limit) {
+      query += " LIMIT ?";
+      values.push(filters.limit);
+    }
+
     try {
-      const [rows] = await this._db.query<Owner[] & RowDataPacket[]>(query);
+      const [rows] = await this._db.query<Owner[] & RowDataPacket[]>(
+        query,
+        values
+      );
 
       const owners: OwnerDto[] = rows.map((row: Owner) =>
         OwnerMapper.toOwnerDto(row)

@@ -1,13 +1,44 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { OwnerSchema } from "@/dto/owner/OwnerDto";
+import { OwnerFilterSchema } from "@/dto/owner/OwnerFIlterDto";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 import { z } from "zod";
 
-export async function GET(): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
   try {
+    const { searchParams } = new URL(request.url);
+
+    const body = {
+      name: searchParams.get("name") ?? undefined,
+      createdFrom: searchParams.get("createdFrom") ?? undefined,
+      createdTo: searchParams.get("createdTo") ?? undefined,
+      updatedFrom: searchParams.get("updatedFrom") ?? undefined,
+      updatedTo: searchParams.get("updatedTo") ?? undefined,
+      orderBy: searchParams.get("orderBy") ?? undefined,
+      orderDirection: searchParams.get("orderDirection") ?? undefined,
+      limit: searchParams.get("limit")
+        ? parseInt(searchParams.get("limit")!)
+        : undefined,
+    };
+
+    const parsed = OwnerFilterSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return new Response(
+        JSON.stringify({
+          message: "Invalid filter",
+          issues: parsed.error.format(),
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const db = await CreateConnection();
     const ownerRepository = new OwnerRepository(db);
-    const owners = await ownerRepository.GetOwnerList();
+    const owners = await ownerRepository.GetOwnerList(parsed.data);
 
     if (!owners || owners.length === 0) {
       return new Response(JSON.stringify({ message: "No Owners found" }), {
