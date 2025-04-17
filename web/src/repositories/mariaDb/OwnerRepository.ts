@@ -59,7 +59,7 @@ export class OwnerRepository implements IOwnerRepository {
 
   async deleteOwnerFromManagementGuid(
     guid: string
-  ): Promise<[QueryResult, FieldPacket[]]> {
+  ): Promise<[QueryResult, FieldPacket[]] | null> {
     try {
       const [rows] = await this._db.query<RowDataPacket[]>(
         "SELECT 1 FROM Owners WHERE managementGuid = ?",
@@ -68,7 +68,7 @@ export class OwnerRepository implements IOwnerRepository {
 
       if (rows.length === 0) {
         console.log("Owner not found");
-        throw new Error("Owner not found");
+        return null;
       }
 
       const result = await this._db.execute(
@@ -175,16 +175,24 @@ export class OwnerRepository implements IOwnerRepository {
     }
   }
 
-  async updateOwner(username: string, password: string, guid: string) {
-    const DB = CreateConnection();
-    const result = (await DB).execute(
-      "UPDATE Owners SET " +
+  async updateOwner(
+    username: string,
+    password: string,
+    guid: string
+  ): Promise<[QueryResult, FieldPacket[]]> {
+    try {
+      const query =
+        "UPDATE Owners SET " +
         "name = ?, " +
         "password = SHA2(?, 256) " +
-        "WHERE managementGuid = ?",
-      [username, password, guid]
-    );
+        "WHERE managementGuid = ?";
+      const values = [username, password, guid];
+      const result = await this._db.execute(query, values);
 
-    return result;
+      return result;
+    } catch (error) {
+      console.error("Error updating an owner:", error);
+      throw new Error("Failed to update an owner");
+    }
   }
 }

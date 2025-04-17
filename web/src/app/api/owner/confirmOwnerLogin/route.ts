@@ -12,8 +12,8 @@ export async function POST(request: Request): Promise<Response> {
       password: formData.get("password"),
     };
 
-    if (!input.name && input.managementGuid && !input.password) {
-      return new Response("The username, guid and password are required.", {
+    if (!input.name || input.managementGuid || !input.password) {
+      return new Response("The username, guid, and password are required.", {
         status: 400,
       });
     }

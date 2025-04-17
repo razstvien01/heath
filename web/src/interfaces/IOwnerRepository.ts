@@ -15,12 +15,12 @@ export interface IOwnerRepository {
 
   deleteOwnerFromManagementGuid(
     guid: string
-  ): Promise<[QueryResult, FieldPacket[]]>;
+  ): Promise<[QueryResult, FieldPacket[]] | null>;
 
   isOwnerGuid(guid: string): Promise<boolean>;
   getOwnerList(filters: OwnerFilterDto): Promise<OwnerDto[]>;
 
-  getOwnerIdFromManagementGuid(guid: string): Promise<number | null>;
+  getOwnerIdFromManagementGuid(guid: string): Promise<number | boolean>;
   updateOwner(
     username: string,
     password: string,

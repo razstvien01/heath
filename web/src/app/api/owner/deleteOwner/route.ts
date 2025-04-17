@@ -35,7 +35,7 @@ export async function DELETE(request: Request): Promise<Response> {
     );
 
     if (!result) {
-      return new Response("Owner delete failed", {
+      return new Response("Owner not found. Deletion aborted.", {
         status: 500,
       });
     }
@@ -44,7 +44,7 @@ export async function DELETE(request: Request): Promise<Response> {
     });
   } catch (error) {
     console.error("Error processing request:", error);
-    return new Response(`Internal Server Error: ${error}`, {
+    return new Response(`Internal Server Error. ${error}`, {
       status: 500,
     });
   }

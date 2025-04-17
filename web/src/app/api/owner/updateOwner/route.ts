@@ -1,30 +1,55 @@
+import { CreateConnection } from "@/config/mariadbConfig";
+import { OwnerSchema } from "@/dto/owner/OwnerDto";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
-export async function PUT(request: Request)
-{
+export async function PUT(request: Request) {
+  try {
     const formData = await request.formData();
 
     const guid = formData.get("guid");
     const username = formData.get("username");
-    const password = formData.get("password");
+    const passwd = formData.get("password");
 
-    if(username == null || password == null)
-    {
-        return new Response("Bad", {
-            status: 400
-        })
+    if (!username || !passwd || !guid) {
+      return new Response("The username, guid, and password are required.", {
+        status: 400,
+      });
     }
 
-    const repository = new OwnerRepository();
-    const result = await repository.UpdateOwner(username as string, password as string, guid as string)
+    const input = {
+      managementGuid: guid,
+      name: username,
+      password: passwd,
+    };
+    const validation = OwnerSchema.safeParse(input);
 
-    if(result) {
-        return new Response("Owner updated successfully", {
-            status: 200
-        });
-    } else {
-        return new Response("Owner update failed", {
-            status: 500
-        })
+    if (!validation.success) {
+      return new Response(
+        `Bad Request: ${validation.error.issues[0].message}`,
+        {
+          status: 400,
+        }
+      );
     }
+
+    const { managementGuid = "", name = "", password = "" } = validation.data;
+    const db = await CreateConnection();
+    const repository = new OwnerRepository(db);
+    const result = await repository.updateOwner(name, password, managementGuid);
+
+    if (!result) {
+      return new Response("Owner update failed", {
+        status: 500,
+      });
+    }
+
+    return new Response("Owner updated successfully", {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return new Response("Internal Server Error:", {
+      status: 500,
+    });
+  }
 }
