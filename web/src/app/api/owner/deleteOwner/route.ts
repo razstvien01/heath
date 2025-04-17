@@ -1,24 +1,50 @@
+import { CreateConnection } from "@/config/mariadbConfig";
+import { OwnerSchema } from "@/dto/owner/OwnerDto";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
-export async function POST(request: Request) {
-  const formData = await request.formData();
-  const guid = formData.get("guid");
+export async function DELETE(request: Request): Promise<Response> {
+  try {
+    const formData = await request.formData();
+    const guid = formData.get("guid");
 
-  if (guid == null) {
-    return new Response("Bad", {
-      status: 400,
+    if (!guid || typeof guid !== "string") {
+      return new Response("Bad Requesr: Missing or invalid GUID", {
+        status: 400,
+      });
+    }
+
+    const validation = OwnerSchema.safeParse({
+      managementGuid: guid,
     });
-  }
 
-  const repository = new OwnerRepository();
-  const result = await repository.DeleteOwnerFromManagementGuid(guid as string);
+    if (!validation.success) {
+      return new Response(
+        `Bad Request: ${validation.error.issues[0].message}`,
+        {
+          status: 400,
+        }
+      );
+    }
 
-  if (result) {
+    const { managementGuid = "" } = validation.data;
+
+    const db = await CreateConnection();
+    const ownerRepo = new OwnerRepository(db);
+    const result = await ownerRepo.deleteOwnerFromManagementGuid(
+      managementGuid
+    );
+
+    if (!result) {
+      return new Response("Owner delete failed", {
+        status: 500,
+      });
+    }
     return new Response("Owner deleted successfully", {
       status: 200,
     });
-  } else {
-    return new Response("Owner delete failed", {
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return new Response(`Internal Server Error: ${error}`, {
       status: 500,
     });
   }

@@ -49,7 +49,7 @@ export class OwnerRepository implements IOwnerRepository {
         query,
         values
       );
-      
+
       return rows.length > 0;
     } catch (error) {
       console.error("Error confirming owner login:", error);
@@ -57,13 +57,29 @@ export class OwnerRepository implements IOwnerRepository {
     }
   }
 
-  async deleteOwnerFromManagementGuid(guid: string) {
-    const DB = CreateConnection();
-    const result = (await DB).execute(
-      "DELETE FROM Owners WHERE managementGuid = ?",
-      [guid]
-    );
-    return result;
+  async deleteOwnerFromManagementGuid(
+    guid: string
+  ): Promise<[QueryResult, FieldPacket[]]> {
+    try {
+      const [rows] = await this._db.query<RowDataPacket[]>(
+        "SELECT 1 FROM Owners WHERE managementGuid = ?",
+        [guid]
+      );
+
+      if (rows.length === 0) {
+        console.log("Owner not found")
+        throw new Error("Owner not found");
+      }
+
+      const result = await this._db.execute(
+        "DELETE FROM Owners WHERE managementGuid = ?",
+        [guid]
+      );
+      return result;
+    } catch (error) {
+      console.error("Error deleting owner by guid:", error);
+      throw new Error("Failed to delete an owner");
+    }
   }
 
   async isOwnerGuid(guid: string) {
