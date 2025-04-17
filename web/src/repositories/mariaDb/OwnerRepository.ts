@@ -3,7 +3,12 @@ import { OwnerDto, OwnerFilterDto } from "@/dto/owner";
 import { IOwnerRepository } from "@/interfaces/IOwnerRepository";
 import OwnerMapper from "@/mappers/OwnerMapper";
 import Owner from "@/models/Owner";
-import { Connection, RowDataPacket } from "mysql2/promise";
+import {
+  Connection,
+  FieldPacket,
+  QueryResult,
+  RowDataPacket,
+} from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
 
 export class OwnerRepository implements IOwnerRepository {
@@ -13,9 +18,10 @@ export class OwnerRepository implements IOwnerRepository {
     this._db = db;
   }
 
-  async AddOwner(username: string | undefined, password: string | undefined) {
-    console.log(username);
-    console.log(password);
+  async addOwner(
+    username: string,
+    password: string
+  ): Promise<[QueryResult, FieldPacket[]]> {
     const query =
       "INSERT INTO Owners (name, password, managementGuid) VALUES " +
       "(?, SHA2(?, 256), ?)";
@@ -29,16 +35,29 @@ export class OwnerRepository implements IOwnerRepository {
     }
   }
 
-  async ConfirmOwnerLogin(guid: string, username: string, password: string) {
-    const result: unknown[] = await this._db.query(
-      "SELECT * FROM Owners WHERE managementGuid = ? and name = ? and password = SHA2(?, 256)",
-      [guid, username, password]
-    );
+  async confirmOwnerLogin(
+    guid: string,
+    username: string,
+    password: string
+  ): Promise<boolean> {
+    const query =
+      "SELECT * FROM Owners WHERE managementGuid = ? and name = ? and password = SHA2(?, 256)";
+    const values = [guid, username, password];
 
-    return Array.isArray(result) && result.length > 0;
+    try {
+      const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(
+        query,
+        values
+      );
+      
+      return rows.length > 0;
+    } catch (error) {
+      console.error("Error confirming owner login:", error);
+      throw new Error("Failed to confirm owner login");
+    }
   }
 
-  async DeleteOwnerFromManagementGuid(guid: string) {
+  async deleteOwnerFromManagementGuid(guid: string) {
     const DB = CreateConnection();
     const result = (await DB).execute(
       "DELETE FROM Owners WHERE managementGuid = ?",
@@ -47,7 +66,7 @@ export class OwnerRepository implements IOwnerRepository {
     return result;
   }
 
-  async IsOwnerGuid(guid: string) {
+  async isOwnerGuid(guid: string) {
     const DB = await CreateConnection();
     const result: unknown[] = await DB.query(
       "SELECT * FROM Owners WHERE managementGuid = ?",
@@ -57,7 +76,7 @@ export class OwnerRepository implements IOwnerRepository {
     return Array.isArray(result) && result.length > 0;
   }
 
-  async GetOwnerList(filters: OwnerFilterDto): Promise<OwnerDto[]> {
+  async getOwnerList(filters: OwnerFilterDto): Promise<OwnerDto[]> {
     let query = "SELECT * FROM Owners";
     const conditions: string[] = [];
     const values: (string | number)[] = [];
@@ -119,7 +138,7 @@ export class OwnerRepository implements IOwnerRepository {
     }
   }
 
-  async GetOwnerIdFromManagementGuid(guid: string): Promise<number | null> {
+  async getOwnerIdFromManagementGuid(guid: string): Promise<number | null> {
     const DB = await CreateConnection();
     const [rows]: unknown[] = await DB.query(
       "SELECT id FROM Owners WHERE managementGuid = ?",
@@ -133,7 +152,7 @@ export class OwnerRepository implements IOwnerRepository {
     }
   }
 
-  async UpdateOwner(username: string, password: string, guid: string) {
+  async updateOwner(username: string, password: string, guid: string) {
     const DB = CreateConnection();
     const result = (await DB).execute(
       "UPDATE Owners SET " +

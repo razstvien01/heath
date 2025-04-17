@@ -38,7 +38,7 @@ export async function GET(request: Request): Promise<Response> {
 
     const db = await CreateConnection();
     const ownerRepository = new OwnerRepository(db);
-    const owners = await ownerRepository.GetOwnerList(parsed.data);
+    const owners = await ownerRepository.getOwnerList(parsed.data);
 
     if (!owners || owners.length === 0) {
       return new Response(JSON.stringify({ message: "No Owners found" }), {

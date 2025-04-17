@@ -24,9 +24,9 @@ export async function POST(request: Request): Promise<Response> {
 
     const db = await CreateConnection();
     const ownerRepo = new OwnerRepository(db);
-    const result = await ownerRepo.AddOwner(
-      parsed.data.name,
-      parsed.data.password
+    const result = await ownerRepo.addOwner(
+      (parsed.data.name = ""),
+      (parsed.data.password = "")
     );
 
     if (!result) {

@@ -5,7 +5,7 @@ import { AdminSchema } from "@/dto/admin/AdminDto";
 export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
-
+    
     const input = {
       ownerManagementGuid: formData.get("guid"),
       name: formData.get("username"),
