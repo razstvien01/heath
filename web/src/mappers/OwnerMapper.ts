@@ -16,21 +16,21 @@ export default class OwnerMapper {
     };
   }
 
-  public static toOwnerFromCreateDto(data: Owner): CreateOwnerReqDto {
+  public static toOwnerFromCreateDto(data: OwnerDto): CreateOwnerReqDto {
     return {
       name: data.name || "",
       password: data.password || "",
     };
   }
 
-  public static toOwnerFromUpdateDto(data: Owner): UpdateOwnerReqDto {
+  public static toOwnerFromUpdateDto(data: OwnerDto): UpdateOwnerReqDto {
     return {
       name: data.name || "",
       managementGuid: data.managementGuid || "",
     };
   }
 
-  public static toConfirmOwnerDto(data: Owner): ConfirmOwnerReqDto {
+  public static toConfirmOwnerDto(data: OwnerDto): ConfirmOwnerReqDto {
     return {
       name: data.name || "",
       managementGuid: data.name || "",

@@ -1,11 +1,7 @@
-import { AdminDto } from "@/dto/admin";
+import { AdminDto, ConfirmAdminReqDto } from "@/dto/admin";
 
 export interface IAdminRepository {
   getAdminByOMGUID(ownerManagementGuid: string): Promise<AdminDto>;
-  isAdminValid(
-    guid: string | undefined,
-    username: string | undefined,
-    password: string | undefined
-  ): Promise<boolean>;
+  isAdminValid(dto: ConfirmAdminReqDto): Promise<boolean>;
   isGuidValid(ownerManagementGuid: string): Promise<boolean>;
 }

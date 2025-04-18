@@ -1,11 +1,12 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { AdminRepository } from "@/repositories/mariaDb/AdminRepository";
 import { AdminSchema } from "@/dto/admin/AdminDto";
+import AdminMapper from "@/mappers/AdminMapper";
 
 export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
-    
+
     const input = {
       ownerManagementGuid: formData.get("guid"),
       name: formData.get("username"),
@@ -19,16 +20,10 @@ export async function POST(request: Request): Promise<Response> {
       });
     }
 
-    const { ownerManagementGuid, name, password } = parsed.data;
-
     const db = await CreateConnection();
     const adminRepo = new AdminRepository(db);
-
-    const isValid = await adminRepo.isAdminValid(
-      ownerManagementGuid,
-      name,
-      password
-    );
+    const dto = AdminMapper.toConfirmAdminDto(parsed.data);
+    const isValid = await adminRepo.isAdminValid(dto);
     if (!isValid) {
       return new Response("Invalid Credentials", { status: 400 });
     }

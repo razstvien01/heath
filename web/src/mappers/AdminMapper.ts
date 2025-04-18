@@ -1,4 +1,4 @@
-import { AdminDto } from "@/dto/admin";
+import { AdminDto, ConfirmAdminReqDto } from "@/dto/admin";
 import Admin from "@/models/Admin";
 
 export default class AdminMapper {
@@ -6,7 +6,15 @@ export default class AdminMapper {
     return {
       id: data.id,
       name: data.name,
-      ownerManagementGuid: data.ownerManagementGuid
+      ownerManagementGuid: data.ownerManagementGuid,
+    };
+  }
+
+  static toConfirmAdminDto(data: AdminDto): ConfirmAdminReqDto {
+    return {
+      name: data.name || "",
+      ownerManagementGuid: data.ownerManagementGuid || "",
+      password: data.password || "", 
     }
   }
 }

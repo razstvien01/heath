@@ -1,4 +1,4 @@
-import { AdminDto } from "@/dto/admin";
+import { AdminDto, ConfirmAdminReqDto } from "@/dto/admin";
 import { IAdminRepository } from "@/interfaces/IAdminRepository";
 import AdminMapper from "@/mappers/AdminMapper";
 import Admin from "@/models/Admin";
@@ -19,25 +19,21 @@ export class AdminRepository implements IAdminRepository {
         query,
         [ownerManagementGuid]
       );
-      
+
       return rows.length > 0;
     } catch (error) {
       console.error("Error validating admin:", error);
       throw new Error("Failed to validate admin");
     }
   }
-  async isAdminValid(
-    guid: string | undefined,
-    username: string | undefined,
-    password: string | undefined
-  ): Promise<boolean> {
+  async isAdminValid(dto: ConfirmAdminReqDto): Promise<boolean> {
     const query =
       "SELECT COUNT(*) as count FROM Admins WHERE ownerManagementGuid = ? and name = ? and password = SHA2(?, 256)";
 
     try {
       const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(
         query,
-        [guid, username, password]
+        [dto.ownerManagementGuid, dto.name, dto.password]
       );
 
       const count = (rows[0] as { count: number })?.count || 0;
