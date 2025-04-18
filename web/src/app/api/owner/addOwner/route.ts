@@ -1,5 +1,6 @@
 import { CreateConnection } from "@/config/mariadbConfig";
-import { OwnerSchema } from "@/dto/owner/OwnerDto";
+import { CreateOwnerSchema } from "@/dto/owner/CreateOwnerReqDto";
+import OwnerMapper from "@/mappers/OwnerMapper";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request): Promise<Response> {
@@ -14,7 +15,7 @@ export async function POST(request: Request): Promise<Response> {
       });
     }
 
-    const parsed = OwnerSchema.safeParse({ name, password });
+    const parsed = CreateOwnerSchema.safeParse({ name, password });
 
     if (!parsed.success) {
       return new Response(`Bad Request: ${parsed.error.issues[0].message}`, {
@@ -24,10 +25,8 @@ export async function POST(request: Request): Promise<Response> {
 
     const db = await CreateConnection();
     const ownerRepo = new OwnerRepository(db);
-    const result = await ownerRepo.addOwner(
-      (parsed.data.name = ""),
-      (parsed.data.password = "")
-    );
+    const dto = OwnerMapper.toOwnerFromCreateDto(parsed.data);
+    const result = await ownerRepo.addOwner(dto);
 
     if (!result) {
       return new Response("Owner insert failed", {

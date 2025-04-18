@@ -11,10 +11,10 @@ export default class OwnerMapper {
     };
   }
 
-  public static toOwnerFromCreateDto(data: CreateOwnerReqDto): Owner {
+  public static toOwnerFromCreateDto(data: Owner): CreateOwnerReqDto {
     return {
-      name: data.name,
-      managementGuid: data.managementGuid,
+      name: data.name || "",
+      password: data.password || ""
     };
   }
 

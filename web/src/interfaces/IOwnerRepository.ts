@@ -1,10 +1,9 @@
-import { OwnerDto, OwnerFilterDto } from "@/dto/owner";
+import { CreateOwnerReqDto, OwnerDto, OwnerFilterDto } from "@/dto/owner";
 import { FieldPacket, QueryResult } from "mysql2/promise";
 
 export interface IOwnerRepository {
   addOwner(
-    username: string,
-    password: string
+    dto: CreateOwnerReqDto
   ): Promise<[QueryResult, FieldPacket[]]>;
 
   confirmOwnerLogin(
@@ -20,7 +19,7 @@ export interface IOwnerRepository {
   isOwnerGuid(guid: string): Promise<boolean>;
   getOwnerList(filters: OwnerFilterDto): Promise<OwnerDto[]>;
 
-  getOwnerIdFromManagementGuid(guid: string): Promise<number | boolean>;
+  getOwnerIdFromManagementGuid(guid: string): Promise<number | null>;
   updateOwner(
     username: string,
     password: string,

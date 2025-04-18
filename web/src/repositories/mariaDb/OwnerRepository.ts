@@ -1,5 +1,4 @@
-import { CreateConnection } from "@/config/mariadbConfig";
-import { OwnerDto, OwnerFilterDto } from "@/dto/owner";
+import { CreateOwnerReqDto, OwnerDto, OwnerFilterDto } from "@/dto/owner";
 import { IOwnerRepository } from "@/interfaces/IOwnerRepository";
 import OwnerMapper from "@/mappers/OwnerMapper";
 import Owner from "@/models/Owner";
@@ -19,14 +18,14 @@ export class OwnerRepository implements IOwnerRepository {
   }
 
   async addOwner(
-    username: string,
-    password: string
+    dto: CreateOwnerReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
     const query =
       "INSERT INTO Owners (name, password, managementGuid) VALUES " +
       "(?, SHA2(?, 256), ?)";
+      
     try {
-      const result = this._db.execute(query, [username, password, uuidv4()]);
+      const result = this._db.execute(query, [dto.name, dto.password, uuidv4()]);
 
       return result;
     } catch (error) {
@@ -162,16 +161,17 @@ export class OwnerRepository implements IOwnerRepository {
   }
 
   async getOwnerIdFromManagementGuid(guid: string): Promise<number | null> {
-    const DB = await CreateConnection();
-    const [rows]: unknown[] = await DB.query(
-      "SELECT id FROM Owners WHERE managementGuid = ?",
-      [guid]
-    );
+    const query = "SELECT id FROM Owners WHERE managementGuid = ?";
+    try {
+      const [rows] = await this._db.query<RowDataPacket[]>(query, [guid]);
 
-    if (Array.isArray(rows) && rows.length > 0) {
-      return rows[0].id;
-    } else {
+      if (Array.isArray(rows) && rows.length > 0) {
+        return rows[0].id;
+      }
       return null;
+    } catch (error) {
+      console.error("Error fetching owners:", error);
+      throw new Error("Failed to fetch owners");
     }
   }
 
