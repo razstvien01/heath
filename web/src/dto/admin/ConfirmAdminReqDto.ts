@@ -8,8 +8,8 @@ export const ConfirmAdminSchema = z.object({
   password: z.string().min(1, "Password is required"),
   ownerManagementGuid: z
     .string()
-    .min(1, "Management Guid is required")
-    .max(36, "Management Guid must be at most 36 characters"),
+    .uuid("Management Guid must be a valid UUID")
+    .optional(),
 });
 
 export type ConfirmAdminReqDto = z.infer<typeof ConfirmAdminSchema>;

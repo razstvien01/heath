@@ -1,10 +1,16 @@
 import { CreateConnection } from "@/config/mariadbConfig";
+import { Connection } from "mysql2";
 import { v4 as uuidv4 } from "uuid";
 
 export class AuditRepository {
+  private readonly _db: Connection;
+
+  constructor(db: Connection) {
+    this._db = db;
+  }
+
   async AddAudit(ownerId: number, name: string) {
-    const DB = await CreateConnection();
-    const result = await DB.execute(
+    const result = await this._db.execute(
       "INSERT INTO Audits (ownerId, name, publicGuid, ownerGuid) VALUES " +
         "(?, ?, ?, ?)",
       [ownerId, name, uuidv4(), uuidv4()]
