@@ -1,5 +1,6 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { OwnerSchema } from "@/dto/owner/OwnerDto";
+import OwnerMapper from "@/mappers/OwnerMapper";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function POST(request: Request): Promise<Response> {
@@ -25,16 +26,10 @@ export async function POST(request: Request): Promise<Response> {
         status: 400,
       });
     }
-
-    const { managementGuid = "", name = "", password = "" } = parsed.data;
     const db = await CreateConnection();
     const ownerRepo = new OwnerRepository(db);
-
-    const isValid = await ownerRepo.confirmOwnerLogin(
-      managementGuid,
-      name,
-      password
-    );
+    const dto = OwnerMapper.toConfirmOwnerDto(parsed.data);
+    const isValid = await ownerRepo.confirmOwnerLogin(dto);
 
     if (!isValid) {
       return new Response("Invalid Owner", {

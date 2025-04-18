@@ -1,4 +1,10 @@
-import { CreateOwnerReqDto, OwnerDto, OwnerFilterDto } from "@/dto/owner";
+import {
+  ConfirmOwnerReqDto,
+  CreateOwnerReqDto,
+  OwnerDto,
+  OwnerFilterDto,
+  UpdateOwnerReqDto,
+} from "@/dto/owner";
 import { IOwnerRepository } from "@/interfaces/IOwnerRepository";
 import OwnerMapper from "@/mappers/OwnerMapper";
 import Owner from "@/models/Owner";
@@ -23,9 +29,13 @@ export class OwnerRepository implements IOwnerRepository {
     const query =
       "INSERT INTO Owners (name, password, managementGuid) VALUES " +
       "(?, SHA2(?, 256), ?)";
-      
+
     try {
-      const result = this._db.execute(query, [dto.name, dto.password, uuidv4()]);
+      const result = this._db.execute(query, [
+        dto.name,
+        dto.password,
+        uuidv4(),
+      ]);
 
       return result;
     } catch (error) {
@@ -34,14 +44,10 @@ export class OwnerRepository implements IOwnerRepository {
     }
   }
 
-  async confirmOwnerLogin(
-    guid: string,
-    username: string,
-    password: string
-  ): Promise<boolean> {
+  async confirmOwnerLogin(dto: ConfirmOwnerReqDto): Promise<boolean> {
     const query =
       "SELECT * FROM Owners WHERE managementGuid = ? and name = ? and password = SHA2(?, 256)";
-    const values = [guid, username, password];
+    const values = [dto.managementGuid, dto.name, dto.password];
 
     try {
       const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(
@@ -176,9 +182,7 @@ export class OwnerRepository implements IOwnerRepository {
   }
 
   async updateOwner(
-    username: string,
-    password: string,
-    guid: string
+    dto: UpdateOwnerReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
     try {
       const query =
@@ -186,7 +190,7 @@ export class OwnerRepository implements IOwnerRepository {
         "name = ?, " +
         "password = SHA2(?, 256) " +
         "WHERE managementGuid = ?";
-      const values = [username, password, guid];
+      const values = [dto.name, dto.password, dto.managementGuid];
       const result = await this._db.execute(query, values);
 
       return result;

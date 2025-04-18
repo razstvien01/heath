@@ -1,4 +1,9 @@
-import { CreateOwnerReqDto, OwnerDto, UpdateOwnerReqDto } from "@/dto/owner";
+import {
+  ConfirmOwnerReqDto,
+  CreateOwnerReqDto,
+  OwnerDto,
+  UpdateOwnerReqDto,
+} from "@/dto/owner";
 import Owner from "@/models/Owner";
 
 export default class OwnerMapper {
@@ -14,14 +19,22 @@ export default class OwnerMapper {
   public static toOwnerFromCreateDto(data: Owner): CreateOwnerReqDto {
     return {
       name: data.name || "",
-      password: data.password || ""
+      password: data.password || "",
     };
   }
 
-  public static toOwnerFromUpdateDto(data: UpdateOwnerReqDto): Owner {
+  public static toOwnerFromUpdateDto(data: Owner): UpdateOwnerReqDto {
     return {
-      name: data.name,
-      managementGuid: data.managementGuid,
+      name: data.name || "",
+      managementGuid: data.managementGuid || "",
+    };
+  }
+
+  public static toConfirmOwnerDto(data: Owner): ConfirmOwnerReqDto {
+    return {
+      name: data.name || "",
+      managementGuid: data.name || "",
+      password: data.name || "",
     };
   }
 }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const UpdateOwnerSchema = z.object({
+export const ConfirmOwnerSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
@@ -13,4 +13,4 @@ export const UpdateOwnerSchema = z.object({
   password: z.string().min(1, "Password is required").optional(),
 });
 
-export type UpdateOwnerReqDto = z.infer<typeof UpdateOwnerSchema>;
+export type ConfirmOwnerReqDto = z.infer<typeof ConfirmOwnerSchema>;

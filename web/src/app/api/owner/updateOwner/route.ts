@@ -1,5 +1,6 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { OwnerSchema } from "@/dto/owner/OwnerDto";
+import OwnerMapper from "@/mappers/OwnerMapper";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function PUT(request: Request) {
@@ -32,10 +33,10 @@ export async function PUT(request: Request) {
       );
     }
 
-    const { managementGuid = "", name = "", password = "" } = validation.data;
     const db = await CreateConnection();
     const repository = new OwnerRepository(db);
-    const result = await repository.updateOwner(name, password, managementGuid);
+    const dto = OwnerMapper.toOwnerFromUpdateDto(validation.data);
+    const result = await repository.updateOwner(dto);
 
     if (!result) {
       return new Response("Owner update failed", {
