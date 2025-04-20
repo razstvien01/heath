@@ -23,9 +23,21 @@ export class OwnerRepository implements IOwnerRepository {
     this._db = db;
   }
 
+  async checkOwnerIfExist(name: string): Promise<boolean> {
+    const [rows] = await this._db.query<RowDataPacket[]>(
+      "SELECT 1 FROM Owners WHERE name = ?",
+      [name]
+    );
+
+    return rows.length > 0;
+  }
+
   async addOwner(
     dto: CreateOwnerReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
+    if (await this.checkOwnerIfExist(dto.name))
+      throw new Error("Owner with this name already exists.");
+
     const query =
       "INSERT INTO Owners (name, password, managementGuid) VALUES " +
       "(?, SHA2(?, 256), ?)";

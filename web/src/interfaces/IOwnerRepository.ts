@@ -9,6 +9,7 @@ import { FieldPacket, QueryResult } from "mysql2/promise";
 
 export interface IOwnerRepository {
   addOwner(dto: CreateOwnerReqDto): Promise<[QueryResult, FieldPacket[]]>;
+  checkOwnerIfExist(name: string): Promise<boolean>;
   confirmOwnerLogin(dto: ConfirmOwnerReqDto): Promise<boolean>;
   deleteOwnerFromManagementGuid(
     guid: string
