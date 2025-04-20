@@ -7,7 +7,7 @@ export const OwnerSchema = z.object({
     .min(1, "Name is required")
     .max(100, "Name must be less than 100 characters")
     .optional(),
-  ownerManagementGuid: z
+  managementGuid: z
     .string()
     .uuid("Management Guid must be a valid UUID")
     .optional(),

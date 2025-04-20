@@ -1,5 +1,5 @@
 interface Audit {
-    id: number | null | undefined;
+    id: number | undefined;
     name: string;
     entries: number;
     publicGuid: string;
