@@ -87,7 +87,7 @@ export class OwnerRepository implements IOwnerRepository {
     }
   }
 
-  async isOwnerGuid(guid: string) {
+  async isOwnerGuid(guid: string): Promise<boolean> {
     const query =
       "SELECT COUNT(*) as count FROM Owners WHERE managementGuid = ?";
 
