@@ -109,6 +109,7 @@ export class OwnerRepository implements IOwnerRepository {
     const conditions: string[] = [];
     const values: (string | number)[] = [];
 
+    //* Filters
     if (filters.name) {
       conditions.push("name LIKE ?");
       values.push(`%${filters.name}%`);
@@ -144,10 +145,11 @@ export class OwnerRepository implements IOwnerRepository {
       query += ` ORDER BY ${filters.orderBy} ${dir}`;
     }
 
-    if (filters.limit) {
-      query += " LIMIT ?";
-      values.push(filters.limit);
-    }
+    //* Pagination
+    const offset = (filters.page - 1) * filters.pageSize;
+
+    query += " LIMIT ? OFFSET ?";
+    values.push(filters.pageSize, offset);
 
     try {
       const [rows] = await this._db.query<Owner[] & RowDataPacket[]>(

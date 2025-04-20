@@ -16,8 +16,11 @@ export async function GET(request: Request): Promise<Response> {
       updatedTo: searchParams.get("updatedTo") ?? undefined,
       orderBy: searchParams.get("orderBy") ?? undefined,
       orderDirection: searchParams.get("orderDirection") ?? undefined,
-      limit: searchParams.get("limit")
-        ? parseInt(searchParams.get("limit")!)
+      page: searchParams.get("page")
+        ? parseInt(searchParams.get("page")!)
+        : undefined,
+      pageSize: searchParams.get("pageSize")
+        ? parseInt(searchParams.get("pageSize")!)
         : undefined,
     };
 
