@@ -31,8 +31,11 @@ export async function POST(request: Request): Promise<Response> {
     return new Response("Valid Credentials", { status: 200 });
   } catch (error) {
     console.error("Error processing request:", error);
-    return new Response("Internal Server Error", {
-      status: 500,
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+
+    return new Response(message, {
+      status: message === "Owner with this name already exists." ? 400 : 500,
     });
   }
 }
