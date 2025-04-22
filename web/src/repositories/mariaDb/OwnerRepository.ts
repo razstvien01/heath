@@ -5,7 +5,7 @@ import {
   OwnerFilterDto,
   UpdateOwnerReqDto,
 } from "@/dto/owner";
-import { IOwnerRepository } from "@/interfaces/IOwnerRepository";
+import { IOwnerRepository } from "@/interfaces";
 import OwnerMapper from "@/mappers/OwnerMapper";
 import Owner from "@/models/Owner";
 import {

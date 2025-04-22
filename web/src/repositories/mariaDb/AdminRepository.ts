@@ -1,5 +1,5 @@
 import { AdminDto, ConfirmAdminReqDto } from "@/dto/admin";
-import { IAdminRepository } from "@/interfaces/IAdminRepository";
+import { IAdminRepository } from "@/interfaces";
 import AdminMapper from "@/mappers/AdminMapper";
 import Admin from "@/models/Admin";
 import { Connection, FieldPacket, RowDataPacket } from "mysql2/promise";

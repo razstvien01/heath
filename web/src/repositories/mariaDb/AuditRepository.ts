@@ -1,25 +1,35 @@
 import { CreateConnection } from "@/config/mariadbConfig";
-import { Connection } from "mysql2";
+import { AuditDto, CreateAuditReqDto } from "@/dto/audit";
+import { IAuditRepository } from "@/interfaces";
+import { Connection, FieldPacket, QueryResult } from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
 
-export class AuditRepository {
+export class AuditRepository implements IAuditRepository {
   private readonly _db: Connection;
 
   constructor(db: Connection) {
     this._db = db;
   }
 
-  async AddAudit(ownerId: number, name: string) {
-    const result = await this._db.execute(
+  async addAudit(
+    dto: CreateAuditReqDto
+  ): Promise<[QueryResult, FieldPacket[]]> {
+    const query =
       "INSERT INTO Audits (ownerId, name, publicGuid, ownerGuid) VALUES " +
-        "(?, ?, ?, ?)",
-      [ownerId, name, uuidv4(), uuidv4()]
-    );
+      "(?, ?, ?, ?)";
+    const values = [dto.ownerId, dto.name, uuidv4(), uuidv4()];
 
-    return result;
+    try {
+      const result = await this._db.execute(query, values);
+
+      return result;
+    } catch (error) {
+      console.log("Error inserting a new audit:", error);
+      throw new Error("Failed to add a new audit.");
+    }
   }
 
-  async GetAuditList(ownerId: number) {
+  async getAuditList(ownerId: number): Promise<AuditDto> {
     const result = await new Promise(async (resolve, reject) => {
       const DB = await CreateConnection();
 
