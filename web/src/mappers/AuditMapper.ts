@@ -5,10 +5,11 @@ import Audit from "@/models/Audit";
 export default class AuditMapper {
   public static toAuditDto(data: Audit): AuditDto {
     return {
-      id: data.id,
-      name: data.name,
-      ownerId: data.ownerGuid,
-      publicGuid: data.publicGuid,
+      id: data.id || undefined,
+      name: data.name || "",
+      ownerId: data.ownerGuid || "",
+      publicGuid: data.publicGuid || "",
+      createdAt: data.createdAt || new Date(),
     };
   }
 

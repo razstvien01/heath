@@ -1,9 +1,9 @@
-interface Audit {
-    id: number | undefined;
-    name: string;
-    entries: number;
-    publicGuid: string;
-    ownerGuid: string;
+class Audit {
+  id?: number | undefined;
+  name?: string = "";
+  publicGuid?: string = "";
+  ownerGuid?: string = "";
+  createdAt?: Date = new Date();
 }
 
 export default Audit;

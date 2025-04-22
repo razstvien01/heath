@@ -9,7 +9,7 @@ export async function POST(request: Request): Promise<Response> {
     const name = formData.get("username");
     const password = formData.get("password");
 
-    if (name == null || password == null) {
+    if (!name || !password) {
       return new Response("Username and password are required", {
         status: 400,
       });

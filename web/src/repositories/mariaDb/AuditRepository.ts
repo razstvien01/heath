@@ -1,7 +1,15 @@
 import { CreateConnection } from "@/config/mariadbConfig";
-import { AuditDto, CreateAuditReqDto } from "@/dto/audit";
+import { AuditDto, CreateAuditReqDto, UpdateAuditReqDto } from "@/dto/audit";
+import { AuditFilterDto } from "@/dto/audit/AuditFilterDto";
 import { IAuditRepository } from "@/interfaces";
-import { Connection, FieldPacket, QueryResult } from "mysql2/promise";
+import AuditMapper from "@/mappers/AuditMapper";
+import Audit from "@/models/Audit";
+import {
+  Connection,
+  FieldPacket,
+  QueryResult,
+  RowDataPacket,
+} from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
 
 export class AuditRepository implements IAuditRepository {
@@ -29,25 +37,81 @@ export class AuditRepository implements IAuditRepository {
     }
   }
 
-  async getAuditList(ownerId: number): Promise<AuditDto> {
-    const result = await new Promise(async (resolve, reject) => {
-      const DB = await CreateConnection();
+  async getAuditList(
+    ownerId: number,
+    filters: AuditFilterDto
+  ): Promise<AuditDto[]> {
+    let query = "SELECT *, 0 AS ENTRIES FROM Audits";
+    const conditions: string[] = [];
+    const values: (string | number)[] = [];
 
-      try {
-        const [results] = await (
-          await DB
-        ).query("SELECT *, 0 as entries FROM Audits WHERE ownerId = ?", [
-          ownerId,
-        ]);
-        resolve(results);
-      } catch (err) {
-        reject(err);
-      }
-    });
-    return result;
+    //* Applying filters
+    if (filters.name) {
+      conditions.push("name LIKE ?");
+      values.push(`%${filters.name}%`);
+    }
+
+    if (filters.createdFrom) {
+      conditions.push("createdAt >= ?");
+      values.push(filters.createdFrom);
+    }
+
+    if (filters.createdTo) {
+      conditions.push("createdAt <= ?");
+      values.push(filters.createdTo);
+    }
+
+    if (filters.updatedFrom) {
+      conditions.push("updatedAt >= ?");
+      values.push(filters.updatedFrom);
+    }
+
+    if (filters.updatedTo) {
+      conditions.push("updatedAt <= ?");
+      values.push(filters.updatedTo);
+    }
+
+    if (ownerId) {
+      conditions.push("ownerId = ?");
+      values.push(ownerId);
+    }
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    if (filters.orderBy) {
+      const dir =
+        filters.orderDirection?.toUpperCase() === "DESC" ? "DESC" : "ASC";
+      query += ` ORDER BY ${filters.orderBy} ${dir}`;
+    }
+
+    //* Pagination
+    const offset = (filters.page - 1) * filters.pageSize;
+
+    query += " LIMIT ? OFFSET ?";
+    values.push(filters.pageSize, offset);
+
+    try {
+      const [rows] = await this._db.query<Audit[] & RowDataPacket[]>(
+        query,
+        values
+      );
+
+      const audits: AuditDto[] = rows.map((row: Audit) => {
+        return AuditMapper.toAuditDto(row);
+      });
+
+      return audits;
+    } catch (error) {
+      console.error("Error fetching audits:", error);
+      throw new Error("Failed to fetch owners");
+    }
   }
 
-  async DeleteAuditById(auditId: number) {
+  async deleteAuditById(
+    auditId: number
+  ): Promise<[QueryResult, FieldPacket[]]> {
     const DB = await CreateConnection();
     const result = await DB.execute("DELETE FROM Audits WHERE id = ?", [
       auditId,
@@ -56,7 +120,7 @@ export class AuditRepository implements IAuditRepository {
     return result;
   }
 
-  async IsAuditPublicGuid(guid: string) {
+  async isAuditPublicGuid(guid: string): Promise<boolean> {
     const DB = await CreateConnection();
     const [isPublicResult]: unknown[] = await DB.query(
       "SELECT * FROM Audits WHERE publicGuid = ?",
@@ -70,7 +134,7 @@ export class AuditRepository implements IAuditRepository {
     }
   }
 
-  async IsAuditPrivateGuid(guid: string): Promise<boolean> {
+  async isAuditPrivateGuid(guid: string): Promise<boolean> {
     const DB = await CreateConnection();
     const [isPrivateResult]: unknown[] = await DB.query(
       "SELECT * FROM Audits WHERE ownerGuid = ?",
@@ -84,32 +148,20 @@ export class AuditRepository implements IAuditRepository {
     }
   }
 
-  async UpdateAudit(name: string, id: number) {
+  async updateAudit(
+    dto: UpdateAuditReqDto
+  ): Promise<[QueryResult, FieldPacket[]]> {
     const DB = await CreateConnection();
 
     const result = await DB.execute(
       "UPDATE Audits SET " + "name = ? " + "WHERE id = ?",
-      [name, id]
+      [dto.name, dto.id]
     );
 
     return result;
   }
-
-  async GetAuditIdFromGuidd(guid: string): Promise<number | null> {
-    const DB = await CreateConnection();
-    const [rows]: unknown[] = await DB.query(
-      "SELECT id FROM Audits WHERE publicGuid = ? or ownerGuid = ?",
-      [guid, guid]
-    );
-
-    if (Array.isArray(rows) && rows.length > 0) {
-      return rows[0].id;
-    } else {
-      return null;
-    }
-  }
-
-  async GetAuditIdFromGuid(guid: string): Promise<number | null> {
+  
+  async getAuditIdFromGuid(guid: string): Promise<number | null> {
     const DB = await CreateConnection();
 
     try {
