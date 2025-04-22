@@ -1,3 +1,4 @@
+import { CreateAuditReqDto, UpdateAuditReqDto } from "@/dto/audit";
 import { AuditDto } from "@/dto/audit/AuditDto";
 import Audit from "@/models/Audit";
 
@@ -8,6 +9,20 @@ export default class AuditMapper {
       name: data.name,
       ownerId: data.ownerGuid,
       publicGuid: data.publicGuid,
+    };
+  }
+
+  public static toAuditFromCreateDto(data: Audit): CreateAuditReqDto {
+    return {
+      name: data.name || "",
+      ownerId: data.ownerGuid || "",
+    };
+  }
+
+  public static toAuditFromUpdateDto(data: Audit): UpdateAuditReqDto {
+    return {
+      name: data.name || "",
+      ownerId: data.ownerGuid || "",
     };
   }
 }
