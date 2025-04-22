@@ -44,7 +44,7 @@ export async function POST(request: Request): Promise<Response> {
       error instanceof Error ? error.message : "Internal Server Error";
 
     return new Response(message, {
-      status: message === "Owner with this name already exists." ? 400 : 500,
+      status: 500,
     });
   }
 }

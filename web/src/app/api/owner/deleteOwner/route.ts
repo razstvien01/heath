@@ -30,15 +30,8 @@ export async function DELETE(request: Request): Promise<Response> {
 
     const db = await CreateConnection();
     const ownerRepo = new OwnerRepository(db);
-    const result = await ownerRepo.deleteOwnerFromManagementGuid(
-      managementGuid
-    );
+    await ownerRepo.deleteOwnerFromManagementGuid(managementGuid);
 
-    if (!result) {
-      return new Response("Owner not found. Deletion aborted.", {
-        status: 500,
-      });
-    }
     return new Response("Owner deleted successfully", {
       status: 200,
     });
@@ -48,7 +41,7 @@ export async function DELETE(request: Request): Promise<Response> {
       error instanceof Error ? error.message : "Internal Server Error";
 
     return new Response(message, {
-      status: message === "Owner with this name already exists." ? 400 : 500,
+      status: message === "Owner not found. Deletion aborted." ? 400 : 500,
     });
   }
 }

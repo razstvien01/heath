@@ -42,8 +42,11 @@ export async function POST(request: Request) {
       status: 200,
     });
   } catch (error) {
-    console.error(error);
-    return new Response(`Error processing request: ${error}`, {
+    console.error("Error processing request:", error);
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+
+    return new Response(message, {
       status: 500,
     });
   }

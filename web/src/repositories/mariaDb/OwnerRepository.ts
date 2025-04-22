@@ -76,7 +76,7 @@ export class OwnerRepository implements IOwnerRepository {
 
   async deleteOwnerFromManagementGuid(
     guid: string
-  ): Promise<[QueryResult, FieldPacket[]] | null> {
+  ): Promise<[QueryResult, FieldPacket[]]> {
     try {
       const [rows] = await this._db.query<RowDataPacket[]>(
         "SELECT 1 FROM Owners WHERE managementGuid = ?",
@@ -85,7 +85,7 @@ export class OwnerRepository implements IOwnerRepository {
 
       if (rows.length === 0) {
         console.log("Owner not found");
-        return null;
+        throw new Error("Owner not found. Deletion aborted.")
       }
 
       const result = await this._db.execute(

@@ -79,7 +79,10 @@ export async function GET(request: Request): Promise<Response> {
     });
   } catch (error) {
     console.error("Error processing request:", error);
-    return new Response("Internal Server Error:", {
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+
+    return new Response(message, {
       status: 500,
     });
   }

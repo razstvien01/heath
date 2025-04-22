@@ -13,7 +13,7 @@ export interface IOwnerRepository {
   confirmOwnerLogin(dto: ConfirmOwnerReqDto): Promise<boolean>;
   deleteOwnerFromManagementGuid(
     guid: string
-  ): Promise<[QueryResult, FieldPacket[]] | null>;
+  ): Promise<[QueryResult, FieldPacket[]]>;
   isOwnerGuid(guid: string): Promise<boolean>;
   getOwnerList(filters: OwnerFilterDto): Promise<OwnerDto[]>;
   getOwnerIdFromManagementGuid(guid: string): Promise<number | null>;
