@@ -1,4 +1,6 @@
+import { CreateConnection } from "@/config/mariadbConfig";
 import { CreateAuditSchema } from "@/dto/audit/CreateAuditReqDto";
+import { OwnerSchema } from "@/dto/owner/OwnerDto";
 import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
@@ -8,39 +10,54 @@ export async function POST(request: Request): Promise<Response> {
     const managementGuid = formData.get("guid");
     const name = formData.get("name");
 
-    if (!name || !guid) {
+    if (!name || !managementGuid) {
       return new Response("Guid and name are required.", {
         status: 400,
       });
     }
-    
-    // const parsed = CreateAuditSchema.safeParse({ name })
-    
 
-    const ownerRepository = new OwnerRepository();
-    // const auditRepository = new AuditRepository();
+    const parsedOwner = OwnerSchema.safeParse({ managementGuid });
+
+    if (!parsedOwner.success) {
+      return new Response(
+        `Bad Request: ${parsedOwner.error.issues[0].message}`,
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const db = await CreateConnection();
+    const ownerRepository = new OwnerRepository(db);
 
     const ownerId = await ownerRepository.getOwnerIdFromManagementGuid(
-      guid as string
+      managementGuid as string
     );
 
-    // if (!ownerId) {
-    //   return new Response("Invalid Request", {
-    //     status: 500,
-    //   });
-    // }
+    const parsedAudit = CreateAuditSchema.safeParse({ name, ownerId });
 
-    // const result = auditRepository.addAudit(ownerId, name as string);
+    if (!parsedAudit.success) {
+      return new Response(
+        `Bad Request: ${[parsedAudit.error.issues[0].message]}`,
+        {
+          status: 400,
+        }
+      );
+    }
 
-    // if (result) {
-    //   return new Response("Audit inserted successfully", {
-    //     status: 200,
-    //   });
-    // } else {
-    //   return new Response("Audit insert failed", {
-    //     status: 500,
-    //   });
-    // }
+    const auditRepository = new AuditRepository(db);
+
+    const result = auditRepository.addAudit(parsedAudit.data);
+
+    if (!result) {
+      return new Response("Audit insert failed", {
+        status: 500,
+      });
+    }
+
+    return new Response("Audit inserted successfully", {
+      status: 200,
+    });
   } catch (error) {
     console.error("Error processing request:", error);
     const message =
