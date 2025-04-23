@@ -7,7 +7,8 @@ export const AuditSchema = z.object({
   name: z
     .string()
     .min(1, "Name is required")
-    .max(100, "Name must be less than 100 characters"),
+    .max(100, "Name must be less than 100 characters")
+    .optional(),
   publicGuid: z.string().uuid("Public Guid must be a valid UUID").optional(),
   createdAt: z.date().default(new Date()).optional(),
 });

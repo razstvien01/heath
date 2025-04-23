@@ -33,7 +33,7 @@ export async function POST(request: Request): Promise<Response> {
     const ownerId = await ownerRepository.getOwnerIdFromManagementGuid(
       managementGuid as string
     );
-
+    
     const parsedAudit = CreateAuditSchema.safeParse({ name, ownerId });
 
     if (!parsedAudit.success) {
