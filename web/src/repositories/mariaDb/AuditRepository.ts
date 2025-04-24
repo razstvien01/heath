@@ -112,12 +112,29 @@ export class AuditRepository implements IAuditRepository {
   async deleteAuditById(
     auditId: number
   ): Promise<[QueryResult, FieldPacket[]]> {
-    const DB = await CreateConnection();
-    const result = await DB.execute("DELETE FROM Audits WHERE id = ?", [
-      auditId,
-    ]);
+    try {
+      const [rows] = await this._db.query<RowDataPacket[]>(
+        "SELECT 1 FROM Audits WHERE id = ?",
+        [auditId]
+      );
 
-    return result;
+      if (rows.length === 0) {
+        console.log("Audit not found");
+        throw new Error("Audit not found. Deletion aborted.");
+      }
+
+      const result = await this._db.execute("DELETE FROM Audits WHERE id = ?", [
+        auditId,
+      ]);
+
+      return result;
+    } catch (error) {
+      console.log("Error deleting audit by auditId:", error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Failed to delete an audit");
+    }
   }
 
   async isAuditPublicGuid(guid: string): Promise<boolean> {
@@ -160,7 +177,7 @@ export class AuditRepository implements IAuditRepository {
 
     return result;
   }
-  
+
   async getAuditIdFromGuid(guid: string): Promise<number | null> {
     const DB = await CreateConnection();
 
