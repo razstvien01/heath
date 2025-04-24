@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const AuditSchema = z.object({
-  id: z.number().optional(),
+  id: z.coerce.number().optional(),
   ownerId: z.number().optional(),
   ownerGuid: z.string().uuid("Management Guid must be a valid UUID").optional(),
   name: z
