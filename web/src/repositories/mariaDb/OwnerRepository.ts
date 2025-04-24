@@ -85,7 +85,7 @@ export class OwnerRepository implements IOwnerRepository {
 
       if (rows.length === 0) {
         console.log("Owner not found");
-        throw new Error("Owner not found. Deletion aborted.")
+        throw new Error("Owner not found. Deletion aborted.");
       }
 
       const result = await this._db.execute(
@@ -94,7 +94,10 @@ export class OwnerRepository implements IOwnerRepository {
       );
       return result;
     } catch (error) {
-      console.error("Error deleting owner by guid:", error);
+      console.log("Error deleting owner by guid:", error);
+      if (error instanceof Error) {
+        throw error;
+      }
       throw new Error("Failed to delete an owner");
     }
   }
