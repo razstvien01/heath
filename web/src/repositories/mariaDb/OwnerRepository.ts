@@ -104,7 +104,7 @@ export class OwnerRepository implements IOwnerRepository {
 
   async isOwnerGuid(guid: string): Promise<boolean> {
     const query =
-      "SELECT COUNT(*) as count FROM Owners WHERE managementGuid = ?";
+      "SELECT 1 FROM Owners WHERE managementGuid = ?";
 
     try {
       const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(

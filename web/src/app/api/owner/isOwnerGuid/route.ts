@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const isValid = await ownerRepository.isOwnerGuid(managementGuid);
 
     if (!isValid) {
-      return new Response("Invalid Gu id Link", {
+      return new Response("Invalid Guid Link", {
         status: 404,
       });
     }
