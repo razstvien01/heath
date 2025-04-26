@@ -1,30 +1,57 @@
-import { CreateConnection  } from "@/config/mariadbConfig";
+import { CreateConnection } from "@/config/mariadbConfig";
+import { AuditSchema } from "@/dto/audit/AuditDto";
+import AuditMapper from "@/mappers/AuditMapper";
 import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 
-export async function POST(request: Request)
-{
+export async function PUT(request: Request): Promise<Response> {
+  try {
     const formData = await request.formData();
+    const idFD = formData.get("id");
+    const nameFD = formData.get("name");
 
-    const id = formData.get("id");
-    const name = formData.get("name");
-
-    if(name == null || id == null)
-    {
-        return new Response("Bad", {
-            status: 400
-        })
+    if (!nameFD || !idFD) {
+      return new Response("The id and nbame are required.", {
+        status: 400,
+      });
     }
 
-    const auditRepository = new AuditRepository()
-    const result = auditRepository.UpdateAudit(name as string, Number(id))
+    const input = {
+      id: idFD,
+      name: nameFD,
+    };
 
-    if(result) {
-        return new Response("Audit updated successfully", {
-            status: 200
-        });
-    } else {
-        return new Response("Audit update failed", {
-            status: 500
-        })
+    const validation = AuditSchema.safeParse(input);
+
+    if (!validation.success) {
+      return new Response(
+        `Bad Request: ${validation.error.issues[0].message}`,
+        {
+          status: 400,
+        }
+      );
     }
+
+    const db = await CreateConnection();
+    const auditRepository = new AuditRepository(db);
+    const dto = AuditMapper.toAuditFromUpdateDto(validation.data);
+    const result = await auditRepository.updateAudit(dto);
+
+    if (!result) {
+      return new Response("Audit update failed", {
+        status: 500,
+      });
+    }
+
+    return new Response("Audit updated successfully", {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+
+    return new Response(message, {
+      status: message.includes("not found") ? 400 : 500,
+    });
+  }
 }

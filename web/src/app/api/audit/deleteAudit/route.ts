@@ -37,7 +37,7 @@ export async function DELETE(request: Request): Promise<Response> {
     console.error("Error processing request:", error);
     const message =
       error instanceof Error ? error.message : "Internal Server Error";
-    
+
     return new Response(message, {
       status: message === "Audit not found. Deletion aborted." ? 400 : 500,
     });

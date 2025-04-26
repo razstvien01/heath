@@ -8,6 +8,7 @@ import {
   Connection,
   FieldPacket,
   QueryResult,
+  ResultSetHeader,
   RowDataPacket,
 } from "mysql2/promise";
 import { v4 as uuidv4 } from "uuid";
@@ -169,14 +170,27 @@ export class AuditRepository implements IAuditRepository {
   async updateAudit(
     dto: UpdateAuditReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
-    const DB = await CreateConnection();
+    const query = "UPDATE Audits SET " + "name = ? " + "WHERE id = ?";
+    const values = [dto.name, dto.id];
 
-    const result = await DB.execute(
-      "UPDATE Audits SET " + "name = ? " + "WHERE id = ?",
-      [dto.name, dto.id]
-    );
+    try {
+      const result = await this._db.execute(query, values);
+      const queryResult = result[0] as ResultSetHeader;
 
-    return result;
+      if (queryResult.affectedRows === 0) {
+        throw new Error(`Audit with ID ${dto.id} not found.`);
+      }
+
+      console.log("RETURNINNNNNNGGG THE RESULT");
+
+      return result;
+    } catch (error) {
+      console.error("Error updating an audit:", error);
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Failed to update an audit.");
+    }
   }
 
   async getAuditIdFromGuid(guid: string): Promise<number | null> {

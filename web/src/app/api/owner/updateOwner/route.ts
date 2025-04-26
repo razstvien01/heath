@@ -3,7 +3,7 @@ import { OwnerSchema } from "@/dto/owner/OwnerDto";
 import OwnerMapper from "@/mappers/OwnerMapper";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
-export async function PUT(request: Request) {
+export async function PUT(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
 

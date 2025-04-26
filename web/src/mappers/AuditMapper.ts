@@ -7,7 +7,7 @@ export default class AuditMapper {
     return {
       id: data.id || undefined,
       name: data.name || "",
-      ownerId: data.ownerGuid || "",
+      ownerGuid: data.ownerGuid || "",
       publicGuid: data.publicGuid || "",
       createdAt: data.createdAt || new Date(),
     };
@@ -16,14 +16,14 @@ export default class AuditMapper {
   public static toAuditFromCreateDto(data: Audit): CreateAuditReqDto {
     return {
       name: data.name || "",
-      ownerId: data.ownerGuid || "",
+      ownerId: Number(data.id),
     };
   }
 
   public static toAuditFromUpdateDto(data: Audit): UpdateAuditReqDto {
     return {
       name: data.name || "",
-      ownerId: data.ownerGuid || "",
+      id: Number(data.id),
     };
   }
 }

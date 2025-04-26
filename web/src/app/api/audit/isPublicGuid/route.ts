@@ -2,7 +2,7 @@ import { CreateConnection } from "@/config/mariadbConfig";
 import { AuditSchema } from "@/dto/audit/AuditDto";
 import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 
-export async function POST(request: Request) {
+export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
     const guid = formData.get("guid");
@@ -32,7 +32,6 @@ export async function POST(request: Request) {
     const isPublicResult = await auditRepository.isAuditPublicGuid(publicGuid);
 
     if (isPublicResult) {
-      console.log("TRUEEE")
       return new Response(JSON.stringify(true), {
         status: 200,
       });
@@ -43,7 +42,6 @@ export async function POST(request: Request) {
     const isPrivateResult = await auditRepository.isAuditPrivateGuid(ownerGuid);
 
     if (isPrivateResult) {
-      console.log("FALSEEE")
       return new Response(JSON.stringify(false), {
         status: 200,
       });
