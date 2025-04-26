@@ -138,16 +138,18 @@ export class AuditRepository implements IAuditRepository {
   }
 
   async isAuditPublicGuid(guid: string): Promise<boolean> {
-    const DB = await CreateConnection();
-    const [isPublicResult]: unknown[] = await DB.query(
-      "SELECT * FROM Audits WHERE publicGuid = ?",
-      [guid]
-    );
+    const query = "SELECT COUNT(*) AS COUNT FROM Audits WHERE publicGuid = ?";
+    const values = [guid];
+    try {
+      const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(
+        query,
+        values
+      );
 
-    if (Array.isArray(isPublicResult) && isPublicResult.length > 0) {
-      return true;
-    } else {
-      return false;
+      return rows.length > 0;
+    } catch (error) {
+      console.error("Error validating Audit Public guid:", error);
+      throw new Error("Failed to validate the Audit Public guid.");
     }
   }
 

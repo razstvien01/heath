@@ -30,15 +30,14 @@ export async function DELETE(request: Request): Promise<Response> {
     const auditRepository = new AuditRepository(db);
     await auditRepository.deleteAuditById(Number(id));
 
-    return new Response("Audit deleted successfully", {
+    return new Response("Audit deleted successfuzlly", {
       status: 200,
     });
   } catch (error) {
     console.error("Error processing request:", error);
     const message =
       error instanceof Error ? error.message : "Internal Server Error";
-
-    console.log("MESSAGE:", message);
+    
     return new Response(message, {
       status: message === "Audit not found. Deletion aborted." ? 400 : 500,
     });
