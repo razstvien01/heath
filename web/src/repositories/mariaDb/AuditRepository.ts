@@ -138,13 +138,13 @@ export class AuditRepository implements IAuditRepository {
   }
 
   async isAuditPublicGuid(guid: string): Promise<boolean> {
-    const query = "SELECT COUNT(*) AS COUNT FROM Audits WHERE publicGuid = ?";
+    const query = "SELECT 1 FROM Audits WHERE publicGuid = ?";
     const values = [guid];
     try {
-      const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(
-        query,
-        values
-      );
+      const [rows] = await this._db.query<[RowDataPacket[]]>(query, values);
+
+      console.log(rows.values);
+      console.log(rows.length);
 
       return rows.length > 0;
     } catch (error) {
@@ -154,16 +154,15 @@ export class AuditRepository implements IAuditRepository {
   }
 
   async isAuditPrivateGuid(guid: string): Promise<boolean> {
-    const DB = await CreateConnection();
-    const [isPrivateResult]: unknown[] = await DB.query(
-      "SELECT * FROM Audits WHERE ownerGuid = ?",
-      [guid]
-    );
+    const query = "SELECT 1 FROM Audits WHERE ownerGuid = ?";
+    const values = [guid];
+    try {
+      const [rows] = await this._db.query<RowDataPacket[]>(query, values);
 
-    if (Array.isArray(isPrivateResult) && isPrivateResult.length > 0) {
-      return true;
-    } else {
-      return false;
+      return rows.length > 0;
+    } catch (error) {
+      console.error("Error validating Audit Private guid:", error);
+      throw new Error("Failed to validate to the Audit Private guid.");
     }
   }
 

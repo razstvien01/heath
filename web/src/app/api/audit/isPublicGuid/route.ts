@@ -1,34 +1,64 @@
+import { CreateConnection } from "@/config/mariadbConfig";
+import { AuditSchema } from "@/dto/audit/AuditDto";
 import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 
-export async function POST(request: Request)
-{
+export async function POST(request: Request) {
+  try {
     const formData = await request.formData();
     const guid = formData.get("guid");
-    if(guid == null)
-    {
-        return new Response("Bad", {
-            status: 400
-        })
+
+    if (!guid) {
+      return new Response("Bad Request: Missing or invalid GUID", {
+        status: 400,
+      });
     }
 
-    const auditRepository = new AuditRepository()
-    const isPublicResult = await auditRepository.IsAuditPublicGuid(guid as string);
+    const validation = AuditSchema.safeParse({
+      publicGuid: guid,
+    });
 
-    if(isPublicResult) {
-        return new Response(JSON.stringify(true), {
-            status: 200,
-        });
-    } 
+    if (!validation.success) {
+      return new Response(
+        `Bad Request: ${validation.error.issues[0].message}`,
+        {
+          status: 400,
+        }
+      );
+    }
 
-    const isPrivateResult = await auditRepository.IsAuditPrivateGuid(guid as string);
+    const { publicGuid = "" } = validation.data;
+    const db = await CreateConnection();
+    const auditRepository = new AuditRepository(db);
+    const isPublicResult = await auditRepository.isAuditPublicGuid(publicGuid);
 
-    if(isPrivateResult) {
-        return new Response(JSON.stringify(false), {
-            status: 200,
-        });
+    if (isPublicResult) {
+      console.log("TRUEEE")
+      return new Response(JSON.stringify(true), {
+        status: 200,
+      });
+    }
+
+    const ownerGuid = publicGuid;
+
+    const isPrivateResult = await auditRepository.isAuditPrivateGuid(ownerGuid);
+
+    if (isPrivateResult) {
+      console.log("FALSEEE")
+      return new Response(JSON.stringify(false), {
+        status: 200,
+      });
     }
 
     return new Response(JSON.stringify(false), {
-        status: 500
-    })
+      status: 500,
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+
+    return new Response(message, {
+      status: 500,
+    });
+  }
 }
