@@ -1,4 +1,3 @@
-import { CreateConnection } from "@/config/mariadbConfig";
 import { AuditDto, CreateAuditReqDto, UpdateAuditReqDto } from "@/dto/audit";
 import { AuditFilterDto } from "@/dto/audit/AuditFilterDto";
 import { IAuditRepository } from "@/interfaces";
@@ -194,22 +193,16 @@ export class AuditRepository implements IAuditRepository {
   }
 
   async getAuditIdFromGuid(guid: string): Promise<number | null> {
-    const DB = await CreateConnection();
+    const query = "SELECT id FROM Audits WHERE publicGuid = ? OR ownerGuid = ?";
+    const values = [guid, guid];
 
     try {
-      const [results]: unknown[] = await DB.query(
-        "SELECT id FROM Audits WHERE publicGuid = ? or ownerGuid = ?",
-        [guid, guid]
-      );
-
-      if (Array.isArray(results) && results.length > 0) {
-        return results[0].id;
-      } else {
-        return null;
-      }
-    } catch (err) {
-      console.error("Error executing query:", err);
+      const [rows] = await this._db.query<RowDataPacket[]>(query, values);
+      if (Array.isArray(rows) && rows.length > 0) return rows[0].id;
       return null;
+    } catch (err) {
+      console.error("Error fetchiung audit id:", err);
+      throw new Error("Failed to fetched audit id.");
     }
   }
 }
