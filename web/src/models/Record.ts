@@ -3,7 +3,7 @@ class Record {
   auditId?: number | undefined;
   amount?: number | undefined;
   reason?: string = "";
-  receipt?: Buffer;
+  receipt?: Buffer<ArrayBuffer>;;
   signature?: string = "";
   approved?: number | undefined;
   createdAt?: Date = new Date();
