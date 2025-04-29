@@ -18,23 +18,23 @@ export default class OwnerMapper {
 
   public static toOwnerFromCreateDto(data: OwnerDto): CreateOwnerReqDto {
     return {
-      name: data.name || "",
-      password: data.password || "",
+      name: data.name ?? "",
+      password: data.password ?? "",
     };
   }
 
   public static toOwnerFromUpdateDto(data: OwnerDto): UpdateOwnerReqDto {
     return {
-      name: data.name || "",
-      managementGuid: data.managementGuid || "",
+      name: data.name ?? "",
+      managementGuid: data.managementGuid ?? "",
     };
   }
 
   public static toConfirmOwnerDto(data: OwnerDto): ConfirmOwnerReqDto {
     return {
-      name: data.name || "",
-      managementGuid: data.name || "",
-      password: data.name || "",
+      name: data.name ?? "",
+      managementGuid: data.name ?? "",
+      password: data.name ?? "",
     };
   }
 }

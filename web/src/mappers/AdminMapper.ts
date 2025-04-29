@@ -12,9 +12,9 @@ export default class AdminMapper {
 
   static toConfirmAdminDto(data: AdminDto): ConfirmAdminReqDto {
     return {
-      name: data.name || "",
-      ownerManagementGuid: data.ownerManagementGuid || "",
-      password: data.password || "", 
+      name: data.name ?? "",
+      ownerManagementGuid: data.ownerManagementGuid ?? "",
+      password: data.password ?? "", 
     }
   }
 }
