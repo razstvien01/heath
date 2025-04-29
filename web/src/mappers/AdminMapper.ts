@@ -14,7 +14,7 @@ export default class AdminMapper {
     return {
       name: data.name ?? "",
       ownerManagementGuid: data.ownerManagementGuid ?? "",
-      password: data.password ?? "", 
-    }
+      password: data.password ?? "",
+    };
   }
 }

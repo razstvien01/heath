@@ -179,9 +179,7 @@ export class AuditRepository implements IAuditRepository {
       if (queryResult.affectedRows === 0) {
         throw new Error(`Audit with ID ${dto.id} not found.`);
       }
-
-      console.log("RETURNINNNNNNGGG THE RESULT");
-
+      
       return result;
     } catch (error) {
       console.error("Error updating an audit:", error);

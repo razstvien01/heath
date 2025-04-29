@@ -10,9 +10,9 @@ export class RecordRepository {
   ) {
     const DB = CreateConnection();
     const result = (await DB).execute(
-      "INSERT INTO Records (auditId, amount, reason, receipt, signature, approved, dateCreated) VALUES " +
-        "(?, ?, ?, ?, ?, ?, ?)",
-      [auditId, balance, reason, receipt, signature, 0, new Date()]
+      "INSERT INTO Records (auditId, amount, reason, receipt, signature, approved) VALUES " +
+        "(?, ?, ?, ?, ?, ?)",
+      [auditId, balance, reason, receipt, signature, 0]
     );
     return result;
   }
