@@ -1,5 +1,6 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { AuditSchema } from "@/dto/audit/AuditDto";
+import { RecordFilterSchema } from "@/dto/record/RecordFilterDto";
 import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 import { RecordRepository } from "@/repositories/mariaDb/RecordRepository";
 
@@ -38,8 +39,42 @@ export async function POST(request: Request): Promise<Response> {
       });
     }
 
+    const { searchParams } = new URL(request.url);
+
+    const body = {
+      reason: searchParams.get("reason") ?? undefined,
+      createdFrom: searchParams.get("createdFrom") ?? undefined,
+      createdTo: searchParams.get("createdTo") ?? undefined,
+      updatedFrom: searchParams.get("updatedFrom") ?? undefined,
+      updatedTo: searchParams.get("updatedTo") ?? undefined,
+      orderBy: searchParams.get("orderBy") ?? undefined,
+      orderDirection: searchParams.get("orderDirection") ?? undefined,
+      page: searchParams.get("page")
+        ? parseInt(searchParams.get("page")!)
+        : undefined,
+      pageSize: searchParams.get("pageSize")
+        ? parseInt(searchParams.get("pageSize")!)
+        : undefined,
+    };
+
+    const parsedFilter = RecordFilterSchema.safeParse(body);
+
+    if (!parsedFilter.success) {
+      return new Response(
+        JSON.stringify({
+          message: "Invalid filter",
+          issues: parsedFilter.error.format(),
+        }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const filters = parsedFilter.data;
     const recordRepository = new RecordRepository(db);
-    const records = await recordRepository.getRecordList(auditId);
+    const records = await recordRepository.getRecordList(auditId, filters);
 
     if (!records || records.length === 0)
       return new Response(JSON.stringify({ message: "No Records found" }), {
