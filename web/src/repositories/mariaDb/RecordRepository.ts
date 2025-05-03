@@ -4,7 +4,14 @@ import {
   UpdateRecordReqDto,
 } from "@/dto/record";
 import { IRecordRepository } from "@/interfaces";
-import { Connection, QueryResult, FieldPacket } from "mysql2/promise";
+import RecordMapper from "@/mappers/RecordMapper";
+import Record from "@/models/Record";
+import {
+  Connection,
+  QueryResult,
+  FieldPacket,
+  RowDataPacket,
+} from "mysql2/promise";
 
 export class RecordRepository implements IRecordRepository {
   private readonly _db: Connection;
@@ -31,8 +38,18 @@ export class RecordRepository implements IRecordRepository {
 
     return result;
   }
-  getRecordList(auditId: number): Promise<RecordDto[]> {
-    throw new Error("Method not implemented.");
+  async getRecordList(auditId: number): Promise<RecordDto[]> {
+    const query = "SELECT * FROM Records WHERE auditId = ?";
+
+    const [rows] = await this._db.query<Record[] & RowDataPacket[]>(query, [
+      auditId,
+    ]);
+
+    const records: RecordDto[] = rows.map((row) => {
+      return RecordMapper.toOwnerDto(row);
+    });
+
+    return records;
   }
   updateRecord(dto: UpdateRecordReqDto): Promise<[QueryResult, FieldPacket[]]> {
     throw new Error("Method not implemented.");
@@ -40,22 +57,6 @@ export class RecordRepository implements IRecordRepository {
   deleteRecordById(id: number): Promise<[QueryResult, FieldPacket[]]> {
     throw new Error("Method not implemented.");
   }
-  // async AddRecord(
-  //   auditId: number,
-  //   balance: number,
-  //   reason: string,
-  //   receipt: ArrayBuffer,
-  //   signature: string
-  // ) {
-  //   const DB = CreateConnection();
-  //   const result = (await DB).execute(
-  //     "INSERT INTO Records (auditId, amount, reason, receipt, signature, approved) VALUES " +
-  //       "(?, ?, ?, ?, ?, ?)",
-  //     [auditId, balance, reason, receipt, signature, 0]
-  //   );
-  //   return result;
-  // }
-
   // async GetRecordList(auditId: number) {
   //   const DB = CreateConnection();
   //   const [results]: unknown[] = await (await DB).query(

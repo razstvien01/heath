@@ -1,7 +1,7 @@
 import { RecordDto } from "@/dto/record";
 import Record from "@/models/Record";
 
-export default class OwnerMapper {
+export default class RecordMapper {
   public static toOwnerDto(data: Record): RecordDto {
     return {
       amount: data.amount ?? 0,
