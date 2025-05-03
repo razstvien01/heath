@@ -12,6 +12,7 @@ import {
   QueryResult,
   FieldPacket,
   RowDataPacket,
+  ResultSetHeader,
 } from "mysql2/promise";
 
 export class RecordRepository implements IRecordRepository {
@@ -97,34 +98,27 @@ export class RecordRepository implements IRecordRepository {
 
     return records;
   }
-  updateRecord(dto: UpdateRecordReqDto): Promise<[QueryResult, FieldPacket[]]> {
-    throw new Error("Method not implemented.");
+
+  async updateRecord(
+    dto: UpdateRecordReqDto
+  ): Promise<[QueryResult, FieldPacket[]]> {
+    const query =
+      "UPDATE Records SET " +
+      "receipt = ?, " +
+      "signature = ? " +
+      "WHERE id = ?";
+    const values = [dto.receipt, dto.signature, dto.id];
+    const result = await this._db.execute(query, values);
+    const queryResult = result[0] as ResultSetHeader;
+
+    if (queryResult.affectedRows === 0)
+      throw new Error(`Record with id ${dto.id} not found`);
+
+    return result;
   }
   deleteRecordById(id: number): Promise<[QueryResult, FieldPacket[]]> {
     throw new Error("Method not implemented.");
   }
-  // async GetRecordList(auditId: number) {
-  //   const DB = CreateConnection();
-  //   const [results]: unknown[] = await (await DB).query(
-  //     "SELECT *, UNIX_TIMESTAMP(dateCreated) as dateCreatedEpoch FROM Records WHERE auditId = ?",
-  //     [auditId]
-  //   );
-
-  //   return results;
-  // }
-
-  // async UpdateRecord(id: number, receipt: ArrayBuffer, signature: string) {
-  //   const DB = CreateConnection();
-  //   const result = (await DB).execute(
-  //     "UPDATE Records SET " +
-  //       "receipt = ?, " +
-  //       "signature = ? " +
-  //       "WHERE id = ?",
-  //     [receipt, signature, id]
-  //   );
-
-  //   return result;
-  // }
 
   // async DeleteRecordById(id: number) {
   //   const DB = CreateConnection();
