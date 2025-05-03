@@ -21,6 +21,12 @@ export class RecordRepository implements IRecordRepository {
   constructor(db: Connection) {
     this._db = db;
   }
+  async isRecordExists(id: number): Promise<boolean> {
+    const query = "SELECT 1 FROM Records WHERE id = ?";
+    const values = [id];
+    const [rows] = await this._db.query<RowDataPacket[]>(query, values);
+    return rows.length > 0;
+  }
 
   async addRecord(
     dto: CreateRecordReqDto
@@ -116,13 +122,13 @@ export class RecordRepository implements IRecordRepository {
 
     return result;
   }
-  deleteRecordById(id: number): Promise<[QueryResult, FieldPacket[]]> {
-    throw new Error("Method not implemented.");
-  }
+  async deleteRecordById(id: number): Promise<[QueryResult, FieldPacket[]]> {
+    if (!(await this.isRecordExists(id)))
+      throw new Error(`Record with id ${id} not found. Deletion aborted.`);
 
-  // async DeleteRecordById(id: number) {
-  //   const DB = CreateConnection();
-  //   const result = (await DB).execute("DELETE FROM Records WHERE id = ?", [id]);
-  //   return result;
-  // }
+    const query = "DELETE FROM Records WHERE id = ?";
+    const values = [id];
+    const result = await this._db.execute(query, values);
+    return result;
+  }
 }
