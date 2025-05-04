@@ -11,7 +11,7 @@ export default async function OwnerManagementPage({
   const isAdminGuidRes = await isAdminGuidReq(guid);
   const admin = await getAdminReq(guid);
 
-  if (!isAdminGuidRes && !admin) {
+  if (!isAdminGuidRes || !admin) {
     notFound();
   }
 

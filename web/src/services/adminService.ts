@@ -58,8 +58,7 @@ export async function getAdminReq(guid: string) {
     });
 
     return res.data;
-  } catch (error) {
-    console.error("Error fetching admin info::", error);
+  } catch {
     return false;
   }
 }
