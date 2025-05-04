@@ -1,39 +1,55 @@
-import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
+import { CreateConnection } from "@/config/mariadbConfig";
+import { UpdateRecordSchema } from "@/dto/record/UpdateRecordReqDto";
 import { RecordRepository } from "@/repositories/mariaDb/RecordRepository";
-import { sign } from "crypto";
 
-export async function POST(request: Request)
-{
+export async function PUT(request: Request): Promise<Response> {
+  try {
     const formData = await request.formData();
-
     const recordId = formData.get("id");
     const receiptFile = formData.get("receipt");
     const signature = formData.get("signature");
 
-    const receipt = await new Promise((resolve, reject) => {
-        (receiptFile as File).arrayBuffer().then((arrayBuffer) => {
-            resolve(arrayBuffer)
-        })
-    })
-
-    if(recordId == null)
-    {
-        return new Response("Bad", {
-            status: 400
-        })
+    if (!recordId || !signature) {
+      return new Response("Missing required fields", {
+        status: 400,
+      });
     }
 
-    const recordRepository = new RecordRepository();
+    const receipt =
+      receiptFile instanceof File
+        ? Buffer.from(await receiptFile.arrayBuffer())
+        : undefined;
 
-    const result = await recordRepository.UpdateRecord(Number(recordId), receipt as ArrayBuffer, signature as string)
+    const parsedRecord = UpdateRecordSchema.safeParse({
+      id: Number(recordId),
+      receipt,
+      signature,
+    });
 
-    if(result) {
-        return new Response("Record updated successfully", {
-            status: 200
-        });
-    } else {
-        return new Response("Record update failed", {
-            status: 500
-        })
-    }
+    if (!parsedRecord.success)
+      return new Response(
+        `Bad Request: ${parsedRecord.error.issues[0].message}`,
+        {
+          status: 400,
+        }
+      );
+
+    const db = await CreateConnection();
+    const recordRepository = new RecordRepository(db);
+    const result = await recordRepository.updateRecord(parsedRecord.data);
+
+    if (!result) throw new Error("Failed to update record");
+
+    return new Response("Record updated successfully", {
+      status: 200,
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+
+    return new Response(message, {
+      status: message.includes("not found") ? 400 : 500,
+    });
+  }
 }
