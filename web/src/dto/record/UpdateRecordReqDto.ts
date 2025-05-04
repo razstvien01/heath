@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const UpdateRecordSchema = z.object({
-  id: z.coerce.number(),
-  receipt: z.instanceof(Buffer),
-  signature: z.string().max(100),
+  id: z.number(),
+  receipt: z.instanceof(Buffer).nullable(),
+  signature: z.string().max(15000).nullable(),
 });
 
 export type UpdateRecordReqDto = z.infer<typeof UpdateRecordSchema>;

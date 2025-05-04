@@ -1,5 +1,6 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { UpdateRecordSchema } from "@/dto/record/UpdateRecordReqDto";
+import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 import { RecordRepository } from "@/repositories/mariaDb/RecordRepository";
 
 export async function PUT(request: Request): Promise<Response> {
@@ -9,22 +10,37 @@ export async function PUT(request: Request): Promise<Response> {
     const receiptFile = formData.get("receipt");
     const signature = formData.get("signature");
 
-    if (!recordId || !signature) {
-      return new Response("Missing required fields", {
-        status: 400,
-      });
-    }
-
     const receipt =
       receiptFile instanceof File
         ? Buffer.from(await receiptFile.arrayBuffer())
-        : undefined;
+        : null;
 
+    if(recordId == null)
+    {
+        return new Response("Bad", {
+            status: 400
+        })
+    }
+
+    const db = await CreateConnection();
     const parsedRecord = UpdateRecordSchema.safeParse({
       id: Number(recordId),
       receipt,
-      signature,
+      signature
     });
+
+    if (!parsedRecord.success) {
+      return new Response(
+        `Bad Request: ${parsedRecord.error.issues[0].message}`,
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const recordRepository = new RecordRepository(db);
+
+    const result = await recordRepository.updateRecord(parsedRecord.data)
 
     if (!parsedRecord.success)
       return new Response(

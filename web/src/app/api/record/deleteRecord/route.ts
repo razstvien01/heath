@@ -1,5 +1,4 @@
 import { CreateConnection } from "@/config/mariadbConfig";
-import { RecordSchema } from "@/dto/record/RecordDto";
 import { RecordRepository } from "@/repositories/mariaDb/RecordRepository";
 
 export async function DELETE(request: Request): Promise<Response> {
@@ -13,17 +12,10 @@ export async function DELETE(request: Request): Promise<Response> {
       });
     }
 
-    const validation = RecordSchema.safeParse({
-      id,
-    });
+    const db = await CreateConnection();
+    const repository = new RecordRepository(db);
 
-    if (!validation.success)
-      return new Response(
-        `Bad Request: ${validation.error.issues[0].message}`,
-        {
-          status: 400,
-        }
-      );
+    const result = await repository.deleteRecordById(Number(id));
 
     const db = await CreateConnection();
     const recordRepository = new RecordRepository(db);

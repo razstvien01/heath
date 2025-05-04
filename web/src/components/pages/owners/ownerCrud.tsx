@@ -132,6 +132,8 @@ export default function OwnerCrud({
 
       if (res) {
         setOwnerList(res.data);
+      } else {
+        setOwnerList([]);
       }
     } catch (error) {
       console.error("Failed to fetch owners:", error);
