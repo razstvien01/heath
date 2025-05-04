@@ -42,8 +42,7 @@ export function AddOwnerDialog({
     e.preventDefault();
     setError(null);
     setSuccess(false);
-
-    // Validate inputs
+    
     if (!username) {
       setError("Username is required");
       return;
@@ -66,7 +65,6 @@ export function AddOwnerDialog({
 
       if (result) {
         setSuccess(true);
-        // Reset form after successful submission
         setTimeout(() => {
           setUsername("");
           setPassword("");
@@ -85,7 +83,6 @@ export function AddOwnerDialog({
   };
 
   const handleClose = () => {
-    // Reset form state when dialog is closed
     setUsername("");
     setPassword("");
     setConfirmPassword("");
