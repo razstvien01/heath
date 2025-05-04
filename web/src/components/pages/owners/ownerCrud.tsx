@@ -30,6 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AdminDto } from "@/dto/admin";
+import { AddOwnerDialog } from "./addOwnerDialog";
 
 type SortField = "name" | "dateCreated";
 type SortDirection = "asc" | "desc";
@@ -52,15 +53,13 @@ export default function OwnerCrud({
     ownerManagementGuid: undefined,
   });
 
-  const [addOwnerNameInput, setAddOwnerNameInput] = useState("");
-  const [addOwnerPasswordInput, setAddOwnerPasswordInput] = useState("");
-
   const [ownerList, setOwnerList] = useState<Owner[]>([]);
   const [filteredOwnerList, setFilteredOwnerList] = useState<Owner[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddOwnerDialogOpen, setIsAddOwnerDialogOpen] = useState(false);
 
   useEffect(() => {
     if (loggedInState) {
@@ -75,16 +74,16 @@ export default function OwnerCrud({
       const query = searchQuery.toLowerCase();
       result = result.filter(
         (owner) =>
-          owner.name.toLowerCase().includes(query) ||
-          owner.managementGuid.toLowerCase().includes(query)
+          owner.name!.toLowerCase().includes(query) ||
+          owner.managementGuid!.toLowerCase().includes(query)
       );
     }
 
     result.sort((a, b) => {
       if (sortField === "name") {
         return sortDirection === "asc"
-          ? a.name.localeCompare(b.name)
-          : b.name.localeCompare(a.name);
+          ? a.name!.localeCompare(b.name!)
+          : b.name!.localeCompare(a.name!);
       } else {
         const dateA = new Date(a.createdAt || 0).getTime();
         const dateB = new Date(b.createdAt || 0).getTime();
@@ -140,29 +139,6 @@ export default function OwnerCrud({
     }
   };
 
-  const addOwner = async () => {
-    if (!addOwnerNameInput || !addOwnerPasswordInput) return;
-
-    setIsLoading(true);
-
-    const formData = new FormData();
-    formData.append("username", addOwnerNameInput);
-    formData.append("password", addOwnerPasswordInput);
-
-    try {
-      const res = await addOwnerReq(formData);
-      if (res) {
-        setAddOwnerNameInput("");
-        setAddOwnerPasswordInput("");
-        fetchOwners();
-      }
-    } catch (error) {
-      console.error("Error adding owner:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       confirmAdminLogin();
@@ -187,6 +163,34 @@ export default function OwnerCrud({
     ) : (
       <ArrowUpAZ className="h-4 w-4" />
     );
+  };
+
+  const handleAddOwner = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
+    if (!username || !password) return false;
+
+    setIsLoading(true);
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+
+    try {
+      const res = await addOwnerReq(formData);
+      if (res) {
+        fetchOwners();
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error adding owner:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+    return false;
   };
 
   return (
@@ -290,48 +294,26 @@ export default function OwnerCrud({
             </div>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Add New Owner</CardTitle>
-                <CardDescription>
-                  Create a new owner account with username and password
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Input
-                    value={addOwnerNameInput}
-                    onChange={(e) => setAddOwnerNameInput(e.target.value)}
-                    placeholder="Username"
-                    className="flex-1"
-                  />
-                  <Input
-                    value={addOwnerPasswordInput}
-                    onChange={(e) => setAddOwnerPasswordInput(e.target.value)}
-                    placeholder="Password"
-                    type="password"
-                    className="flex-1"
-                  />
+              <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full">
+                <div>
+                  <CardTitle>Owner List</CardTitle>
+                  <CardDescription>
+                    Manage existing owner accounts
+                  </CardDescription>
+                </div>
+
+                <div className="sm:ml-auto mt-4 sm:mt-0">
                   <Button
-                    onClick={addOwner}
+                    onClick={() => setIsAddOwnerDialogOpen(true)}
                     className="bg-emerald-500 hover:bg-emerald-600"
-                    disabled={
-                      isLoading || !addOwnerNameInput || !addOwnerPasswordInput
-                    }
+                    disabled={isLoading}
                   >
                     <UserPlus className="h-4 w-4 mr-2" />
                     Add Owner
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Owner List</CardTitle>
-                <CardDescription>
-                  Manage existing owner accounts
-                </CardDescription>
               </CardHeader>
+
               <CardContent>
                 <div className="mb-4 space-y-4">
                   {/* Search bar */}
@@ -438,6 +420,12 @@ export default function OwnerCrud({
           </div>
         )}
       </div>
+      <AddOwnerDialog
+        open={isAddOwnerDialogOpen}
+        onOpenChange={setIsAddOwnerDialogOpen}
+        onSubmit={handleAddOwner}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

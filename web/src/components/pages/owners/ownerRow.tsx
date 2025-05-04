@@ -23,7 +23,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setName(owner.name);
+    setName(owner.name!);
   }, [owner.name]);
 
   const onSubmit = async () => {
@@ -34,7 +34,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
     const formData = new FormData();
     formData.append("username", name);
     formData.append("password", password);
-    formData.append("guid", owner.managementGuid);
+    formData.append("guid", owner.managementGuid!);
 
     try {
       const res = await updateOwnerReq(formData);
@@ -57,7 +57,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("guid", owner.managementGuid);
+    formData.append("guid", owner.managementGuid!);
 
     try {
       const res = await deleteOwnerReq(formData);
