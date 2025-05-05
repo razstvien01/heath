@@ -9,6 +9,12 @@ export async function PUT(request: Request): Promise<Response> {
     const receiptFile = formData.get("receipt");
     const signature = formData.get("signature");
 
+    if (!recordId) {
+      return new Response("Missing required fields", {
+        status: 400,
+      });
+    }
+
     const receipt =
       receiptFile instanceof File
         ? Buffer.from(await receiptFile.arrayBuffer())
