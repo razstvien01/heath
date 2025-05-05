@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { OwnerRow } from "./ownerRow";
@@ -31,6 +31,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AdminDto } from "@/dto/admin";
 import { AddOwnerDialog } from "./addOwnerDialog";
+import { OwnerFilterDto } from "@/dto/owner";
 
 type SortField = "name" | "dateCreated";
 type SortDirection = "asc" | "desc";
@@ -52,7 +53,6 @@ export default function OwnerCrud({
     password: undefined,
     ownerManagementGuid: undefined,
   });
-
   const [ownerList, setOwnerList] = useState<Owner[]>([]);
   const [filteredOwnerList, setFilteredOwnerList] = useState<Owner[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,40 +60,11 @@ export default function OwnerCrud({
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isLoading, setIsLoading] = useState(false);
   const [isAddOwnerDialogOpen, setIsAddOwnerDialogOpen] = useState(false);
-
-  useEffect(() => {
-    if (loggedInState) {
-      fetchOwners();
-    }
-  }, [loggedInState]);
-
-  useEffect(() => {
-    let result = [...ownerList];
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (owner) =>
-          owner.name!.toLowerCase().includes(query) ||
-          owner.managementGuid!.toLowerCase().includes(query)
-      );
-    }
-
-    result.sort((a, b) => {
-      if (sortField === "name") {
-        return sortDirection === "asc"
-          ? a.name!.localeCompare(b.name!)
-          : b.name!.localeCompare(a.name!);
-      } else {
-        const dateA = new Date(a.createdAt || 0).getTime();
-        const dateB = new Date(b.createdAt || 0).getTime();
-        return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
-      }
-    });
-
-    setFilteredOwnerList(result);
-  }, [ownerList, searchQuery, sortField, sortDirection]);
-
+  //* Filters
+  const [filterOwnerList] = useState<OwnerFilterDto>({
+    page: 1,
+    pageSize: 20,
+  });
   const confirmAdminLogin = async () => {
     if (!adminUsername || !adminPassword) return;
 
@@ -123,11 +94,11 @@ export default function OwnerCrud({
     }
   };
 
-  const fetchOwners = async () => {
+  const fetchOwners = useCallback(async () => {
     setIsLoading(true);
 
     try {
-      const res = await fetchOwnersReq();
+      const res = await fetchOwnersReq(filterOwnerList);
 
       if (res) {
         setOwnerList(res.data);
@@ -137,7 +108,7 @@ export default function OwnerCrud({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filterOwnerList]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -192,6 +163,39 @@ export default function OwnerCrud({
     }
     return false;
   };
+
+  useEffect(() => {
+    if (loggedInState) {
+      fetchOwners();
+    }
+  }, [loggedInState, fetchOwners]);
+
+  useEffect(() => {
+    let result = [...ownerList];
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (owner) =>
+          owner.name!.toLowerCase().includes(query) ||
+          owner.managementGuid!.toLowerCase().includes(query)
+      );
+    }
+
+    result.sort((a, b) => {
+      if (sortField === "name") {
+        return sortDirection === "asc"
+          ? a.name!.localeCompare(b.name!)
+          : b.name!.localeCompare(a.name!);
+      } else {
+        const dateA = new Date(a.createdAt || 0).getTime();
+        const dateB = new Date(b.createdAt || 0).getTime();
+        return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
+      }
+    });
+
+    setFilteredOwnerList(result);
+  }, [ownerList, searchQuery, sortField, sortDirection]);
 
   return (
     <div className="min-h-screen flex flex-col">
