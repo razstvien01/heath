@@ -1,6 +1,5 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { UpdateRecordSchema } from "@/dto/record/UpdateRecordReqDto";
-import { AuditRepository } from "@/repositories/mariaDb/AuditRepository";
 import { RecordRepository } from "@/repositories/mariaDb/RecordRepository";
 
 export async function PUT(request: Request): Promise<Response> {
