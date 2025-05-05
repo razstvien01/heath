@@ -1,11 +1,19 @@
 import { OwnerRoutes } from "@/constants/ownerRoutesConstants";
+import { OwnerFilterDto } from "@/dto/owner";
 import axios from "axios";
 
-export async function fetchOwnersReq() {
+export async function fetchOwnersReq(filter: OwnerFilterDto) {
   const getOwnersUrl = OwnerRoutes.GET_OWNERS_URL;
+  const queryParams = new URLSearchParams();
+
+  (Object.keys(filter) as (keyof OwnerFilterDto)[]).forEach((key) => {
+    const value = filter[key];
+    if (value !== undefined && value !== null && value !== "")
+      queryParams.append(key, String(value));
+  });
 
   try {
-    const res = await axios.get(getOwnersUrl);
+    const res = await axios.get(`${getOwnersUrl}?${queryParams.toString()}`);
 
     return res;
   } catch (error) {
@@ -39,7 +47,7 @@ export async function updateOwnerReq(formData: FormData) {
   }
 }
 
-export async function deleteOwnerReq(formData: FormData){
+export async function deleteOwnerReq(formData: FormData) {
   const deleteOwnerUrl = OwnerRoutes.DELETE_OWNER_URL;
   try {
     const res = await axios.post(deleteOwnerUrl, formData);
