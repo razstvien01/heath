@@ -25,7 +25,7 @@ export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onS
     formData.append("id", id.toString());
 
     const res = await fetch(fetchUrl, {
-      method: "POST",
+      method: "PUT",
       body: formData
     })
 
@@ -42,7 +42,7 @@ export function AuditRow({ audit, onSubmitDone, onDelete }: { audit : Audit, onS
     formData.append("id", audit.id?.toString() || "");
 
     const res = await fetch(apiUrl, {
-      method: "POST",
+      method: "DELETE",
       body: formData
     })
 

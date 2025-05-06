@@ -32,7 +32,7 @@ export function RecordRow({
     }
 
     const res = await fetch(fetchUrl, {
-      method: "POST",
+      method: "PUT",
       body: formData,
     });
 
@@ -48,7 +48,7 @@ export function RecordRow({
     formData.append("id", audit.id.toString());
 
     const res = await fetch(apiUrl, {
-      method: "POST",
+      method: "DELETE",
       body: formData,
     });
 

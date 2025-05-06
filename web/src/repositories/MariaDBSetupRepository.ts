@@ -91,7 +91,7 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       name VARCHAR(255), 
       publicGuid VARCHAR(255), 
       ownerGuid VARCHAR(255),
-      FOREIGN KEY (ownerId) REFERENCES Owners(id),
+      FOREIGN KEY (ownerId) REFERENCES Owners(id) ON DELETE CASCADE,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )`;
@@ -112,7 +112,7 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       receipt MEDIUMBLOB, 
       signature TEXT, 
       approved TINYINT(1),
-      FOREIGN KEY (auditId) REFERENCES Audits(id),
+      FOREIGN KEY (auditId) REFERENCES Audits(id) ON DELETE CASCADE,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     )`;
