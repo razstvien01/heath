@@ -42,8 +42,6 @@ You can access them at:
 http://<your-local-ip>:3000/api/<endpoint>
 ```
 
-Use this base URL in your **Flutter app's** `ApiService`.
-
 ---
 
 ## 🔒 Environment Variables
