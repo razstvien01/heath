@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const receiptFile = formData.get("receipt");
     const signature = formData.get("signature");
 
-    if (!guid || !balance || !reason || !signature) {
+    if (!guid || !balance || !reason) {
       return new Response("Missing required fields", {
         status: 400,
       });
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const receipt =
       receiptFile instanceof File
         ? Buffer.from(await receiptFile.arrayBuffer())
-        : undefined;
+        : null;
 
     const db = await CreateConnection();
     const auditRepository = new AuditRepository(db);

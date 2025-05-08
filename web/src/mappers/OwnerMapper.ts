@@ -26,6 +26,7 @@ export default class OwnerMapper {
   public static toOwnerFromUpdateDto(data: OwnerDto): UpdateOwnerReqDto {
     return {
       name: data.name ?? "",
+      password: data.password ?? "",
       managementGuid: data.managementGuid ?? "",
     };
   }
@@ -33,8 +34,8 @@ export default class OwnerMapper {
   public static toConfirmOwnerDto(data: OwnerDto): ConfirmOwnerReqDto {
     return {
       name: data.name ?? "",
-      managementGuid: data.name ?? "",
-      password: data.name ?? "",
+      managementGuid: data.managementGuid ?? "",
+      password: data.password ?? "",
     };
   }
 }
