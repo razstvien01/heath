@@ -29,9 +29,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { AdminDto } from "@/dto/admin";
+import type { AdminDto } from "@/dto/admin";
 import { AddOwnerDialog } from "./addOwnerDialog";
-import { OwnerFilterDto } from "@/dto/owner";
+import type { OwnerFilterDto } from "@/dto/owner";
 
 type SortField = "name" | "dateCreated";
 type SortDirection = "asc" | "desc";
@@ -53,48 +53,20 @@ export default function OwnerCrud({
     password: undefined,
     ownerManagementGuid: undefined,
   });
+
   const [ownerList, setOwnerList] = useState<Owner[]>([]);
-  const [filteredOwnerList, setFilteredOwnerList] = useState<Owner[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [filterOwnerList, setFilterOwnerList] = useState<OwnerFilterDto>({
+    page: 1,
+    pageSize: 10,
+    orderBy: "name",
+    orderDirection: "asc",
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const [isLoading, setIsLoading] = useState(false);
   const [isAddOwnerDialogOpen, setIsAddOwnerDialogOpen] = useState(false);
-  //* Filters
-  const [filterOwnerList] = useState<OwnerFilterDto>({
-    page: 1,
-    pageSize: 20,
-    orderBy: "name",
-    orderDirection: "asc",
-  });
-  const confirmAdminLogin = async () => {
-    if (!adminUsername || !adminPassword) return;
-
-    setIsLoading(true);
-    setInvalidLoginState(false);
-
-    try {
-      const res = await confirmAdminLoginReq(
-        guid,
-        adminUsername,
-        adminPassword
-      );
-
-      if (res) {
-        setCurrentAdmin(admin);
-        setAdminUsername("");
-        setAdminPassword("");
-        setLoggedInState(true);
-      } else {
-        setInvalidLoginState(true);
-      }
-    } catch (error) {
-      setInvalidLoginState(true);
-      console.error("Error confirming admin login:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const fetchOwners = useCallback(async () => {
     setIsLoading(true);
@@ -104,8 +76,10 @@ export default function OwnerCrud({
 
       if (res) {
         setOwnerList(res.data);
+        setTotalCount(res.data.length);
       } else {
         setOwnerList([]);
+        setTotalCount(0);
       }
     } catch (error) {
       console.error("Failed to fetch owners:", error);
@@ -113,60 +87,6 @@ export default function OwnerCrud({
       setIsLoading(false);
     }
   }, [filterOwnerList]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      confirmAdminLogin();
-    }
-  };
-
-  const toggleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  const getSortIcon = (field: SortField) => {
-    if (sortField !== field) {
-      return <ArrowDownUp className="h-4 w-4 opacity-50" />;
-    }
-    return sortDirection === "asc" ? (
-      <ArrowDownAZ className="h-4 w-4" />
-    ) : (
-      <ArrowUpAZ className="h-4 w-4" />
-    );
-  };
-
-  const handleAddOwner = async (
-    username: string,
-    password: string
-  ): Promise<boolean> => {
-    if (!username || !password) return false;
-
-    setIsLoading(true);
-
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-
-    try {
-      const res = await addOwnerReq(formData);
-      if (res) {
-        fetchOwners();
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("Error adding owner:", error);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-    return false;
-  };
 
   useEffect(() => {
     if (loggedInState) {
@@ -197,9 +117,105 @@ export default function OwnerCrud({
         return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
       }
     });
-
-    setFilteredOwnerList(result);
   }, [ownerList, searchQuery, sortField, sortDirection]);
+
+  const confirmAdminLogin = async () => {
+    if (!adminUsername || !adminPassword) return;
+
+    setIsLoading(true);
+    setInvalidLoginState(false);
+
+    try {
+      const res = await confirmAdminLoginReq(
+        guid,
+        adminUsername,
+        adminPassword
+      );
+
+      if (res) {
+        setCurrentAdmin(admin);
+        setAdminUsername("");
+        setAdminPassword("");
+        setLoggedInState(true);
+      } else {
+        setInvalidLoginState(true);
+      }
+    } catch (error) {
+      setInvalidLoginState(true);
+      console.error("Error confirming admin login:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddOwner = async (
+    username: string,
+    password: string
+  ): Promise<boolean> => {
+    if (!username || !password) return false;
+
+    setIsLoading(true);
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+
+    try {
+      const res = await addOwnerReq(formData);
+      if (res) {
+        fetchOwners();
+        return true; 
+      }
+      return false;
+    } catch (error) {
+      console.error("Error adding owner:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+    return false;
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      confirmAdminLogin();
+    }
+  };
+
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ArrowDownUp className="h-4 w-4 opacity-50" />;
+    }
+    return sortDirection === "asc" ? (
+      <ArrowDownAZ className="h-4 w-4" />
+    ) : (
+      <ArrowUpAZ className="h-4 w-4" />
+    );
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setFilterOwnerList((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setFilterOwnerList((prev) => ({
+      ...prev,
+      page: 1, // Reset to first page when changing page size
+      pageSize: newSize,
+    }));
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -363,7 +379,7 @@ export default function OwnerCrud({
 
                     {searchQuery && (
                       <Badge variant="outline" className="ml-auto">
-                        {filteredOwnerList.length} results
+                        {ownerList.length} results
                       </Badge>
                     )}
                   </div>
@@ -397,8 +413,8 @@ export default function OwnerCrud({
                           </tr>
                         </thead>
                         <tbody>
-                          {filteredOwnerList.length > 0 ? (
-                            filteredOwnerList.map((owner) => (
+                          {ownerList.length > 0 ? (
+                            ownerList.map((owner) => (
                               <OwnerRow
                                 key={owner.id}
                                 owner={owner}
@@ -423,11 +439,82 @@ export default function OwnerCrud({
                     </div>
                   </div>
                 )}
+                {!isLoading && ownerList.length > 0 && (
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">
+                        Rows per page:
+                      </span>
+                      <select
+                        className="h-8 rounded-md border border-input bg-background px-2 py-1 text-sm"
+                        value={filterOwnerList.pageSize}
+                        onChange={(e) =>
+                          handlePageSizeChange(Number(e.target.value))
+                        }
+                      >
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={50}>50</option>
+                      </select>
+                    </div>
+
+                    {/* <div className="flex items-center gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handlePageChange(filterOwnerList.page - 1)
+                        }
+                        disabled={filterOwnerList.page <= 1}
+                      >
+                        Previous
+                      </Button>
+
+                      <div className="flex items-center gap-1 mx-2">
+                        <span className="text-sm">Page</span>
+                        <Input
+                          type="number"
+                          min={1}
+                          value={filterOwnerList.page}
+                          onChange={(e) =>
+                            handlePageChange(
+                              Math.max(1, Number.parseInt(e.target.value) || 1)
+                            )
+                          }
+                          className="w-16 h-8"
+                        />
+                        <span className="text-sm text-muted-foreground">
+                          of{" "}
+                          {Math.max(
+                            1,
+                            Math.ceil(totalCount / filterOwnerList.pageSize)
+                          )}
+                        </span>
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handlePageChange(filterOwnerList.page + 1)
+                        }
+                        disabled={
+                          filterOwnerList.page >=
+                          Math.ceil(totalCount / filterOwnerList.pageSize)
+                        }
+                      >
+                        Next
+                      </Button>
+                    </div> */}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
         )}
       </div>
+
       <AddOwnerDialog
         open={isAddOwnerDialogOpen}
         onOpenChange={setIsAddOwnerDialogOpen}
