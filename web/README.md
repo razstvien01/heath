@@ -15,7 +15,6 @@ pnpm install
 # or
 bun install
 ```
-````
 
 ### ▶️ Run the Development Server
 
