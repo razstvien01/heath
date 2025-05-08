@@ -64,6 +64,8 @@ export default function OwnerCrud({
   const [filterOwnerList] = useState<OwnerFilterDto>({
     page: 1,
     pageSize: 20,
+    orderBy: "name",
+    orderDirection: "asc",
   });
   const confirmAdminLogin = async () => {
     if (!adminUsername || !adminPassword) return;
