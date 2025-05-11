@@ -4,8 +4,7 @@ interface AuditRecord {
     signature: string | null;
     id: number;
     amount: number;
-    dateCreatedEpoch: number;
-    dateCreated: Date;
+    createdAt: Date;
     hasReceipt: boolean;
     hasSignature: boolean;
     runningBalance: number;

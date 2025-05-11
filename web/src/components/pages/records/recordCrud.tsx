@@ -8,6 +8,7 @@ import { SignatureDialog } from "../../ui/signatureDialog";
 import { Edit, SquareArrowOutUpRight, SquarePen, Trash } from "lucide-react";
 import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog";
 import { RecordRow } from "./recordRow";
+import AuditRecord from "@/models/AuditRecord";
 
 export default function RecordCrud({ guid }: { guid: string }) {
     const [addBalanceInput, setBalanceInput] = useState("");
@@ -37,16 +38,17 @@ export default function RecordCrud({ guid }: { guid: string }) {
             .then((dataList) => {
                 let currentBalance: number | null = null
                 dataList.forEach((currentValue: {
-                    dateCreated: Date;
-                    dateCreatedEpoch: number; amount: number | null; runningBalance: number | null; 
-}) => {
+                    createdAt: Date;
+                    amount: number | null; 
+                    runningBalance: number | null; 
+                    }) => {
                     if(!currentBalance) {
                         currentBalance = currentValue.amount
                     } else {
                         currentBalance += currentValue.amount ?? 0
                     }
                     currentValue.runningBalance = currentBalance
-                    currentValue.dateCreated = new Date(currentValue.dateCreatedEpoch * 1000)
+                    currentValue.createdAt = new Date(currentValue.createdAt)
                 })
                 setCurrentBalance(currentBalance ?? 0);
                 setRecordList(dataList)
@@ -136,7 +138,7 @@ export default function RecordCrud({ guid }: { guid: string }) {
                     <tbody>
                         {recordList?.length > 0 ? (
                             recordList?.map((audit) => (
-                                <RecordRow audit={audit} onEditSuccess={fetchRecords} onDeleteSuccess={fetchRecords}></RecordRow>
+                                <RecordRow key={audit.id} audit={audit} onEditSuccess={fetchRecords} onDeleteSuccess={fetchRecords}></RecordRow>
                             ))
                         ) : (
                             <tr>
