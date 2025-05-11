@@ -18,7 +18,11 @@ import {
 } from "lucide-react";
 import type Owner from "@/models/Owner";
 import { confirmAdminLoginReq } from "@/services/adminService";
-import { addOwnerReq, fetchOwnersReq } from "@/services/ownerService";
+import {
+  addOwnerReq,
+  fetchOwnersReq,
+  fetchTotalOwnersReq,
+} from "@/services/ownerService";
 import {
   Card,
   CardContent,
@@ -74,10 +78,11 @@ export default function OwnerCrud({
 
     try {
       const res = await fetchOwnersReq(filterOwnerList);
+      const counts = await fetchTotalOwnersReq(filterOwnerList);
 
       if (res) {
         setOwnerList(res.data);
-        setTotalCount(res.data.length);
+        setTotalCount(counts);
       } else {
         setOwnerList([]);
         setTotalCount(0);
@@ -90,35 +95,11 @@ export default function OwnerCrud({
   }, [filterOwnerList]);
 
   useEffect(() => {
+    // console.log("Search query:", searchQuery);
     if (loggedInState) {
       fetchOwners();
     }
   }, [loggedInState, fetchOwners]);
-
-  useEffect(() => {
-    let result = [...ownerList];
-
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (owner) =>
-          owner.name!.toLowerCase().includes(query) ||
-          owner.managementGuid!.toLowerCase().includes(query)
-      );
-    }
-
-    result.sort((a, b) => {
-      if (sortField === "name") {
-        return sortDirection === "asc"
-          ? a.name!.localeCompare(b.name!)
-          : b.name!.localeCompare(a.name!);
-      } else {
-        const dateA = new Date(a.createdAt || 0).getTime();
-        const dateB = new Date(b.createdAt || 0).getTime();
-        return sortDirection === "asc" ? dateA - dateB : dateB - dateA;
-      }
-    });
-  }, [ownerList, searchQuery, sortField, sortDirection]);
 
   const confirmAdminLogin = async () => {
     if (!adminUsername || !adminPassword) return;
