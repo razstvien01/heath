@@ -3,7 +3,7 @@ import { OwnerCountFilterDto, OwnerFilterDto } from "@/dto/owner";
 import axios from "axios";
 
 export async function fetchOwnersReq(filter: OwnerFilterDto) {
-  const getOwnersUrl = OwnerRoutes.GET_OWNERS_URL;
+  const getOwnersUrl = OwnerRoutes.GET_OWNERS_ROUTE;
   const queryParams = new URLSearchParams();
 
   (Object.keys(filter) as (keyof OwnerFilterDto)[]).forEach((key) => {
@@ -48,7 +48,7 @@ export async function fetchTotalOwnersReq(
 }
 
 export async function addOwnerReq(formData: FormData) {
-  const addOwnerUrl = OwnerRoutes.ADD_OWNER_URL;
+  const addOwnerUrl = OwnerRoutes.ADD_OWNER_ROUTE;
 
   try {
     const res = await axios.post(addOwnerUrl, formData);
@@ -61,7 +61,7 @@ export async function addOwnerReq(formData: FormData) {
 }
 
 export async function updateOwnerReq(formData: FormData) {
-  const updateOwnerUrl = OwnerRoutes.UPDATE_OWNER_URL;
+  const updateOwnerUrl = OwnerRoutes.UPDATE_OWNER_ROUTE;
   try {
     const res = await axios.put(updateOwnerUrl, formData);
 
@@ -73,7 +73,7 @@ export async function updateOwnerReq(formData: FormData) {
 }
 
 export async function deleteOwnerReq(formData: FormData) {
-  const deleteOwnerUrl = OwnerRoutes.DELETE_OWNER_URL;
+  const deleteOwnerUrl = OwnerRoutes.DELETE_OWNER_ROUTE;
   try {
     const res = await axios.delete(deleteOwnerUrl, {
       data: formData,
