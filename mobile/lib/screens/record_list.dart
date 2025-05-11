@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:mobile/domain/models/record_model.dart';
-import 'package:mobile/presentation/pages/record_tile.dart';
+import 'package:mobile/models/record_model.dart';
+import 'package:mobile/screens/record_tile.dart';
 
 enum RecordActions { showReceipt, showSignature, edit, delete, sync }
 

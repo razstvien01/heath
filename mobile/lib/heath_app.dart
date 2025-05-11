@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/presentation/pages/record_list.dart';
+import 'package:mobile/screens/record_list.dart';
 
 class HeathApp extends StatelessWidget {
   const HeathApp({super.key});

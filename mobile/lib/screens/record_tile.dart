@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/domain/models/record_model.dart';
-import 'package:mobile/presentation/pages/record_list.dart';
-import 'package:mobile/presentation/widgets/check_label.dart';
+import 'package:mobile/models/record_model.dart';
+import 'package:mobile/screens/record_list.dart';
+import 'package:mobile/widgets/check_label.dart';
 
 class RecordTile extends StatelessWidget {
   const RecordTile({
