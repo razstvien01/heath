@@ -78,7 +78,7 @@ export function RecordRow({
         )}
       </td>
       <td>{audit.runningBalance}</td>
-      <td>{audit.dateCreated.toLocaleString()}</td>
+      <td>{audit.createdAt.toLocaleString()}</td>
       <td>
         <Button className="bg-sky-400">
           <SquareArrowOutUpRight />
