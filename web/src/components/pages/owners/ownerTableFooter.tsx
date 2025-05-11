@@ -19,6 +19,11 @@ export function OwnerTableFooter({
     1,
     Math.ceil(totalCount / filterOwnerList.pageSize)
   );
+  const startEntry = (filterOwnerList.page - 1) * filterOwnerList.pageSize + 1;
+  const endEntry = Math.min(
+    filterOwnerList.page * filterOwnerList.pageSize,
+    totalCount
+  );
 
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
@@ -37,6 +42,10 @@ export function OwnerTableFooter({
           <option value={20}>20</option>
           <option value={50}>50</option>
         </select>
+      </div>
+
+      <div className="text-sm text-muted-foreground">
+        {startEntry} - {endEntry} of {totalCount}
       </div>
 
       <div className="flex items-center gap-1">
@@ -60,7 +69,9 @@ export function OwnerTableFooter({
             className="w-16 h-8"
             disabled={isLoading}
           /> */}
-          <span className="text-sm text-muted-foreground">Page {filterOwnerList.page} of {totalPages}</span>
+          <span className="text-sm text-muted-foreground">
+            Page {filterOwnerList.page} of {totalPages}
+          </span>
         </div>
 
         <Button
