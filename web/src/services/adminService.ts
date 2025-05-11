@@ -39,8 +39,7 @@ export async function confirmAdminLoginReq(
     });
 
     return res.status === 200;
-  } catch (error) {
-    console.error("Error confirming admin login:", error);
+  } catch {
     return false;
   }
 }

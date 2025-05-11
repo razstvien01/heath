@@ -1,6 +1,7 @@
 import {
   ConfirmOwnerReqDto,
   CreateOwnerReqDto,
+  OwnerCountFilterDto,
   OwnerDto,
   OwnerFilterDto,
   UpdateOwnerReqDto,
@@ -21,6 +22,44 @@ export class OwnerRepository implements IOwnerRepository {
 
   constructor(db: Connection) {
     this._db = db;
+  }
+  async getOwnerTotalCount(filters: OwnerCountFilterDto): Promise<number> {
+    let query = "SELECT COUNT(*) AS total FROM Owners";
+    const conditions: string[] = [];
+    const values: (string | number)[] = [];
+
+    if (filters.name) {
+      conditions.push("name LIKE ?");
+      values.push(`%${filters.name}%`);
+    }
+
+    if (filters.createdFrom) {
+      conditions.push("createdAt >= ?");
+      values.push(filters.createdFrom);
+    }
+
+    if (filters.createdTo) {
+      conditions.push("createdAt <= ?");
+      values.push(filters.createdTo);
+    }
+
+    if (filters.updatedFrom) {
+      conditions.push("updatedAt >= ?");
+      values.push(filters.updatedFrom);
+    }
+
+    if (filters.updatedTo) {
+      conditions.push("updatedAt <= ?");
+      values.push(filters.updatedTo);
+    }
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    const [rows] = await this._db.query<RowDataPacket[]>(query, values);
+
+    return rows[0]?.total ?? 0;
   }
 
   async checkOwnerIfExist(name: string): Promise<boolean> {
@@ -165,21 +204,16 @@ export class OwnerRepository implements IOwnerRepository {
     query += " LIMIT ? OFFSET ?";
     values.push(filters.pageSize, offset);
 
-    try {
-      const [rows] = await this._db.query<Owner[] & RowDataPacket[]>(
-        query,
-        values
-      );
+    const [rows] = await this._db.query<Owner[] & RowDataPacket[]>(
+      query,
+      values
+    );
 
-      const owners: OwnerDto[] = rows.map((row: Owner) =>
-        OwnerMapper.toOwnerDto(row)
-      );
+    const owners: OwnerDto[] = rows.map((row: Owner) =>
+      OwnerMapper.toOwnerDto(row)
+    );
 
-      return owners;
-    } catch (error) {
-      console.error("Error fetching owners:", error);
-      throw new Error("Failed to fetch owners");
-    }
+    return owners;
   }
 
   async getOwnerIdFromManagementGuid(guid: string): Promise<number | null> {

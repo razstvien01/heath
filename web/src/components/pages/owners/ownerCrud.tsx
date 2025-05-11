@@ -32,6 +32,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { AdminDto } from "@/dto/admin";
 import { AddOwnerDialog } from "./addOwnerDialog";
 import type { OwnerFilterDto } from "@/dto/owner";
+import { OwnerTableFooter } from "./ownerTableFooter";
 
 type SortField = "name" | "dateCreated";
 type SortDirection = "asc" | "desc";
@@ -164,7 +165,7 @@ export default function OwnerCrud({
       const res = await addOwnerReq(formData);
       if (res) {
         fetchOwners();
-        return true; 
+        return true;
       }
       return false;
     } catch (error) {
@@ -202,18 +203,12 @@ export default function OwnerCrud({
     );
   };
 
-  const handlePageChange = (newPage: number) => {
+  const handleChangeTable = (changes: Partial<OwnerFilterDto>) => {
     setFilterOwnerList((prev) => ({
       ...prev,
-      page: newPage,
-    }));
-  };
-
-  const handlePageSizeChange = (newSize: number) => {
-    setFilterOwnerList((prev) => ({
-      ...prev,
-      page: 1, // Reset to first page when changing page size
-      pageSize: newSize,
+      ...changes,
+      //* Reset to page 1 when changing page size
+      ...(changes.pageSize && { page: 1 }),
     }));
   };
 
@@ -440,74 +435,12 @@ export default function OwnerCrud({
                   </div>
                 )}
                 {!isLoading && ownerList.length > 0 && (
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
-                        Rows per page:
-                      </span>
-                      <select
-                        className="h-8 rounded-md border border-input bg-background px-2 py-1 text-sm"
-                        value={filterOwnerList.pageSize}
-                        onChange={(e) =>
-                          handlePageSizeChange(Number(e.target.value))
-                        }
-                      >
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={20}>20</option>
-                        <option value={50}>50</option>
-                      </select>
-                    </div>
-
-                    {/* <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handlePageChange(filterOwnerList.page - 1)
-                        }
-                        disabled={filterOwnerList.page <= 1}
-                      >
-                        Previous
-                      </Button>
-
-                      <div className="flex items-center gap-1 mx-2">
-                        <span className="text-sm">Page</span>
-                        <Input
-                          type="number"
-                          min={1}
-                          value={filterOwnerList.page}
-                          onChange={(e) =>
-                            handlePageChange(
-                              Math.max(1, Number.parseInt(e.target.value) || 1)
-                            )
-                          }
-                          className="w-16 h-8"
-                        />
-                        <span className="text-sm text-muted-foreground">
-                          of{" "}
-                          {Math.max(
-                            1,
-                            Math.ceil(totalCount / filterOwnerList.pageSize)
-                          )}
-                        </span>
-                      </div>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          handlePageChange(filterOwnerList.page + 1)
-                        }
-                        disabled={
-                          filterOwnerList.page >=
-                          Math.ceil(totalCount / filterOwnerList.pageSize)
-                        }
-                      >
-                        Next
-                      </Button>
-                    </div> */}
-                  </div>
+                  <OwnerTableFooter
+                    filterOwnerList={filterOwnerList}
+                    totalCount={totalCount}
+                    handleChangeTable={handleChangeTable}
+                    isLoading={isLoading}
+                  />
                 )}
               </CardContent>
             </Card>
