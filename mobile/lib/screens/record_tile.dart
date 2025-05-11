@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/models/record_model.dart';
@@ -22,6 +25,85 @@ class RecordTile extends StatelessWidget {
   String formatBalance(double balance) {
     return '${balance.toStringAsFixed(2)} Php';
   }
+
+  Image getImageFromBuffer(Map<String, dynamic> bufferData) {
+    final List<dynamic> intList = bufferData['data'];
+    final Uint8List bytes = Uint8List.fromList(intList.cast<int>());
+    return Image.memory(bytes);
+  }
+
+  Image getImageFromString(String base64String) {
+    final Uint8List bytes = base64Decode(base64String);
+    return Image.memory(bytes);
+  }
+
+  List<PopupMenuItem<RecordActions>> getPopupMenuItems(BuildContext context) {
+    List<PopupMenuItem<RecordActions>> list = [];
+    if(record.hasReceipt()) {
+      list.add(PopupMenuItem(
+        value: RecordActions.showReceipt,
+        child: Text("Show Receipt"),
+        onTap: () => showDialog<void>(
+          context: context, 
+          builder: (BuildContext context) => Dialog(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                getImageFromBuffer(record.receipt),
+                const SizedBox(height: 15),
+                TextButton(
+                  onPressed: () => Navigator.pop(context), 
+                  child: const Text('Close')
+                )
+              ],
+            )
+          )
+        )
+      ));
+    }
+
+    if(record.signature.isNotEmpty) {
+      list.add(PopupMenuItem(
+        value: RecordActions.showReceipt,
+        child: Text("Show Signature"),
+        onTap: () => showDialog<void>(
+          context: context, 
+          builder: (BuildContext context) => Dialog(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                getImageFromString(record.signature),
+                const SizedBox(height: 15),
+                TextButton(
+                  onPressed: () => Navigator.pop(context), 
+                  child: const Text('Close')
+                )
+              ],
+            )
+          )
+        )
+      ));
+    }
+
+    list.addAll([
+      const PopupMenuItem(
+        value: RecordActions.edit,
+        child: Text("Edit")
+      ),
+      const PopupMenuItem(
+        value: RecordActions.delete,
+        child: Text("Delete")
+      ),
+      const PopupMenuItem(
+        value: RecordActions.sync,
+        child: Text("Sync")
+      )
+    ]);
+
+    return list;
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -34,11 +116,11 @@ class RecordTile extends StatelessWidget {
                 spacing: 3,
                 children: [
                   Icon(Icons.calendar_month, size: 20),
-                  Text(formatDate(record.dateEntered)),
+                  Text(formatDate(record.createdAt)),
                 ]
               )
             ),
-            Text(formatBalance(record.balance))
+            Text(formatBalance(record.amount))
           ]
         ),
         subtitle: Column(
@@ -52,35 +134,14 @@ class RecordTile extends StatelessWidget {
             Row(
               spacing: 10,
               children: <Widget>[
-                CheckLabel(text: 'Receipt', isChecked: record.receipt != null),
-                CheckLabel(text: 'Signature', isChecked: record.signature != null)
+                CheckLabel(text: 'Receipt', isChecked: record.hasReceipt()),
+                CheckLabel(text: 'Signature', isChecked: record.signature.isNotEmpty)
               ]
             )
           ]
         ),
         trailing: PopupMenuButton(
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<RecordActions>>[
-            const PopupMenuItem(
-              value: RecordActions.showReceipt,
-              child: Text("Show Receipt")
-            ),
-            const PopupMenuItem(
-              value: RecordActions.showSignature,
-              child: Text("Show Signature")
-            ),
-            const PopupMenuItem(
-              value: RecordActions.edit,
-              child: Text("Edit")
-            ),
-            const PopupMenuItem(
-              value: RecordActions.delete,
-              child: Text("Delete")
-            ),
-            const PopupMenuItem(
-              value: RecordActions.sync,
-              child: Text("Sync")
-            ),
-          ],
+            itemBuilder: (BuildContext context) => getPopupMenuItems(context)
         ),
         isThreeLine: true
       ),
