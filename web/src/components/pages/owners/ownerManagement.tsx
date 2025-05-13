@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AdminHeader } from "./adminHeader";
 import type { AdminDto } from "@/dto/admin";
 import { LoginForm } from "./loginForm";
-import { OwnerList } from "./ownerLIst";
+import { OwnerList } from "./ownerList";
 
 interface OwnerManagementProps {
   guid: string;
@@ -52,7 +52,6 @@ export function OwnerManagement({ guid, admin }: OwnerManagementProps) {
             </div>
             <AdminHeader admin={currentAdmin} onLogout={handleLogout} />
           </div>
-
           <OwnerList />
         </div>
       )}
