@@ -8,7 +8,7 @@ export default async function OwnerManagementPage({
 }: {
   params: { guid: string };
 }) {
-  const { guid } = params;
+  const { guid } = await params;
   const isAdminGuidRes = await isAdminGuidReq(guid);
   const admin = await getAdminReq(guid);
 
