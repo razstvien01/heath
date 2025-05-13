@@ -59,16 +59,6 @@ export function OwnerTableFooter({
         </Button>
 
         <div className="flex items-center gap-1 mx-2">
-          {/* <span
-            value={filterOwnerList.page}
-            // onChange={(e) =>
-            //   handleChangeTable({
-            //     page: Math.max(1, Number.parseInt(e.target.value) || 1),
-            //   })
-            // }
-            className="w-16 h-8"
-            disabled={isLoading}
-          /> */}
           <span className="text-sm text-muted-foreground">
             Page {filterOwnerList.page} of {totalPages}
           </span>
