@@ -65,7 +65,7 @@ export default function OwnerCrud({
     page: 1,
     pageSize: 10,
     orderBy: "name",
-    orderDirection: "asc",
+    orderDirection: "desc",
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
