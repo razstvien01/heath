@@ -10,11 +10,12 @@
   },
   "dependencies": {
     "@docuseal/signature-maker-react": "^1.0.2",
+    "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-alert-dialog": "^1.1.7",
     "@radix-ui/react-avatar": "^1.1.4",
     "@radix-ui/react-dialog": "^1.1.4",
-    "@radix-ui/react-label": "^2.1.4",
-    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-label": "^2.1.6",
+    "@radix-ui/react-slot": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.1.6",
     "axios": "^1.8.4",
     "class-variance-authority": "^0.7.1",
@@ -25,10 +26,11 @@
     "next": "^15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.56.3",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.0.3",
-    "zod": "^3.24.2"
+    "zod": "^3.24.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
