@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Wallet } from "lucide-react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <header className="bg-white border-b py-4 px-6 shadow-sm">
+          <div className="container mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <Wallet className="h-8 w-8" />
+              <span className="text-2xl font-bold">Heath</span>
+            </div>
+          </div>
+        </header>
         {children}
       </body>
     </html>
