@@ -74,7 +74,7 @@ export function DialogProps({
   );
 
   const form = useForm<z.infer<typeof schema>>({
-    resolver: async (values, context, options) => {
+    resolver: async (values) => {
       try {
         const result = schema.safeParse(values);
         if (result.success) {
@@ -82,7 +82,7 @@ export function DialogProps({
         }
         return {
           values: {},
-          errors: result.error.flatten().fieldErrors as any,
+          errors: result.error.flatten().fieldErrors,
         };
       } catch {
         return { values: {}, errors: {} };
