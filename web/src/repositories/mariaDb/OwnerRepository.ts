@@ -1,7 +1,6 @@
 import {
   ConfirmOwnerReqDto,
   CreateOwnerReqDto,
-  OwnerCountFilterDto,
   OwnerDto,
   OwnerFilterDto,
   UpdateOwnerReqDto,
@@ -23,7 +22,7 @@ export class OwnerRepository implements IOwnerRepository {
   constructor(db: Connection) {
     this._db = db;
   }
-  async getOwnerTotalCount(filters: OwnerCountFilterDto): Promise<number> {
+  async getOwnerTotalCount(filters: OwnerFilterDto): Promise<number> {
     let query = "SELECT COUNT(*) AS total FROM Owners";
     const conditions: string[] = [];
     const values: (string | number)[] = [];

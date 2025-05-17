@@ -1,8 +1,6 @@
 import { CreateConnection } from "@/config/mariadbConfig";
-import { OwnerSchema } from "@/dto/owner/OwnerDto";
 import { OwnerFilterSchema } from "@/dto/owner/OwnerFIlterDto";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
-import { z } from "zod";
 
 export async function GET(request: Request): Promise<Response> {
   try {
@@ -42,6 +40,7 @@ export async function GET(request: Request): Promise<Response> {
     const db = await CreateConnection();
     const ownerRepository = new OwnerRepository(db);
     const owners = await ownerRepository.getOwnerList(parsed.data);
+    const total = await ownerRepository.getOwnerTotalCount(parsed.data);
 
     if (!owners || owners.length === 0) {
       return new Response(JSON.stringify({ message: "No Owners found" }), {
@@ -52,26 +51,7 @@ export async function GET(request: Request): Promise<Response> {
       });
     }
 
-    const ownersValidation = z.array(OwnerSchema).safeParse(owners);
-
-    if (!ownersValidation.success) {
-      console.error(
-        "Invalid owners data from DB",
-        ownersValidation.error.format()
-      );
-
-      return new Response(
-        JSON.stringify({ message: "Currupted owners data" }),
-        {
-          status: 500,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
-
-    return new Response(JSON.stringify(owners), {
+    return new Response(JSON.stringify({ owners, total }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
