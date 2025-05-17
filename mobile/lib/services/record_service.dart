@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:mobile/models/record_model.dart';
-import 'package:mobile/services/result.dart';
+import 'package:mobile/models/api_models/record_model.dart';
+import 'package:mobile/models/service_results/result.dart';
 import 'package:mobile/utils/api_paths.dart';
 import 'package:mobile/utils/env_keys.dart';
 
@@ -34,20 +35,24 @@ class RecordService {
       return Future.value(result);
     }
 
-    final response = await http.post(Uri.http(dotenv.env[EnvKeys.baseUrl]!, ApiPaths.isPublicGuidUrl), 
-      body: {
-        'guid': guid
-      }
-    );
+    try {
+      final response = await http.post(Uri.http(dotenv.env[EnvKeys.baseUrl]!, ApiPaths.isPublicGuidUrl), 
+        body: {
+          'guid': guid
+        }
+      );
 
-    if (response.statusCode == 200) {
-      result.value = response.body.toLowerCase() == 'true';
-      if(!result.value) {
+      if (response.statusCode == 200) {
+        result.value = response.body.toLowerCase() == 'true';
+        if(!result.value) {
+          result.exceptions.add(Exception('Not a valid GUID'));
+        }
+      } 
+      else {
         result.exceptions.add(Exception('Not a valid GUID'));
       }
-    } 
-    else {
-      result.exceptions.add(Exception('Not a valid GUID'));
+    } on SocketException catch(e) {
+        result.exceptions.add(Exception('Cannot connect to Server'));
     }
     
     return result;

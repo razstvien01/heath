@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:mobile/models/view_models/record_key_dialog_result.dart';
-import 'package:mobile/screens/record_key_dialog/record_key_tile.dart';
+import 'package:mobile/models/dialog_results/record_key_dialog_result.dart';
+import 'package:mobile/screens/record_list/record_key_dialog/record_key_tile.dart';
 import 'package:mobile/utils/box_names.dart';
 
 class RecordKeyDialog extends StatefulWidget {

@@ -3,8 +3,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/models/record_model.dart';
-import 'package:mobile/screens/record_list.dart';
+import 'package:mobile/models/api_models/record_model.dart';
+import 'package:mobile/screens/record_list/record_list.dart';
 import 'package:mobile/widgets/check_label.dart';
 
 class RecordTile extends StatelessWidget {

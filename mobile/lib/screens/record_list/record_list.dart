@@ -2,12 +2,13 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:mobile/models/record_model.dart';
-import 'package:mobile/models/view_models/record_key_dialog_result.dart';
-import 'package:mobile/screens/record_key_dialog/record_key_dialog.dart';
-import 'package:mobile/screens/record_tile.dart';
+import 'package:mobile/models/api_models/record_model.dart';
+import 'package:mobile/models/dialog_results/record_key_dialog_result.dart';
+import 'package:mobile/screens/record_add/record_add.dart';
+import 'package:mobile/screens/record_list/record_key_dialog/record_key_dialog.dart';
+import 'package:mobile/screens/record_list/record_tile.dart';
 import 'package:mobile/services/record_service.dart';
-import 'package:mobile/services/result.dart';
+import 'package:mobile/models/service_results/result.dart';
 import 'package:mobile/utils/box_names.dart';
 
 enum RecordActions { showReceipt, showSignature, edit, delete, sync }
@@ -23,7 +24,6 @@ class _RecordListState extends State<RecordList> {
   late Future<List<RecordModel>> futureRecords = Future.value([]);
   late Queue<Exception>? errors = Queue();
   String guid = "";
-  String? currentName = "";
 
   @override
   void initState() {
@@ -46,6 +46,7 @@ class _RecordListState extends State<RecordList> {
 
   void retrieveGuid() async {
     var result = await showDialog<RecordKeyDialogResult>(context: context, builder: (context) => RecordKeyDialog());
+    String? currentName;
     if(result != null) {
       guid = result.key;
       currentName = result.name;
@@ -70,7 +71,8 @@ class _RecordListState extends State<RecordList> {
         actions: [
           IconButton(
             onPressed: retrieveGuid, 
-            icon: Icon(Icons.vpn_key))
+            icon: Icon(Icons.vpn_key)
+          )
         ],
       ),
       body: FutureBuilder<List<RecordModel>>(
@@ -84,9 +86,6 @@ class _RecordListState extends State<RecordList> {
             return Center(child: Text('${errors!.first}'));
           }
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
           final records = snapshot.data!;
 
           if (records.isEmpty) {
