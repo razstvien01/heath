@@ -1,10 +1,14 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:mobile/models/record_model.dart';
+import 'package:mobile/models/view_models/record_key_dialog_result.dart';
+import 'package:mobile/screens/record_key_dialog/record_key_dialog.dart';
 import 'package:mobile/screens/record_tile.dart';
 import 'package:mobile/services/record_service.dart';
 import 'package:mobile/services/result.dart';
+import 'package:mobile/utils/box_names.dart';
 
 enum RecordActions { showReceipt, showSignature, edit, delete, sync }
 
@@ -16,10 +20,10 @@ class RecordList extends StatefulWidget {
 }
 
 class _RecordListState extends State<RecordList> {
-  final TextEditingController guidController = TextEditingController();
   late Future<List<RecordModel>> futureRecords = Future.value([]);
   late Queue<Exception>? errors = Queue();
   String guid = "";
+  String? currentName = "";
 
   @override
   void initState() {
@@ -40,9 +44,21 @@ class _RecordListState extends State<RecordList> {
     });
   }
 
-  void onGuidChange() {
-    guid = guidController.text.trim();
-    fetchRecords();
+  void retrieveGuid() async {
+    var result = await showDialog<RecordKeyDialogResult>(context: context, builder: (context) => RecordKeyDialog());
+    if(result != null) {
+      guid = result.key;
+      currentName = result.name;
+    }
+    
+    if(guid.isNotEmpty) {
+      if(currentName != null) {
+        var keyBox = Hive.box(BoxNames.keys);
+        keyBox.put(currentName, guid);
+      }
+
+      fetchRecords();
+    }
   }
 
   @override
@@ -52,31 +68,8 @@ class _RecordListState extends State<RecordList> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Record List'),
         actions: [
-          IconButton(onPressed: () => showDialog(context: context, 
-            builder: (BuildContext context) => Dialog(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextField(
-                                controller: guidController,
-                                decoration: InputDecoration(
-                                  hintText: 'Input Records GUID here',
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  onGuidChange();
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('Close'),
-                              ),
-                            ],
-                          ),
-                        )
-            )), 
+          IconButton(
+            onPressed: retrieveGuid, 
             icon: Icon(Icons.vpn_key))
         ],
       ),
