@@ -1,5 +1,5 @@
 import { OwnerRoutes } from "@/constants/ownerRoutesConstants";
-import { OwnerCountFilterDto, OwnerFilterDto } from "@/dto/owner";
+import { OwnerFilterDto } from "@/dto/owner";
 import axios from "axios";
 
 export async function fetchOwnersReq(filter: OwnerFilterDto) {
@@ -19,31 +19,6 @@ export async function fetchOwnersReq(filter: OwnerFilterDto) {
   } catch (error) {
     console.error("Error confirming admin loigin:", error);
     return null;
-  }
-}
-
-export async function fetchTotalOwnersReq(
-  filter: OwnerCountFilterDto
-): Promise<number> {
-  const getOwnerTotalCountRoute = OwnerRoutes.TOTAL_COUNTS_ROUTE;
-
-  const queryParams = new URLSearchParams();
-
-  (Object.keys(filter) as (keyof OwnerFilterDto)[]).forEach((key) => {
-    const value = filter[key];
-    if (value !== undefined && value !== null && value !== "")
-      queryParams.append(key, String(value));
-  });
-
-  try {
-    const res = await axios.get(
-      `${getOwnerTotalCountRoute}?${queryParams.toString()}`
-    );
-
-    return res.data.total;
-  } catch (error) {
-    console.error("Error fetching total owners:", error);
-    return 0;
   }
 }
 
