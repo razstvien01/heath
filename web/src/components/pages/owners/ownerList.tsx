@@ -12,11 +12,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import type Owner from "@/models/Owner";
-import {
-  addOwnerReq,
-  fetchOwnersReq,
-  fetchTotalOwnersReq,
-} from "@/services/ownerService";
+import { addOwnerReq, fetchOwnersReq } from "@/services/ownerService";
 import {
   Card,
   CardContent,
@@ -57,11 +53,10 @@ export function OwnerList() {
 
     try {
       const res = await fetchOwnersReq(filterOwnerList);
-      const counts = await fetchTotalOwnersReq(filterOwnerList);
 
       if (res) {
-        setOwnerList(res.data);
-        setTotalCount(counts);
+        setOwnerList(res.data.owners);
+        setTotalCount(res.data.total);
       } else {
         setOwnerList([]);
         setTotalCount(0);
