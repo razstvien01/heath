@@ -1,13 +1,15 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:mobile/models/record_model.dart';
 import 'package:mobile/services/result.dart';
 import 'package:mobile/utils/api_paths.dart';
+import 'package:mobile/utils/env_keys.dart';
 
 class RecordService {
   Future<List<RecordModel>> fetchRecords(String guid) async {
-    final response = await http.post(Uri.http(ApiPaths.baseUrl, ApiPaths.recordListUrl), 
+    final response = await http.post(Uri.http(dotenv.env[EnvKeys.baseUrl]!, ApiPaths.recordListUrl), 
       body: {
         'guid': guid
       }
@@ -32,7 +34,7 @@ class RecordService {
       return Future.value(result);
     }
 
-    final response = await http.post(Uri.http(ApiPaths.baseUrl, ApiPaths.isPublicGuidUrl), 
+    final response = await http.post(Uri.http(dotenv.env[EnvKeys.baseUrl]!, ApiPaths.isPublicGuidUrl), 
       body: {
         'guid': guid
       }
