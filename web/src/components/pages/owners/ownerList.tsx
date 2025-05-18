@@ -21,9 +21,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AddOwnerDialog } from "./addOwnerDialog";
 import type { OwnerFilterDto } from "@/dto/owner";
 import { OwnerTableFooter } from "./ownerTableFooter";
+import { DialogForm } from "@/components/ui/dialogForm";
 
 type SortField = "name" | "createdAt";
 type SortDirection = "asc" | "desc";
@@ -73,10 +73,13 @@ export function OwnerList() {
   }, [fetchOwners]);
 
   const handleAddOwner = async (
-    username: string,
-    password: string
+    values: Record<string, string>
   ): Promise<boolean> => {
-    if (!username || !password) return false;
+    const { username, password, confirmPassword } = values;
+
+    if (!username || !password || !confirmPassword) return false;
+
+    if (password !== confirmPassword) throw new Error("Passwords do not match");
 
     setIsLoading(true);
 
@@ -265,11 +268,36 @@ export function OwnerList() {
         )}
       </CardContent>
 
-      <AddOwnerDialog
+      <DialogForm
         open={isAddOwnerDialogOpen}
         onOpenChange={setIsAddOwnerDialogOpen}
         onSubmit={handleAddOwner}
         isLoading={isLoading}
+        title="Add New Owner"
+        description="Create a new owner account with username and password."
+        icon={<UserPlus className="h-5 w-5 text-emerald-500" />}
+        successMessage="Owner added successfully!"
+        errorMessage="Failed to add owner. Please try again."
+        submitText="Add Owner"
+        fields={[
+          {
+            id: "username",
+            label: "Username",
+            placeholder: "Enter username",
+          },
+          {
+            id: "password",
+            label: "Password",
+            type: "password",
+            placeholder: "Enter password",
+          },
+          {
+            id: "confirmPassword",
+            label: "Confirm Password",
+            type: "password",
+            placeholder: "Re-enter password",
+          },
+        ]}
       />
     </Card>
   );
