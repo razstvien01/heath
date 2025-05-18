@@ -70,7 +70,7 @@ export function LoginForm({
           {roleLabel} Login
         </CardTitle>
         <CardDescription className="text-center">
-          Enter your credentialsd to access the {roleLabel.toLocaleLowerCase()}{" "}
+          Enter your credentials to access the {roleLabel.toLocaleLowerCase()}{" "}
           portal
         </CardDescription>
       </CardHeader>
