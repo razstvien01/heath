@@ -21,7 +21,7 @@ class RecordList extends StatefulWidget {
 }
 
 class _RecordListState extends State<RecordList> {
-  late Future<List<RecordModel>> futureRecords = Future.value([]);
+  late Future<Result<List<RecordModel>>> futureRecords = Future.value(Result([]));
   late Queue<Exception>? errors = Queue();
   String guid = "";
 
@@ -37,7 +37,7 @@ class _RecordListState extends State<RecordList> {
 
     setState(() {
       if(!isValidGuid.value) {
-        futureRecords = Future.value([]);
+        futureRecords = Future.value(Result([]));
       } else {
         futureRecords = RecordService().fetchRecords(guid);
       }
@@ -72,10 +72,19 @@ class _RecordListState extends State<RecordList> {
           IconButton(
             onPressed: retrieveGuid, 
             icon: Icon(Icons.vpn_key)
+          ),
+          if(errors != null && errors!.isEmpty) IconButton(
+            onPressed: () async { 
+              var shouldRefresh = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (context) => RecordAdd(recordGuid: guid)));
+              if(shouldRefresh != null && shouldRefresh) {
+                fetchRecords();
+              }
+            },
+            icon: Icon(Icons.add)
           )
         ],
       ),
-      body: FutureBuilder<List<RecordModel>>(
+      body: FutureBuilder<Result<List<RecordModel>>>(
         future: futureRecords, 
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -86,9 +95,13 @@ class _RecordListState extends State<RecordList> {
             return Center(child: Text('${errors!.first}'));
           }
 
-          final records = snapshot.data!;
+          final results = snapshot.data!;
 
-          if (records.isEmpty) {
+          if (results.exceptions.isNotEmpty) {
+            return Center(child: Text('${results.exceptions.first}'));
+          }
+
+          if (results.value.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +119,7 @@ class _RecordListState extends State<RecordList> {
           return RefreshIndicator(
             onRefresh: fetchRecords,
             child: ListView(
-              children: records.map((record) => RecordTile(record: record)).toList()
+              children: results.value.map((record) => RecordTile(record: record)).toList()
             ) 
           );
         }
