@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/models/view_models/record_key_dialog_result.dart';
+import 'package:mobile/models/dialog_results/record_key_dialog_result.dart';
 import 'package:mobile/widgets/confirm_dialog.dart';
 
 class RecordKeyTile extends StatelessWidget {
