@@ -60,7 +60,7 @@ export default function RecordCrud({ guid }: { guid: string }) {
 
         const formData = new FormData();
         formData.append("guid", guid);
-        formData.append("balance", addBalanceInput);
+        formData.append("amount", addBalanceInput);
         formData.append("reason", reasonInput);
         if (receiptInput) {
             formData.append("receipt", receiptInput);

@@ -8,12 +8,12 @@ export async function POST(request: Request) {
     const formData = await request.formData();
 
     const guid = formData.get("guid");
-    const balance = formData.get("balance");
+    const amount = formData.get("amount");
     const reason = formData.get("reason");
     const receiptFile = formData.get("receipt");
     const signature = formData.get("signature");
 
-    if (!guid || !balance || !reason) {
+    if (!guid || !amount || !reason) {
       return new Response("Missing required fields", {
         status: 400,
       });
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
     const parsedRecord = CreateRecordSchema.safeParse({
       auditId,
-      amount: Number(balance),
+      amount: Number(amount),
       reason,
       receipt,
       signature,
