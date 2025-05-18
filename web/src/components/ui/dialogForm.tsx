@@ -47,7 +47,7 @@ interface DialogFormProps {
   fields: FieldConfig[];
 }
 
-export function DialogProps({
+export function DialogForm({
   open,
   onOpenChange,
   onSubmit,
