@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { AdminHeader } from "./adminHeader";
 import type { AdminDto } from "@/dto/admin";
-import { LoginForm } from "./loginForm";
 import { OwnerList } from "./ownerList";
+import { confirmAdminLoginReq } from "@/services/adminService";
+import { LoginForm } from "@/components/ui/loginForm";
 
 interface OwnerManagementProps {
   guid: string;
@@ -12,6 +13,7 @@ interface OwnerManagementProps {
 }
 
 export function OwnerManagement({ guid, admin }: OwnerManagementProps) {
+  const role = "admin";
   const [loggedInState, setLoggedInState] = useState(false);
   const [currentAdmin, setCurrentAdmin] = useState<AdminDto>({
     id: undefined,
@@ -39,7 +41,12 @@ export function OwnerManagement({ guid, admin }: OwnerManagementProps) {
     <>
       {!loggedInState ? (
         <div className="flex justify-center items-center min-h-[70vh]">
-          <LoginForm guid={guid} onLoginSuccess={handleLoginSuccess} />
+          <LoginForm
+            guid={guid}
+            role={role}
+            onLoginRequest={confirmAdminLoginReq}
+            onLoginSuccess={handleLoginSuccess}
+          />
         </div>
       ) : (
         <div className="space-y-6">
