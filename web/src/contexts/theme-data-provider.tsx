@@ -9,7 +9,7 @@ const ThemeContext = createContext<ThemeColorStateParams>(
   {} as ThemeColorStateParams
 );
 
-export default function ThemeProvider({ children }: ThemeProviderProps) {
+export default function ThemeDataProvider({ children }: ThemeProviderProps) {
   const getSavedThemeColor = () => {
     try {
       return (localStorage.getItem("themeColor") as ThemeColors) || "Zinc";
@@ -25,6 +25,7 @@ export default function ThemeProvider({ children }: ThemeProviderProps) {
   const { theme } = useTheme();
 
   useEffect(() => {
+    console.log("selected themeColor:", themeColor)
     localStorage.setItem("themeColor", themeColor);
     setGlobalColorTheme(theme as "light" | "dark", themeColor);
 
