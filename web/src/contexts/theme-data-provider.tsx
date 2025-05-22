@@ -1,5 +1,4 @@
 "use client";
-
 import setGlobalColorTheme from "@/lib/theme-colors";
 import { useTheme } from "next-themes";
 import { ThemeProviderProps } from "next-themes";
@@ -25,11 +24,12 @@ export default function ThemeDataProvider({ children }: ThemeProviderProps) {
   const { theme } = useTheme();
 
   useEffect(() => {
-    console.log("selected themeColor:", themeColor)
     localStorage.setItem("themeColor", themeColor);
     setGlobalColorTheme(theme as "light" | "dark", themeColor);
 
-    if (!isMounted) setIsMounted(true);
+    if (!isMounted) {
+      setIsMounted(true);
+    }
   }, [themeColor, theme, isMounted]);
 
   if (!isMounted) {
@@ -37,9 +37,9 @@ export default function ThemeDataProvider({ children }: ThemeProviderProps) {
   }
 
   return (
-    <ThemeContext value={{ themeColor, setThemeColor }}>
+    <ThemeContext.Provider value={{ themeColor, setThemeColor }}>
       {children}
-    </ThemeContext>
+    </ThemeContext.Provider>
   );
 }
 
