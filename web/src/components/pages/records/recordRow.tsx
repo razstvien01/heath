@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Edit, SquareArrowOutUpRight, Trash } from "lucide-react";
-import { ImageDialog } from "@/components/ui/imageDialog";
+import { ImageDialog } from "@/components/imageDialog";
 import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog";
 import AuditRecord from "@/models/AuditRecord";
 

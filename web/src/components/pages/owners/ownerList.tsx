@@ -23,7 +23,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { OwnerFilterDto } from "@/dto/owner";
 import { OwnerTableFooter } from "./ownerTableFooter";
-import { DialogForm } from "@/components/ui/dialogForm";
+import { DialogForm } from "@/components/dialogForm";
 
 type SortField = "name" | "createdAt";
 type SortDirection = "asc" | "desc";

@@ -7,7 +7,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { CircleOff, Edit, ExternalLink, Save, Trash } from "lucide-react";
 import Link from "next/link";
 import type Owner from "@/models/Owner";
-import { ConfirmationDialog } from "@/components/ui/confirmationDialog";
+import { ConfirmationDialog } from "@/components/confirmationDialog";
 import { deleteOwnerReq, updateOwnerReq } from "@/services/ownerService";
 
 interface OwnerRowProps {

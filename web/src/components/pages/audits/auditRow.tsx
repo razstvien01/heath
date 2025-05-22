@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
-import { ConfirmationDialog } from "@/components/ui/confirmationDialog"
+import { ConfirmationDialog } from "@/components/confirmationDialog"
 import { CircleOff, Edit, Save, SquareArrowOutUpRight, Trash } from "lucide-react"
 import Audit from "@/models/Audit"
 

@@ -3,8 +3,8 @@
 import { SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ImageDialog } from "../../ui/imageDialog";
-import { SignatureDialog } from "../../ui/signatureDialog";
+import { ImageDialog } from "../../imageDialog";
+import { SignatureDialog } from "../../signatureDialog";
 import { Edit, SquareArrowOutUpRight, SquarePen, Trash } from "lucide-react";
 import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog";
 import { RecordRow } from "./recordRow";

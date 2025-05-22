@@ -5,7 +5,7 @@ import { AdminHeader } from "./adminHeader";
 import type { AdminDto } from "@/dto/admin";
 import { OwnerList } from "./ownerList";
 import { confirmAdminLoginReq } from "@/services/adminService";
-import { LoginForm } from "@/components/ui/loginForm";
+import { LoginForm } from "@/components/loginForm";
 
 interface OwnerManagementProps {
   guid: string;

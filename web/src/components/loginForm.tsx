@@ -6,9 +6,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./card";
-import { Input } from "./input";
-import { Button } from "./button";
+} from "./ui/card";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 import { LogIn } from "lucide-react";
 
 interface LoginFormProps {

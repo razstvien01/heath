@@ -11,7 +11,7 @@ import {
   } from "@/components/ui/dialog"
 import { SetStateAction, useState } from "react"
 import { Input } from "@/components/ui/input"
-import { SignatureDialog } from "@/components/ui/signatureDialog"
+import { SignatureDialog } from "@/components/signatureDialog"
 import { Button } from "@/components/ui/button"
 
 export function RecordAddReceiptSignatureDialog({ 
