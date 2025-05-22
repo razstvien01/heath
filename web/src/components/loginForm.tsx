@@ -99,6 +99,7 @@ export function LoginForm({
       </CardContent>
       <CardFooter>
         <Button
+          variant="default"
           onClick={confirmLogin}
           className="w-full"
           disabled={isLoading || !username || !password}
