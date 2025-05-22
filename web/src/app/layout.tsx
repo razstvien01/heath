@@ -32,13 +32,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased before:dark:to-primary`}
       >
-        {/* <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        > */}
-        {/* </ThemeProvider> */}
         <NextThemesProvider
           attribute="class"
           defaultTheme="dark"
@@ -48,10 +41,13 @@ export default function RootLayout({
           <ThemeDataProvider>
             <header className="border-b py-4 px-6 shadow-sm">
               <div className="container mx-auto flex justify-between items-center">
+                {/* Left side: Logo */}
                 <div className="flex items-center gap-2">
                   <Wallet className="h-8 w-8" />
                   <span className="text-2xl font-bold">Heath</span>
-                  <ThemeColorToggle/>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ThemeColorToggle />
                   <ThemeModeToggle />
                 </div>
               </div>
