@@ -91,11 +91,14 @@ export function OwnerList() {
       const res = await addOwnerReq(formData);
       if (res) {
         fetchOwners();
+        setIsLoading(false);
         return true;
       }
+      setIsLoading(false);
       return false;
     } catch (error) {
       console.error("Error adding owner:", error);
+      setIsLoading(false);
       return false;
     } finally {
       setIsLoading(false);

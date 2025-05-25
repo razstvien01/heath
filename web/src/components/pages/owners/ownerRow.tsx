@@ -4,11 +4,17 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { CircleOff, Edit, ExternalLink, Save, Trash } from "lucide-react";
+import {
+  Edit,
+  ExternalLink,
+  Trash,
+  UserPlus,
+} from "lucide-react";
 import Link from "next/link";
 import type Owner from "@/models/Owner";
 import { ConfirmationDialog } from "@/components/confirmationDialog";
 import { deleteOwnerReq, updateOwnerReq } from "@/services/ownerService";
+import { DialogForm } from "@/components/dialogForm";
 
 interface OwnerRowProps {
   owner: Owner;
@@ -17,22 +23,21 @@ interface OwnerRowProps {
 }
 
 export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
-  const [editMode, setEditMode] = useState(false);
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditOwnerDialogOpen, setIsEditOwnerDialogOpen] = useState(false);
 
-  useEffect(() => {
-    setName(owner.name!);
-  }, [owner.name]);
+  const handleEditOwner = async (
+    values: Record<string, string>
+  ): Promise<boolean> => {
+    // if (!name || !password) return;
+    const { username, password } = values;
 
-  const onSubmit = async () => {
-    if (!name || !password) return;
+    if (!username || !password) return false;
 
     setIsLoading(true);
 
     const formData = new FormData();
-    formData.append("username", name);
+    formData.append("username", username);
     formData.append("password", password);
     formData.append("guid", owner.managementGuid!);
 
@@ -40,16 +45,16 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
       const res = await updateOwnerReq(formData);
 
       if (res) {
-        setEditMode(false);
-        setPassword("");
         onSubmitDone();
-      } else {
-        console.error("Failed to update owner");
+        setIsLoading(false);
+        return true;
       }
+      setIsLoading(false);
+      return false;
     } catch (error) {
       console.error("Failed to update owner:", error);
-    } finally {
       setIsLoading(false);
+      return false;
     }
   };
 
@@ -74,34 +79,11 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
 
   return (
     <TableRow key={owner.id}>
+      <TableCell>owner.name</TableCell>
       <TableCell>
-        {editMode ? (
-          <Input
-            type="text"
-            name="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="max-w-[200px]"
-          />
-        ) : (
-          owner.name
-        )}
-      </TableCell>
-      <TableCell>
-        {editMode ? (
-          <Input
-            type="password"
-            name="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter new password"
-            className="max-w-[200px]"
-          />
-        ) : (
-          <span className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-            ********
-          </span>
-        )}
+        <span className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+          ********
+        </span>
       </TableCell>
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
@@ -124,82 +106,70 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
       </TableCell>
       <TableCell>
         <div className="flex items-center gap-2 justify-end">
-          {editMode ? (
-            <>
-              <Button
-                size="sm"
-                onClick={() => setEditMode(false)}
-                variant="destructive"
-                disabled={isLoading}
-              >
-                <CircleOff className="h-4 w-4 mr-1" />
+          <>
+            <Button
+              size="sm"
+              onClick={() => setIsEditOwnerDialogOpen(true)}
+              variant="secondary"
+              disabled={isLoading}
+            >
+              <Edit className="h-4 w-4 mr-1" />
+              <span className="sr-only sm:not-sr-only sm:inline-block">
+                Edit
+              </span>
+            </Button>
+
+            <Button size="sm" asChild disabled={isLoading} variant="link">
+              <Link href={`/audits/${owner.managementGuid}`}>
+                <ExternalLink className="h-4 w-4 mr-1" />
                 <span className="sr-only sm:not-sr-only sm:inline-block">
-                  Cancel
+                  Audits
+                </span>
+              </Link>
+            </Button>
+
+            <ConfirmationDialog onYes={onDeleteClicked}>
+              <Button size="sm" disabled={isLoading} variant="destructive">
+                <Trash className="h-4 w-4 mr-1" />
+                <span className="sr-only sm:not-sr-only sm:inline-block">
+                  Delete
                 </span>
               </Button>
-              <Button
-                size="sm"
-                onClick={onSubmit}
-                // className="bg-emerald-500 hover:bg-emerald-600"
-                disabled={isLoading || !name}
-              >
-                {isLoading ? (
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                ) : (
-                  <>
-                    <Save className="h-4 w-4 mr-1" />
-                    <span className="sr-only sm:not-sr-only sm:inline-block">
-                      Save
-                    </span>
-                  </>
-                )}
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                size="sm"
-                onClick={() => setEditMode(true)}
-                // className="bg-amber-500 hover:bg-amber-600"
-                variant="secondary"
-                disabled={isLoading}
-              >
-                <Edit className="h-4 w-4 mr-1" />
-                <span className="sr-only sm:not-sr-only sm:inline-block">
-                  Edit
-                </span>
-              </Button>
-
-              <Button
-                size="sm"
-                asChild
-                disabled={isLoading}
-                variant="link"
-              >
-                <Link href={`/audits/${owner.managementGuid}`}>
-                  <ExternalLink className="h-4 w-4 mr-1" />
-                  <span className="sr-only sm:not-sr-only sm:inline-block">
-                    Audits
-                  </span>
-                </Link>
-              </Button>
-
-              <ConfirmationDialog onYes={onDeleteClicked}>
-                <Button
-                  size="sm"
-                  disabled={isLoading}
-                  variant="destructive"
-                >
-                  <Trash className="h-4 w-4 mr-1" />
-                  <span className="sr-only sm:not-sr-only sm:inline-block">
-                    Delete
-                  </span>
-                </Button>
-              </ConfirmationDialog>
-            </>
-          )}
+            </ConfirmationDialog>
+          </>
         </div>
       </TableCell>
+      <DialogForm
+        open={isEditOwnerDialogOpen}
+        onOpenChange={setIsEditOwnerDialogOpen}
+        onSubmit={handleEditOwner}
+        isLoading={isLoading}
+        title="Add New Owner"
+        description="Create a new owner account with username and password."
+        icon={<UserPlus className="h-5 w-5 text-emerald-500" />}
+        successMessage="Owner added successfully!"
+        errorMessage="Failed to add owner. Please try again."
+        submitText="Add Owner"
+        fields={[
+          {
+            id: "username",
+            label: "Username",
+            placeholder: "Enter username",
+          },
+          {
+            id: "password",
+            label: "Password",
+            type: "password",
+            placeholder: "Enter password",
+          },
+          {
+            id: "confirmPassword",
+            label: "Confirm Password",
+            type: "password",
+            placeholder: "Re-enter password",
+          },
+        ]}
+      />
     </TableRow>
   );
 }
