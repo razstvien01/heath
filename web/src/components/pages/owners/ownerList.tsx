@@ -141,7 +141,7 @@ export function OwnerList() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full">
+      <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full border">
         <div>
           <CardTitle>Owner List</CardTitle>
           <CardDescription>Manage existing owner accounts</CardDescription>
@@ -150,7 +150,6 @@ export function OwnerList() {
         <div className="sm:ml-auto mt-4 sm:mt-0">
           <Button
             onClick={() => setIsAddOwnerDialogOpen(true)}
-            className="bg-emerald-500 hover:bg-emerald-600"
             disabled={isLoading}
           >
             <UserPlus className="h-4 w-4 mr-2" />
@@ -160,7 +159,7 @@ export function OwnerList() {
       </CardHeader>
 
       <CardContent>
-        <div className="mb-4 space-y-4">
+        <div className="mb-4 space-y-4 pt-4">
           {/* Search bar */}
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
