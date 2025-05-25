@@ -140,7 +140,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
               <Button
                 size="sm"
                 onClick={onSubmit}
-                className="bg-emerald-500 hover:bg-emerald-600"
+                // className="bg-emerald-500 hover:bg-emerald-600"
                 disabled={isLoading || !name}
               >
                 {isLoading ? (
@@ -160,7 +160,8 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
               <Button
                 size="sm"
                 onClick={() => setEditMode(true)}
-                className="bg-amber-500 hover:bg-amber-600"
+                // className="bg-amber-500 hover:bg-amber-600"
+                variant="secondary"
                 disabled={isLoading}
               >
                 <Edit className="h-4 w-4 mr-1" />
@@ -171,9 +172,9 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
 
               <Button
                 size="sm"
-                className="bg-sky-500 hover:bg-sky-600"
                 asChild
                 disabled={isLoading}
+                variant="link"
               >
                 <Link href={`/audits/${owner.managementGuid}`}>
                   <ExternalLink className="h-4 w-4 mr-1" />
@@ -186,8 +187,8 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
               <ConfirmationDialog onYes={onDeleteClicked}>
                 <Button
                   size="sm"
-                  className="bg-red-500 hover:bg-red-600"
                   disabled={isLoading}
+                  variant="destructive"
                 >
                   <Trash className="h-4 w-4 mr-1" />
                   <span className="sr-only sm:not-sr-only sm:inline-block">
