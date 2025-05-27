@@ -1,15 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { TableCell, TableRow } from "@/components/ui/table";
-import {
-  Edit,
-  ExternalLink,
-  Trash,
-  UserPlus,
-} from "lucide-react";
+import { Edit, ExternalLink, Trash } from "lucide-react";
 import Link from "next/link";
 import type Owner from "@/models/Owner";
 import { ConfirmationDialog } from "@/components/confirmationDialog";
@@ -29,7 +23,6 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
   const handleEditOwner = async (
     values: Record<string, string>
   ): Promise<boolean> => {
-    // if (!name || !password) return;
     const { username, password } = values;
 
     if (!username || !password) return false;
@@ -79,7 +72,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
 
   return (
     <TableRow key={owner.id}>
-      <TableCell>owner.name</TableCell>
+      <TableCell>{owner.name}</TableCell>
       <TableCell>
         <span className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
           ********
@@ -115,7 +108,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
             >
               <Edit className="h-4 w-4 mr-1" />
               <span className="sr-only sm:not-sr-only sm:inline-block">
-                Edit
+                Update
               </span>
             </Button>
 
@@ -144,12 +137,12 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
         onOpenChange={setIsEditOwnerDialogOpen}
         onSubmit={handleEditOwner}
         isLoading={isLoading}
-        title="Add New Owner"
-        description="Create a new owner account with username and password."
-        icon={<UserPlus className="h-5 w-5 text-emerald-500" />}
-        successMessage="Owner added successfully!"
-        errorMessage="Failed to add owner. Please try again."
-        submitText="Add Owner"
+        title="Update Owner"
+        description="Update the owner account with username and password."
+        icon={<Edit className="h-5 w-5 text-amber-500" />}
+        successMessage="Owner updated successfully!"
+        errorMessage="Failed to updat the owner. Please try again."
+        submitText="Update Owner"
         fields={[
           {
             id: "username",
