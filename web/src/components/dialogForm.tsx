@@ -193,11 +193,7 @@ export function DialogForm({
               </Button>
               <Button
                 type="submit"
-                className={
-                  danger
-                    ? "bg-red-500 hover:bg-red-600"
-                    : "bg-emerald-500 hover:bg-emerald-600"
-                }
+                variant={danger ? "destructive" : "default"}
                 disabled={localLoading || isLoading || success}
               >
                 {localLoading || isLoading ? (
