@@ -162,9 +162,15 @@ export class OwnerRepository implements IOwnerRepository {
     const values: (string | number)[] = [];
 
     //* Filters
-    if (filters.name) {
+    if (filters.name && filters.managementGuid) {
+      conditions.push("name LIKE ? OR managementGuid = ?");
+      values.push(`%${filters.name}%`, `%${filters.managementGuid}`);
+    } else if (filters.name) {
       conditions.push("name LIKE ?");
       values.push(`%${filters.name}%`);
+    } else if (filters.managementGuid) {
+      conditions.push("managementGuid LIKE ?");
+      values.push(`%${filters.managementGuid}%`);
     }
 
     if (filters.createdFrom) {
@@ -202,7 +208,7 @@ export class OwnerRepository implements IOwnerRepository {
 
     query += " LIMIT ? OFFSET ?";
     values.push(filters.pageSize, offset);
-
+    
     const [rows] = await this._db.query<Owner[] & RowDataPacket[]>(
       query,
       values
