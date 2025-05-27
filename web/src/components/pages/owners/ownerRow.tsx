@@ -6,7 +6,6 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Edit, ExternalLink, Trash } from "lucide-react";
 import Link from "next/link";
 import type Owner from "@/models/Owner";
-import { ConfirmationDialog } from "@/components/confirmationDialog";
 import { deleteOwnerReq, updateOwnerReq } from "@/services/ownerService";
 import { DialogForm } from "@/components/dialogForm";
 
@@ -19,6 +18,7 @@ interface OwnerRowProps {
 export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditOwnerDialogOpen, setIsEditOwnerDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleEditOwner = async (
     values: Record<string, string>
@@ -51,7 +51,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
     }
   };
 
-  const onDeleteClicked = async () => {
+  const handleDeleteOwner = async (): Promise<boolean> => {
     setIsLoading(true);
 
     const formData = new FormData();
@@ -62,11 +62,15 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
 
       if (res && onDelete) {
         onDelete();
+        setIsLoading(false);
+        return true;
       }
-    } catch (error) {
-      console.error("Failed to delete owner:", error);
-    } finally {
       setIsLoading(false);
+      return false;
+    } catch (error) {
+      console.error("Failed to update owner:", error);
+      setIsLoading(false);
+      return false;
     }
   };
 
@@ -120,15 +124,17 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
                 </span>
               </Link>
             </Button>
-
-            <ConfirmationDialog onYes={onDeleteClicked}>
-              <Button size="sm" disabled={isLoading} variant="destructive">
-                <Trash className="h-4 w-4 mr-1" />
-                <span className="sr-only sm:not-sr-only sm:inline-block">
-                  Delete
-                </span>
-              </Button>
-            </ConfirmationDialog>
+            <Button
+              size="sm"
+              disabled={isLoading}
+              variant="destructive"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash className="h-4 w-4 mr-1" />
+              <span className="sr-only sm:not-sr-only sm:inline-block">
+                Delete
+              </span>
+            </Button>
           </>
         </div>
       </TableCell>
@@ -141,7 +147,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
         description="Update the owner account with username and password."
         icon={<Edit className="h-5 w-5 text-amber-500" />}
         successMessage="Owner updated successfully!"
-        errorMessage="Failed to updat the owner. Please try again."
+        errorMessage="Failed to update the owner. Please try again."
         submitText="Update Owner"
         fields={[
           {
@@ -162,6 +168,19 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
             placeholder: "Re-enter password",
           },
         ]}
+      />
+      <DialogForm
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onSubmit={handleDeleteOwner}
+        isLoading={isLoading}
+        title="Delete Owner"
+        description="Delete the owner account permanently. This action cannot be undone."
+        icon={<Trash className="h-5 w-5 text-red-500" />}
+        successMessage="Owner deleted successfully!"
+        errorMessage="Failed to delete the owner. Please try again."
+        submitText="Delete Owner"
+        fields={[]}
       />
     </TableRow>
   );
