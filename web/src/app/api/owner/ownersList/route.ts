@@ -1,5 +1,5 @@
 import { CreateConnection } from "@/config/mariadbConfig";
-import { OwnerFilterSchema } from "@/dto/owner/OwnerFIlterDto";
+import { OwnerFilterSchema } from "@/dto/owner/OwnerFilterDto";
 import { OwnerRepository } from "@/repositories/mariaDb/OwnerRepository";
 
 export async function GET(request: Request): Promise<Response> {
@@ -8,6 +8,7 @@ export async function GET(request: Request): Promise<Response> {
 
     const body = {
       name: searchParams.get("name") ?? undefined,
+      managementGuid: searchParams.get("managementGuid") ?? undefined,
       createdFrom: searchParams.get("createdFrom") ?? undefined,
       createdTo: searchParams.get("createdTo") ?? undefined,
       updatedFrom: searchParams.get("updatedFrom") ?? undefined,
