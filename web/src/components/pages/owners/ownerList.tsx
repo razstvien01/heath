@@ -164,14 +164,20 @@ export function OwnerList() {
       <CardContent>
         <div className="mb-4 space-y-4 pt-4">
           {/* Search bar */}
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <div className="flex items-center gap-2 w-full ">
             <Input
               placeholder="Search by name or GUID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8"
             />
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => console.log("Search:", searchQuery)}
+              disabled={isLoading || !searchQuery.trim()}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
           </div>
 
           {/* Sort controls */}
