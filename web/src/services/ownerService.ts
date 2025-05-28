@@ -16,8 +16,7 @@ export async function fetchOwnersReq(filter: OwnerFilterDto) {
     const res = await axios.get(`${getOwnersUrl}?${queryParams.toString()}`);
 
     return res;
-  } catch (error) {
-    console.error("Error confirming admin loigin:", error);
+  } catch {
     return null;
   }
 }
