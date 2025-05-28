@@ -32,6 +32,8 @@ export function OwnerList() {
   const [ownerList, setOwnerList] = useState<Owner[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [filterOwnerList, setFilterOwnerList] = useState<OwnerFilterDto>({
+    name: undefined,
+    managementGuid: undefined,
     page: 1,
     pageSize: 10,
     orderBy: "name",
@@ -138,7 +140,7 @@ export function OwnerList() {
       ...(changes.pageSize && { page: 1 }),
     }));
   };
-  
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(searchQuery);
@@ -148,16 +150,32 @@ export function OwnerList() {
   }, [searchQuery]);
 
   useEffect(() => {
-    setFilterOwnerList((prev) => ({
-      ...prev,
-      name: debouncedQuery || undefined,
-      managementGuid: debouncedQuery || undefined,
-    }));
+    setFilterOwnerList((prev) => {
+      const newFilter = {
+        ...prev,
+        name: debouncedQuery || undefined,
+        managementGuid: debouncedQuery || undefined,
+        page: 1,
+      };
+
+      // Avoid redundant state updates - still called the fetchOwners twice
+      if (
+        prev.name === newFilter.name &&
+        prev.managementGuid === newFilter.managementGuid &&
+        prev.page === newFilter.page
+      ) {
+        return prev;
+      }
+
+      return newFilter;
+    });
   }, [debouncedQuery]);
 
   useEffect(() => {
     fetchOwners();
-  }, [fetchOwners]);
+    console.log("Refersh owner list");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterOwnerList]);
 
   return (
     <Card>
