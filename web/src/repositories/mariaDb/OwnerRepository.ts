@@ -163,8 +163,8 @@ export class OwnerRepository implements IOwnerRepository {
 
     //* Filters
     if (filters.name && filters.managementGuid) {
-      conditions.push("name LIKE ? OR managementGuid = ?");
-      values.push(`%${filters.name}%`, `%${filters.managementGuid}`);
+      conditions.push("name LIKE ? OR managementGuid LIKE ?");
+      values.push(`%${filters.name}%`, `%${filters.managementGuid}%`);
     } else if (filters.name) {
       conditions.push("name LIKE ?");
       values.push(`%${filters.name}%`);
