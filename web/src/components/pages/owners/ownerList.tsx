@@ -47,6 +47,7 @@ export function OwnerList() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isAddOwnerDialogOpen, setIsAddOwnerDialogOpen] = useState(false);
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
   const fetchOwners = useCallback(async () => {
     setIsLoading(true);
@@ -67,10 +68,6 @@ export function OwnerList() {
       setIsLoading(false);
     }
   }, [filterOwnerList]);
-
-  useEffect(() => {
-    fetchOwners();
-  }, [fetchOwners, searchQuery]);
 
   const handleAddOwner = async (
     values: Record<string, string>
@@ -134,18 +131,6 @@ export function OwnerList() {
     );
   };
 
-  // const onSearchButtonClick = async (searchQuery: string) => {
-  //   const trimmedQuery = searchQuery.trim();
-
-  //   setFilterOwnerList({
-  //     ...filterOwnerList,
-  //     name: trimmedQuery,
-  //     managementGuid: trimmedQuery,
-  //   });
-
-  //   await fetchOwners();
-  // };
-
   const handleChangeTable = (changes: Partial<OwnerFilterDto>) => {
     setFilterOwnerList((prev) => ({
       ...prev,
@@ -153,15 +138,26 @@ export function OwnerList() {
       ...(changes.pageSize && { page: 1 }),
     }));
   };
+  
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500);
 
-  const handleSearchInputChange = (value: string) => {
-    setSearchQuery(value);
-    setFilterOwnerList({
-      ...filterOwnerList,
-      name: value,
-      managementGuid: value,
-    });
-  };
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setFilterOwnerList((prev) => ({
+      ...prev,
+      name: debouncedQuery || undefined,
+      managementGuid: debouncedQuery || undefined,
+    }));
+  }, [debouncedQuery]);
+
+  useEffect(() => {
+    fetchOwners();
+  }, [fetchOwners]);
 
   return (
     <Card>
@@ -189,7 +185,7 @@ export function OwnerList() {
             <Input
               placeholder="Search by name or GUID..."
               value={searchQuery}
-              onChange={(e) => handleSearchInputChange(e.target.value)}
+              onChange={(e) => setSearchQuery(e.target.value.trim())}
             />
             <Button size="icon" variant="outline" disabled={true}>
               <Search className="h-4 w-4" />
