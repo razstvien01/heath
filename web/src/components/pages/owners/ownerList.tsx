@@ -144,7 +144,7 @@ export function OwnerList() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(searchQuery);
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(handler);
   }, [searchQuery]);
@@ -173,7 +173,6 @@ export function OwnerList() {
 
   useEffect(() => {
     fetchOwners();
-    console.log("Refersh owner list");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterOwnerList]);
 
