@@ -70,7 +70,7 @@ export function OwnerList() {
 
   useEffect(() => {
     fetchOwners();
-  }, [fetchOwners]);
+  }, [fetchOwners, searchQuery]);
 
   const handleAddOwner = async (
     values: Record<string, string>
@@ -134,12 +134,33 @@ export function OwnerList() {
     );
   };
 
+  // const onSearchButtonClick = async (searchQuery: string) => {
+  //   const trimmedQuery = searchQuery.trim();
+
+  //   setFilterOwnerList({
+  //     ...filterOwnerList,
+  //     name: trimmedQuery,
+  //     managementGuid: trimmedQuery,
+  //   });
+
+  //   await fetchOwners();
+  // };
+
   const handleChangeTable = (changes: Partial<OwnerFilterDto>) => {
     setFilterOwnerList((prev) => ({
       ...prev,
       ...changes,
       ...(changes.pageSize && { page: 1 }),
     }));
+  };
+
+  const handleSearchInputChange = (value: string) => {
+    setSearchQuery(value);
+    setFilterOwnerList({
+      ...filterOwnerList,
+      name: value,
+      managementGuid: value,
+    });
   };
 
   return (
@@ -168,14 +189,9 @@ export function OwnerList() {
             <Input
               placeholder="Search by name or GUID..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchInputChange(e.target.value)}
             />
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={() => console.log("Search:", searchQuery)}
-              disabled={isLoading || !searchQuery.trim()}
-            >
+            <Button size="icon" variant="outline" disabled={true}>
               <Search className="h-4 w-4" />
             </Button>
           </div>
