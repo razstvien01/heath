@@ -63,6 +63,10 @@ export function AuditManagement({ guid }: { guid: string }) {
     // setCurrentAdmin(admin);
     setLoggedInState(true);
   };
+  
+  const handleLogout = () => {
+    setLoggedInState(false)
+  }
 
   return (
     <>
