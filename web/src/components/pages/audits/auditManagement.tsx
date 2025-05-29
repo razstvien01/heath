@@ -7,8 +7,7 @@ import { AuditRow } from "./auditRow";
 import { BookPlus } from "lucide-react";
 import Audit from "@/models/Audit";
 import { LoginForm } from "@/components/loginForm";
-import axios from "axios";
-import { OwnerRoutes } from "@/constants/ownerRoutesConstants";
+import { confirmOwnerLoginReq } from "@/services/ownerService";
 
 export function AuditManagement({ guid }: { guid: string }) {
   const role = "owner";
@@ -38,30 +37,6 @@ export function AuditManagement({ guid }: { guid: string }) {
       fetchAudits();
     }
   }, [loggedInState, fetchAudits]);
-
-  const confirmOwnerLoginReq = async (
-    guid: string,
-    username: string,
-    password: string
-  ): Promise<boolean> => {
-    const formData = new FormData();
-
-    formData.append("guid", guid);
-    formData.append("username", username);
-    formData.append("password", password);
-
-    try {
-      const res = await axios.post(OwnerRoutes.CONFIRM_OWNER_URL, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      return res.status === 200;
-    } catch {
-      return false;
-    }
-  };
 
   const addAudit = async () => {
     const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/addAudit";
