@@ -9,7 +9,7 @@ import {
 } from "./ui/card";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { LogIn } from "lucide-react";
+import { EyeIcon, EyeOffIcon, LogIn } from "lucide-react";
 
 interface LoginFormProps {
   guid: string;
@@ -32,6 +32,9 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [invalidLoginState, setInvalidLoginState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const disabledShowPass = isLoading || invalidLoginState || !password;
 
   const confirmLogin = async () => {
     if (!username || !password) return;
@@ -83,13 +86,32 @@ export function LoginForm({
             onKeyDown={handleKeyDown}
           />
         </div>
-        <div>
+        <div className="relative">
           <Input
+            type={showPassword ? "text" : "password"}
+            className="hide-password-toggle pr-10"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             onKeyDown={handleKeyDown}
           />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+            onClick={() => setShowPassword((prev) => !prev)}
+            disabled={disabledShowPass}
+          >
+            {showPassword && !disabledShowPass ? (
+              <EyeIcon className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <EyeOffIcon className="h-4 w-4" aria-hidden="true" />
+            )}
+            <span className="sr-only">
+              {showPassword ? "Hide password" : "Show password"}
+            </span>
+          </Button>
         </div>
         {invalidLoginState && (
           <p className="text-red-500 text-sm text-center">
