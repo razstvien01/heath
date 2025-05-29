@@ -117,7 +117,11 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
             </Button>
 
             <Button size="sm" asChild disabled={isLoading} variant="link">
-              <Link href={`/audits/${owner.managementGuid}`}>
+              <Link
+                href={`/audits/${owner.managementGuid}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <ExternalLink className="h-4 w-4 mr-1" />
                 <span className="sr-only sm:not-sr-only sm:inline-block">
                   Audits
