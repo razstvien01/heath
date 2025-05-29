@@ -59,3 +59,18 @@ export async function deleteOwnerReq(formData: FormData) {
     return null;
   }
 }
+
+export async function isOwnerGuid(guid: string) {
+  const isAdminGuidUrl = OwnerRoutes.IS_OWNER_GUID;
+
+  const formData = new FormData();
+  formData.append("guid", guid);
+
+  try {
+    const res = await axios.post(isAdminGuidUrl, formData);
+
+    return res.status === 200;
+  } catch {
+    return false;
+  }
+}
