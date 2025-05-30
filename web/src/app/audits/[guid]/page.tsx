@@ -15,7 +15,7 @@ export default async function AuditManagementPage({
   }
 
   return (
-    <div>
+    <div className="flex-1 container mx-auto py-8 px-4">
       <AuditManagement guid={guid} />
     </div>
   );
