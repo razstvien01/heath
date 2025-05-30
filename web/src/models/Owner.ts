@@ -1,10 +1,10 @@
-class Owner {
-  id?: number | undefined;
-  name?: string = "";
-  managementGuid?: string = "";
-  password?: string = "";
-  createdAt?: Date = new Date();
-  updatedAt?: Date = new Date();
+interface Owner {
+  id: number;
+  name: string;
+  managementGuid: string;
+  password: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export default Owner;
