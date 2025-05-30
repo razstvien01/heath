@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { AdminHeader } from "./adminHeader";
 import type { AdminDto } from "@/dto/admin";
 import { OwnerList } from "./ownerList";
 import { confirmAdminLoginReq } from "@/services/adminService";
 import { LoginForm } from "@/components/loginForm";
+import { ProfileHeader } from "./profileHeader";
 
 interface OwnerManagementProps {
   guid: string;
@@ -57,7 +57,11 @@ export function OwnerManagement({ guid, admin }: OwnerManagementProps) {
                 Manage owner accounts and permissions
               </p>
             </div>
-            <AdminHeader admin={currentAdmin} onLogout={handleLogout} />
+            <ProfileHeader
+              profile={currentAdmin}
+              onLogout={handleLogout}
+              role={role === "admin" ? "Administrator" : "Owner"}
+            />
           </div>
           <OwnerList />
         </div>
