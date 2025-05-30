@@ -8,6 +8,7 @@ import { BookPlus } from "lucide-react";
 import Audit from "@/models/Audit";
 import { LoginForm } from "@/components/loginForm";
 import { confirmOwnerLoginReq } from "@/services/ownerService";
+import { ProfileHeader } from "../owners/profileHeader";
 
 export function AuditManagement({ guid }: { guid: string }) {
   const role = "owner";
@@ -63,10 +64,10 @@ export function AuditManagement({ guid }: { guid: string }) {
     // setCurrentAdmin(admin);
     setLoggedInState(true);
   };
-  
+
   const handleLogout = () => {
-    setLoggedInState(false)
-  }
+    setLoggedInState(false);
+  };
 
   return (
     <>
@@ -80,49 +81,62 @@ export function AuditManagement({ guid }: { guid: string }) {
           />
         </div>
       ) : (
-        <div className="flex flex-col h-screen">
-          <h1 className="h-35">Audits</h1>
-
-          <div className="flex flex-row">
-            <Input
-              value={addAuditNameInput}
-              onChange={onAddAuditNameChange}
-              placeholder="Audit Name"
-            />
-            <Button onClick={addAudit} className="bg-emerald-500">
-              <BookPlus />
-            </Button>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Audit</h1>
+            <p className="text-muted-foreground">
+              Manage owner accounts and permissions
+            </p>
           </div>
-
-          <table>
-            <thead>
-              <tr>
-                <th>Audit Name</th>
-                <th>Entries</th>
-                <th>Public Guid</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {auditList?.length > 0 ? (
-                auditList?.map((audit) => (
-                  <AuditRow
-                    key={audit.id}
-                    audit={audit}
-                    onSubmitDone={fetchAudits}
-                    onDelete={fetchAudits}
-                  />
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="text-center">
-                    No Audits Found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <ProfileHeader
+            profile={{ name: "Owner" }}
+            onLogout={handleLogout}
+            role="Owner"
+          />
         </div>
+        // <div className="flex flex-col h-screen">
+        //   <h1 className="h-35">Audits</h1>
+
+        //   <div className="flex flex-row">
+        //     <Input
+        //       value={addAuditNameInput}
+        //       onChange={onAddAuditNameChange}
+        //       placeholder="Audit Name"
+        //     />
+        //     <Button onClick={addAudit} className="bg-emerald-500">
+        //       <BookPlus />
+        //     </Button>
+        //   </div>
+
+        //   <table>
+        //     <thead>
+        //       <tr>
+        //         <th>Audit Name</th>
+        //         <th>Entries</th>
+        //         <th>Public Guid</th>
+        //         <th>Actions</th>
+        //       </tr>
+        //     </thead>
+        //     <tbody>
+        //       {auditList?.length > 0 ? (
+        //         auditList?.map((audit) => (
+        //           <AuditRow
+        //             key={audit.id}
+        //             audit={audit}
+        //             onSubmitDone={fetchAudits}
+        //             onDelete={fetchAudits}
+        //           />
+        //         ))
+        //       ) : (
+        //         <tr>
+        //           <td colSpan={5} className="text-center">
+        //             No Audits Found
+        //           </td>
+        //         </tr>
+        //       )}
+        //     </tbody>
+        //   </table>
+        // </div>
       )}
     </>
   );
