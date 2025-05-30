@@ -22,6 +22,23 @@ export class OwnerRepository implements IOwnerRepository {
   constructor(db: Connection) {
     this._db = db;
   }
+  async getOwnerByMGuid(managementGuid: string): Promise<OwnerDto> {
+    const query = "SELECT * FROM Owners WHERE managementGuid = ?";
+
+    const [rows] = await this._db.execute<RowDataPacket[]>(query, [
+      managementGuid,
+    ]);
+
+    const owners: OwnerDto[] = (rows as Owner[]).map((row: Owner) =>
+      OwnerMapper.toOwnerDto(row)
+    );
+
+    if (owners.length === 0) {
+      throw new Error("Owner not found");
+    }
+
+    return owners[0];
+  }
   async getOwnerTotalCount(filters: OwnerFilterDto): Promise<number> {
     let query = "SELECT COUNT(*) AS total FROM Owners";
     const conditions: string[] = [];
@@ -208,7 +225,7 @@ export class OwnerRepository implements IOwnerRepository {
 
     query += " LIMIT ? OFFSET ?";
     values.push(filters.pageSize, offset);
-    
+
     const [rows] = await this._db.query<Owner[] & RowDataPacket[]>(
       query,
       values
