@@ -19,4 +19,5 @@ export interface IOwnerRepository {
   getOwnerTotalCount(filters: OwnerFilterDto): Promise<number>;
   getOwnerIdFromManagementGuid(guid: string): Promise<number | null>;
   updateOwner(dto: UpdateOwnerReqDto): Promise<[QueryResult, FieldPacket[]]>;
+  getOwnerByMGuid(managementGuid: string): Promise<OwnerDto>;
 }
