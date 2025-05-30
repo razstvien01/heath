@@ -14,7 +14,7 @@ export async function POST(request: Request): Promise<Response> {
       });
     }
 
-    const validation = AdminSchema.safeParse({ guid });
+    const validation = AdminSchema.safeParse({ ownerManagementGuid: guid });
 
     if (!validation.success) {
       return new Response(
@@ -33,22 +33,6 @@ export async function POST(request: Request): Promise<Response> {
     if (!admin) {
       return new Response(JSON.stringify({ message: "Admin not found" }), {
         status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
-
-    const adminValidation = AdminSchema.safeParse(admin);
-
-    if (!adminValidation.success) {
-      console.error(
-        "Invalid admin data from DB: ",
-        adminValidation.error.format()
-      );
-
-      return new Response(JSON.stringify({ message: "Corrupted admin data" }), {
-        status: 500,
         headers: {
           "Content-Type": "application/json",
         },
