@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import 'package:mobile/screens/record_list/record_tile.dart';
 import 'package:mobile/services/record_offline_service.dart';
 import 'package:mobile/services/record_service.dart';
 import 'package:mobile/models/service_results/result.dart';
+import 'package:mobile/services/server_service.dart';
 import 'package:mobile/utils/box_names.dart';
 
 enum RecordActions { showReceipt, showSignature, edit, delete, sync }
@@ -28,12 +30,31 @@ class _RecordListState extends State<RecordList> {
   late Queue<Exception>? errors = Queue();
   RecordOfflineService recordOfflineService = RecordOfflineService();
   String guid = "";
-  bool offlineMode = false;
+  ValueNotifier<bool> offlineMode = ValueNotifier(false);
+  Timer? connectivityTimer;
 
   @override
   void initState() {
     super.initState();
     fetchRecords();
+    checkServerStatus();
+    startConnectivityCheckTimer();
+  }
+
+  @override
+  void dispose() {
+    connectivityTimer?.cancel();
+    super.dispose();
+  }
+
+  void startConnectivityCheckTimer() {
+    connectivityTimer = Timer.periodic(Duration(seconds: 10), (_) async {
+      checkServerStatus();
+    });
+  }
+
+  void checkServerStatus() async {
+    offlineMode.value = !await ServerService().canConnectToServer();
   }
 
   Future<void> fetchRecords() async {
@@ -46,7 +67,7 @@ class _RecordListState extends State<RecordList> {
         return;
       }
 
-      if (offlineMode) {
+      if (offlineMode.value) {
         futureRecords = fetchCombinedRecordsOffline();
       } else {
         futureRecords = fetchCombinedRecordsOnline();
@@ -61,7 +82,7 @@ class _RecordListState extends State<RecordList> {
       return Future.value(result);
     } 
 
-    if(!offlineMode) {
+    if(!offlineMode.value) {
       return RecordService().isPublicGuid(guid);
     }
 
@@ -113,6 +134,13 @@ class _RecordListState extends State<RecordList> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text('Record List'),
+        leading: ValueListenableBuilder(
+          valueListenable: offlineMode, 
+          builder: (context, isOffline, _) => Icon(
+            isOffline ? Icons.cloud_off : Icons.cloud_done,
+            color: isOffline ? Colors.red.shade400 : Colors.green.shade600,
+          )
+        ),
         actions: [
           IconButton(
             onPressed: retrieveGuid, 
@@ -168,12 +196,15 @@ class _RecordListState extends State<RecordList> {
                 if(record.isSynced) {
                   return RecordTile(record: record);
                 } else {
-                  return RecordTileDismissible(guid: guid, record: record, canSync: !offlineMode, 
-                    onSync: () async {
-                      var removedRecord = await recordOfflineService.removeOfflineRecord(guid, record.viewModelGuid!);
-                      RecordService().addRecord(RecordInputModel.fromStorage(guid, removedRecord));
-                      fetchRecords();
-                    });
+                  return ValueListenableBuilder(
+                    valueListenable: offlineMode, 
+                    builder: (context, isOffline, _) => RecordTileDismissible(guid: guid, record: record, canSync: !isOffline, 
+                      onSync: () async {
+                        var removedRecord = await recordOfflineService.removeOfflineRecord(guid, record.viewModelGuid!);
+                        RecordService().addRecord(RecordInputModel.fromStorage(guid, removedRecord));
+                        fetchRecords();
+                      })
+                  );
                 }
               }).toList() 
             ) 
