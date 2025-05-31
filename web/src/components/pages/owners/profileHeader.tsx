@@ -7,9 +7,9 @@ import type { AdminDto } from "@/dto/admin";
 import { OwnerDto } from "@/dto/owner";
 
 interface ProfileHeaderProps {
-  profile: AdminDto | OwnerDto;
+  profile: AdminDto | OwnerDto | undefined;
   onLogout: () => void;
-  role: "Administrator" | "Owner"
+  role: "Administrator" | "Owner";
 }
 
 export function ProfileHeader({ profile, onLogout, role }: ProfileHeaderProps) {
@@ -17,7 +17,9 @@ export function ProfileHeader({ profile, onLogout, role }: ProfileHeaderProps) {
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-3">
         <div className="text-right hidden sm:block">
-          <p className="text-sm font-medium">{profile.name}</p>
+          <p className="text-sm font-medium">
+            {profile !== undefined ? profile.name : "Unknown"}
+          </p>
           <p className="text-xs text-muted-foreground">{role}</p>
         </div>
         <Avatar className="h-8 w-8 border border-muted">
