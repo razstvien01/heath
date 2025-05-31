@@ -20,7 +20,7 @@ class RecordService {
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
-      result.value = jsonList.map((e) => RecordModel.fromJson(e)).toList();
+      result.value = jsonList.map((e) => RecordModel.fromServer(e)).toList();
     } 
     else if(response.statusCode != 404) {
       result.exceptions.add(Exception("Failed to fetch Records"));
@@ -31,10 +31,6 @@ class RecordService {
 
   Future<Result<bool>> isPublicGuid(String guid) async {
     Result<bool> result = Result(false);
-    if(guid.isEmpty) {
-      result.exceptions.add(Exception("No GUID yet, please set it by clicking the Key button"));
-      return Future.value(result);
-    }
 
     try {
       final response = await http.post(Uri.http(dotenv.env[EnvKeys.baseUrl]!, ApiPaths.isPublicGuidUrl), 
@@ -70,7 +66,7 @@ class RecordService {
 
     request.fields.addAll({
       'guid': recordModel.guid,
-      'balance': recordModel.amount,
+      'amount': recordModel.amount,
       'reason': recordModel.reason,
     });
 

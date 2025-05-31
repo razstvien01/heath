@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile/models/api_models/record_input_model.dart';
-import 'package:mobile/services/record_service.dart';
+import 'package:mobile/services/record_offline_service.dart';
 import 'package:mobile/widgets/compact_image_input.dart';
 import 'package:mobile/widgets/compact_signature_input.dart';
 
@@ -31,21 +31,15 @@ class _RecordAddState extends State<RecordAdd> {
   }
 
   void onSubmit(Function(Queue<Exception>) onErrors, Function() onSuccess) async {
-    var result = await RecordService().addRecord(RecordInputModel(
-      guid: widget.recordGuid,
+    await RecordOfflineService().addOfflineRecord(RecordInputModel(
+      guid: widget.recordGuid, 
       amount: amountController.text, 
       reason: reasonController.text, 
       receipt: fileInput, 
-      signature: signatureInput
-    ));
+      signature: signatureInput));
 
     if(!context.mounted) return;
-
-    if(result.exceptions.isNotEmpty) {
-      onErrors(result.exceptions);
-    } else {
-      onSuccess();
-    }
+    onSuccess();
   }
 
   @override
