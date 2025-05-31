@@ -8,11 +8,13 @@ class RecordTileDismissible extends StatelessWidget {
     required this.guid,
     required this.record, 
     required this.canSync,
+    required this.onSync,
     super.key});
 
   final String guid;
   final RecordModel record;
   final bool canSync;
+  final Function onSync;
 
   final RecordOfflineService recordOfflineService = RecordOfflineService();
 
@@ -32,11 +34,16 @@ class RecordTileDismissible extends StatelessWidget {
         child: Icon(Icons.sync, color: Colors.deepPurple),
       ),
       child: RecordTile(record: record),
-      onDismissed: (direction) {
+      confirmDismiss: (direction) {
         if (direction == DismissDirection.startToEnd) {
-          recordOfflineService.removeOfflineRecord(guid, record.viewModelGuid!);
+          return Future.value(true);
         } else if (direction == DismissDirection.endToStart) {
+          onSync();
         }
+        return Future.value(false);
+      },
+      onDismissed: (direction) {
+        recordOfflineService.removeOfflineRecord(guid, record.viewModelGuid!);
       },
     );
   }

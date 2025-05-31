@@ -50,7 +50,7 @@ class RecordOfflineService {
     }
   }
 
-  Future<void> removeOfflineRecord(String guid, String viewModelGuid) async {
+  Future<StoredRecord> removeOfflineRecord(String guid, String viewModelGuid) async {
     if (await isGuidStored(guid)) {
       final box = await Hive.openBox(getOfflineBoxKey(guid));
       final toDeleteItem = box.values.firstWhere((item) {
@@ -60,7 +60,9 @@ class RecordOfflineService {
         return false;
       });
       box.delete(toDeleteItem.key);
+      return toDeleteItem;
     }
+    throw Exception("Guid is not stored");
   }
   
   String getOfflineBoxKey(String guid) => "${guid}_offline";

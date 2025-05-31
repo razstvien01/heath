@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:hive/hive.dart';
 import 'package:mobile/models/api_models/record_input_model.dart';
 import 'package:mobile/models/api_models/record_model.dart';
@@ -17,7 +16,7 @@ class StoredRecord extends HiveObject {
   @HiveField(3)
   Map<String, dynamic>? receipt;
   @HiveField(4)
-  File? receiptFile;
+  String? receiptFilePath;
   @HiveField(5)
   String signature;
   @HiveField(6)
@@ -32,7 +31,7 @@ class StoredRecord extends HiveObject {
     required this.reason,
     required this.amount,
     this.receipt,
-    this.receiptFile,
+    this.receiptFilePath,
     this.viewModelGuid,
     required this.signature,
     required this.createdAt,
@@ -43,6 +42,7 @@ class StoredRecord extends HiveObject {
     guid: input.guid, 
     reason: input.reason, 
     amount: double.parse(input.amount), 
+    receiptFilePath: input.receipt?.path,
     signature: input.signature ?? "", 
     createdAt: DateTime.now(),
     isSynced: false,

@@ -24,13 +24,14 @@ class RecordModel {
   final String? viewModelGuid;
 
   bool hasReceipt() {
-    if(receipt == null) return false;
-
-    dynamic receiptValue = receipt!['data'];
-    if(receiptValue is List) {
-      return receiptValue.isNotEmpty;
+    if(receipt != null) {
+      dynamic receiptValue = receipt!['data'];
+      if(receiptValue is List) {
+        return receiptValue.isNotEmpty;
+      }
     }
-    return false;
+
+    return receiptFile != null;
   }
 
   factory RecordModel.fromServer(Map<String, dynamic> json) {
@@ -59,7 +60,7 @@ class RecordModel {
       createdAt: record.createdAt,
       reason: record.reason,
       amount: record.amount,
-      receiptFile: record.receiptFile,
+      receiptFile: record.receiptFilePath == null ? null : File(record.receiptFilePath!),
       receipt: record.receipt,
       signature: record.signature,
       isSynced: isSynced,

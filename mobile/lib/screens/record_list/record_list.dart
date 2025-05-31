@@ -2,11 +2,12 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:mobile/models/api_models/record_input_model.dart';
 import 'package:mobile/models/api_models/record_model.dart';
 import 'package:mobile/models/dialog_results/record_key_dialog_result.dart';
 import 'package:mobile/screens/record_add/record_add.dart';
 import 'package:mobile/screens/record_list/record_key_dialog/record_key_dialog.dart';
-import 'package:mobile/screens/record_list/record_tile%20dismissible.dart';
+import 'package:mobile/screens/record_list/record_tile_dismissible.dart';
 import 'package:mobile/screens/record_list/record_tile.dart';
 import 'package:mobile/services/record_offline_service.dart';
 import 'package:mobile/services/record_service.dart';
@@ -84,7 +85,7 @@ class _RecordListState extends State<RecordList> {
 
   Future<Result<List<RecordModel>>> combineAndSortRecords(List<RecordModel> recordA, List<RecordModel> recordB) {
     var result = Result([...recordA, ...recordB]);
-    result.value.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    result.value.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return Future.value(result);
   }
 
@@ -167,7 +168,12 @@ class _RecordListState extends State<RecordList> {
                 if(record.isSynced) {
                   return RecordTile(record: record);
                 } else {
-                  return RecordTileDismissible(guid: guid, record: record, canSync: !offlineMode);
+                  return RecordTileDismissible(guid: guid, record: record, canSync: !offlineMode, 
+                    onSync: () async {
+                      var removedRecord = await recordOfflineService.removeOfflineRecord(guid, record.viewModelGuid!);
+                      RecordService().addRecord(RecordInputModel.fromStorage(guid, removedRecord));
+                      fetchRecords();
+                    });
                 }
               }).toList() 
             ) 

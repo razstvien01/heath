@@ -21,7 +21,7 @@ class StoredRecordAdapter extends TypeAdapter<StoredRecord> {
       reason: fields[1] as String,
       amount: fields[2] as double,
       receipt: (fields[3] as Map?)?.cast<String, dynamic>(),
-      receiptFile: fields[4] as File?,
+      receiptFilePath: fields[4] as String?,
       viewModelGuid: fields[8] as String?,
       signature: fields[5] as String,
       createdAt: fields[6] as DateTime,
@@ -42,7 +42,7 @@ class StoredRecordAdapter extends TypeAdapter<StoredRecord> {
       ..writeByte(3)
       ..write(obj.receipt)
       ..writeByte(4)
-      ..write(obj.receiptFile)
+      ..write(obj.receiptFilePath)
       ..writeByte(5)
       ..write(obj.signature)
       ..writeByte(6)
