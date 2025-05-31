@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -32,6 +33,10 @@ class RecordTile extends StatelessWidget {
     return Image.memory(bytes);
   }
 
+  Image getImageFromFile(File bufferData) {
+    return Image.file(bufferData);
+  }
+
   Image getImageFromString(String base64String) {
     final Uint8List bytes = base64Decode(base64String);
     return Image.memory(bytes);
@@ -50,7 +55,7 @@ class RecordTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                getImageFromBuffer(record.receipt),
+                if(record.isSynced) getImageFromBuffer(record.receipt!) else getImageFromFile(record.receiptFile!),
                 const SizedBox(height: 15),
                 TextButton(
                   onPressed: () => Navigator.pop(context), 
@@ -135,7 +140,8 @@ class RecordTile extends StatelessWidget {
               spacing: 10,
               children: <Widget>[
                 CheckLabel(text: 'Receipt', isChecked: record.hasReceipt()),
-                CheckLabel(text: 'Signature', isChecked: record.signature.isNotEmpty)
+                CheckLabel(text: 'Signature', isChecked: record.signature.isNotEmpty),
+                CheckLabel(text: 'Synced', isChecked: record.isSynced)
               ]
             )
           ]
