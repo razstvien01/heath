@@ -66,7 +66,7 @@ class RecordService {
 
     request.fields.addAll({
       'guid': recordModel.guid,
-      'balance': recordModel.amount,
+      'amount': recordModel.amount,
       'reason': recordModel.reason,
     });
 

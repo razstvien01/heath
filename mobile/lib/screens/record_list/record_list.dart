@@ -128,6 +128,22 @@ class _RecordListState extends State<RecordList> {
     }
   }
 
+  void syncAll() async {
+    var offlineItems = await RecordOfflineService().removeAllOfflineRecords(guid);
+    List<Future<void>> addRecordFutures = [];
+    for(var item in offlineItems) {
+      addRecordFutures.add(RecordService().addRecord(RecordInputModel.fromStorage(guid, item)));
+    }
+    Future.wait(addRecordFutures);
+    fetchRecords();
+  }
+
+  void syncOne(String viewModelGuid) async {
+    var removedRecord = await recordOfflineService.removeOfflineRecord(guid, viewModelGuid);
+    RecordService().addRecord(RecordInputModel.fromStorage(guid, removedRecord));
+    fetchRecords();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,7 +162,16 @@ class _RecordListState extends State<RecordList> {
             onPressed: retrieveGuid, 
             icon: Icon(Icons.vpn_key)
           ),
-          if(errors != null && errors!.isEmpty) IconButton(
+          if(errors != null && errors!.isEmpty) 
+          ValueListenableBuilder(
+            valueListenable: offlineMode, 
+            builder: (context, isOffline, _) { 
+              if(isOffline) return SizedBox();
+              return IconButton(onPressed: syncAll, icon: Icon(Icons.cloud_upload));
+            }
+          ),
+          if(errors != null && errors!.isEmpty) 
+          IconButton(
             onPressed: () async { 
               var shouldRefresh = await Navigator.of(context).push<bool>(MaterialPageRoute(builder: (context) => RecordAdd(recordGuid: guid)));
               if(shouldRefresh != null && shouldRefresh) {
@@ -199,11 +224,8 @@ class _RecordListState extends State<RecordList> {
                   return ValueListenableBuilder(
                     valueListenable: offlineMode, 
                     builder: (context, isOffline, _) => RecordTileDismissible(guid: guid, record: record, canSync: !isOffline, 
-                      onSync: () async {
-                        var removedRecord = await recordOfflineService.removeOfflineRecord(guid, record.viewModelGuid!);
-                        RecordService().addRecord(RecordInputModel.fromStorage(guid, removedRecord));
-                        fetchRecords();
-                      })
+                      onSync: () => syncOne(record.viewModelGuid!)
+                    )
                   );
                 }
               }).toList() 

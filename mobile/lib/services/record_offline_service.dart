@@ -42,6 +42,27 @@ class RecordOfflineService {
     return offlineRecords;
   }
 
+  Future<List<StoredRecord>> removeAllOfflineRecords(String guid) async {
+    List<StoredRecord> offlineRecords = [];
+    if (await isGuidStored(guid)) {
+      final boxExists = await Hive.boxExists(getOfflineBoxKey(guid));
+      if (boxExists) {
+        final box = await Hive.openBox(getOfflineBoxKey(guid));
+
+        for (var key in box.keys) {
+          final item = box.get(key);
+          if (item != null) {
+            offlineRecords.add(item);
+          }
+        }
+
+        await box.clear();
+      }
+    }
+
+    return offlineRecords;
+  }
+
   Future<void> addOfflineRecord(RecordInputModel inputModel) async {
     var guid = inputModel.guid;
     if (await isGuidStored(guid)) {

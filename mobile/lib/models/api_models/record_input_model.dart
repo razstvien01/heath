@@ -21,6 +21,6 @@ class RecordInputModel {
       guid: guid, 
       amount: record.amount.toString(), 
       reason: record.reason, 
-      receipt: File(record.receiptFilePath!), 
+      receipt: record.receiptFilePath == null ? null : File(record.receiptFilePath!), 
       signature: record.signature);
 }
