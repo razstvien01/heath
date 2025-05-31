@@ -22,6 +22,7 @@ class StoredRecordAdapter extends TypeAdapter<StoredRecord> {
       amount: fields[2] as double,
       receipt: (fields[3] as Map?)?.cast<String, dynamic>(),
       receiptFile: fields[4] as File?,
+      viewModelGuid: fields[8] as String?,
       signature: fields[5] as String,
       createdAt: fields[6] as DateTime,
       isSynced: fields[7] as bool,
@@ -31,7 +32,7 @@ class StoredRecordAdapter extends TypeAdapter<StoredRecord> {
   @override
   void write(BinaryWriter writer, StoredRecord obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.guid)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class StoredRecordAdapter extends TypeAdapter<StoredRecord> {
       ..writeByte(6)
       ..write(obj.createdAt)
       ..writeByte(7)
-      ..write(obj.isSynced);
+      ..write(obj.isSynced)
+      ..writeByte(8)
+      ..write(obj.viewModelGuid);
   }
 
   @override

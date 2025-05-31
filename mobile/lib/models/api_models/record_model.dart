@@ -10,6 +10,7 @@ class RecordModel {
     this.receipt,
     required this.signature,
     this.receiptFile,
+    this.viewModelGuid,
     required this.isSynced
   });
 
@@ -20,6 +21,7 @@ class RecordModel {
   final String signature;
   final File? receiptFile;
   final bool isSynced;
+  final String? viewModelGuid;
 
   bool hasReceipt() {
     if(receipt == null) return false;
@@ -60,7 +62,8 @@ class RecordModel {
       receiptFile: record.receiptFile,
       receipt: record.receipt,
       signature: record.signature,
-      isSynced: isSynced
+      isSynced: isSynced,
+      viewModelGuid: record.viewModelGuid
     );
   }
 }

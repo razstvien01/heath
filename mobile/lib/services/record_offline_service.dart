@@ -49,6 +49,19 @@ class RecordOfflineService {
       box.add(StoredRecord.fromInput(inputModel));
     }
   }
+
+  Future<void> removeOfflineRecord(String guid, String viewModelGuid) async {
+    if (await isGuidStored(guid)) {
+      final box = await Hive.openBox(getOfflineBoxKey(guid));
+      final toDeleteItem = box.values.firstWhere((item) {
+        if(item is StoredRecord) {
+          return item.viewModelGuid == viewModelGuid;
+        }
+        return false;
+      });
+      box.delete(toDeleteItem.key);
+    }
+  }
   
   String getOfflineBoxKey(String guid) => "${guid}_offline";
   String getOnlineBoxKey(String guid) => "${guid}_online";

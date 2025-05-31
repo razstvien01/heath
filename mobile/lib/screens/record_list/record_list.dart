@@ -27,7 +27,7 @@ class _RecordListState extends State<RecordList> {
   late Queue<Exception>? errors = Queue();
   RecordOfflineService recordOfflineService = RecordOfflineService();
   String guid = "";
-  bool offlineMode = true;
+  bool offlineMode = false;
 
   @override
   void initState() {
@@ -167,7 +167,7 @@ class _RecordListState extends State<RecordList> {
                 if(record.isSynced) {
                   return RecordTile(record: record);
                 } else {
-                  return RecordTileDismissible(record: record, canSync: !offlineMode);
+                  return RecordTileDismissible(guid: guid, record: record, canSync: !offlineMode);
                 }
               }).toList() 
             ) 

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:hive/hive.dart';
 import 'package:mobile/models/api_models/record_input_model.dart';
 import 'package:mobile/models/api_models/record_model.dart';
+import 'package:uuid/uuid.dart';
 
 part 'stored_record.g.dart';
 
@@ -23,6 +24,8 @@ class StoredRecord extends HiveObject {
   DateTime createdAt;
   @HiveField(7)
   bool isSynced;
+  @HiveField(8)
+  String? viewModelGuid;
 
   StoredRecord({
     required this.guid,
@@ -30,6 +33,7 @@ class StoredRecord extends HiveObject {
     required this.amount,
     this.receipt,
     this.receiptFile,
+    this.viewModelGuid,
     required this.signature,
     required this.createdAt,
     required this.isSynced
@@ -41,7 +45,8 @@ class StoredRecord extends HiveObject {
     amount: double.parse(input.amount), 
     signature: input.signature ?? "", 
     createdAt: DateTime.now(),
-    isSynced: false
+    isSynced: false,
+    viewModelGuid: Uuid().v4()
   );
 
   factory StoredRecord.fromRecord(String guid, RecordModel record) => StoredRecord(
@@ -52,5 +57,6 @@ class StoredRecord extends HiveObject {
     signature: record.signature,
     createdAt: record.createdAt,
     isSynced: true,
+    viewModelGuid: record.viewModelGuid
   );
 }
