@@ -121,7 +121,6 @@ class RecordTile extends StatelessWidget {
                 spacing: 3,
                 children: [
                   Expanded(child: Text(record.reason)),
-                  
                 ]
               )
             ),

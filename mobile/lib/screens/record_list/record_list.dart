@@ -6,6 +6,7 @@ import 'package:mobile/models/api_models/record_model.dart';
 import 'package:mobile/models/dialog_results/record_key_dialog_result.dart';
 import 'package:mobile/screens/record_add/record_add.dart';
 import 'package:mobile/screens/record_list/record_key_dialog/record_key_dialog.dart';
+import 'package:mobile/screens/record_list/record_tile%20dismissible.dart';
 import 'package:mobile/screens/record_list/record_tile.dart';
 import 'package:mobile/services/record_offline_service.dart';
 import 'package:mobile/services/record_service.dart';
@@ -162,7 +163,13 @@ class _RecordListState extends State<RecordList> {
           return RefreshIndicator(
             onRefresh: fetchRecords,
             child: ListView(
-              children: results.value.map((record) => RecordTile(record: record)).toList()
+              children: results.value.map((record) {
+                if(record.isSynced) {
+                  return RecordTile(record: record);
+                } else {
+                  return RecordTileDismissible(record: record);
+                }
+              }).toList() 
             ) 
           );
         }
