@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:mobile/models/api_models/record_input_model.dart';
 import 'package:mobile/models/api_models/record_model.dart';
 import 'package:mobile/models/hive_models/stored_record.dart';
 import 'package:mobile/models/service_results/result.dart';
@@ -24,15 +25,7 @@ class RecordOfflineService {
   Future<void> storeLastOnlineData(String guid, Result<List<RecordModel>> result) async {
     final box = await Hive.openBox(getOnlineBoxKey(guid));
     await box.clear();
-    await box.addAll(result.value.map((record) => StoredRecord(
-        guid: guid,
-        reason: record.reason,
-        amount: record.amount,
-        receipt: record.receipt,
-        signature: record.signature,
-        createdAt: record.createdAt,
-        isSynced: true,
-      )));
+    await box.addAll(result.value.map((record) => StoredRecord.fromRecord(guid, record)));
   }
 
   Future<List<RecordModel>> fetchOfflineRecords(String guid) async {
@@ -47,6 +40,14 @@ class RecordOfflineService {
       }
     }
     return offlineRecords;
+  }
+
+  Future<void> addOfflineRecord(RecordInputModel inputModel) async {
+    var guid = inputModel.guid;
+    if (await isGuidStored(guid)) {
+      final box = await Hive.openBox(getOfflineBoxKey(guid));
+      box.add(StoredRecord.fromInput(inputModel));
+    }
   }
   
   String getOfflineBoxKey(String guid) => "${guid}_offline";

@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:hive/hive.dart';
+import 'package:mobile/models/api_models/record_input_model.dart';
+import 'package:mobile/models/api_models/record_model.dart';
 
 part 'stored_record.g.dart';
 
@@ -32,4 +34,23 @@ class StoredRecord extends HiveObject {
     required this.createdAt,
     required this.isSynced
   });
+
+  factory StoredRecord.fromInput(RecordInputModel input) => StoredRecord(
+    guid: input.guid, 
+    reason: input.reason, 
+    amount: double.parse(input.amount), 
+    signature: input.signature ?? "", 
+    createdAt: DateTime.now(),
+    isSynced: false
+  );
+
+  factory StoredRecord.fromRecord(String guid, RecordModel record) => StoredRecord(
+    guid: guid,
+    reason: record.reason,
+    amount: record.amount,
+    receipt: record.receipt,
+    signature: record.signature,
+    createdAt: record.createdAt,
+    isSynced: true,
+  );
 }
