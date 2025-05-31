@@ -120,8 +120,8 @@ class RecordTile extends StatelessWidget {
               child: Row(
                 spacing: 3,
                 children: [
-                  Icon(Icons.calendar_month, size: 20),
-                  Text(formatDate(record.createdAt)),
+                  Expanded(child: Text(record.reason)),
+                  
                 ]
               )
             ),
@@ -132,7 +132,12 @@ class RecordTile extends StatelessWidget {
           children: <Row>[
             Row(
               children: <Widget>[
-                Expanded(child: Text(record.reason)),
+                Expanded(
+                  child: Row(children: [
+                    Icon(Icons.calendar_month, size: 20),
+                    Text(formatDate(record.createdAt)),
+                  ])
+                ),
                 Text(formatBalance(runningBalance ?? 0))
               ]
             ),
