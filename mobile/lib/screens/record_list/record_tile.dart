@@ -92,22 +92,18 @@ class RecordTile extends StatelessWidget {
       ));
     }
 
-    list.addAll([
-      const PopupMenuItem(
-        value: RecordActions.edit,
-        child: Text("Edit")
-      ),
-      const PopupMenuItem(
-        value: RecordActions.delete,
-        child: Text("Delete")
-      ),
-      const PopupMenuItem(
-        value: RecordActions.sync,
-        child: Text("Sync")
-      )
-    ]);
-
     return list;
+  }
+
+  Widget? buildTrailing(BuildContext context) {
+    var menuItems = getPopupMenuItems(context);
+    return Visibility(
+      visible: menuItems.isNotEmpty,
+      maintainState: true,
+      maintainAnimation: true,
+      maintainSize: true,
+      child: PopupMenuButton(itemBuilder: (context) => menuItems)
+    );
   }
   
   @override
@@ -150,9 +146,7 @@ class RecordTile extends StatelessWidget {
             )
           ]
         ),
-        trailing: PopupMenuButton(
-            itemBuilder: (BuildContext context) => getPopupMenuItems(context)
-        ),
+        trailing: buildTrailing(context),
         isThreeLine: true
       ),
     );
