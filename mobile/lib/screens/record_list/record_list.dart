@@ -167,7 +167,7 @@ class _RecordListState extends State<RecordList> {
                 if(record.isSynced) {
                   return RecordTile(record: record);
                 } else {
-                  return RecordTileDismissible(record: record);
+                  return RecordTileDismissible(record: record, canSync: !offlineMode);
                 }
               }).toList() 
             ) 

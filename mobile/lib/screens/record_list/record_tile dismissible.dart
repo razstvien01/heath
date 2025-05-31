@@ -5,16 +5,17 @@ import 'package:mobile/screens/record_list/record_tile.dart';
 class RecordTileDismissible extends StatelessWidget {
   const RecordTileDismissible({
     required this.record, 
-    this.runningBalance,
+    required this.canSync,
     super.key});
 
   final RecordModel record;
-  final double? runningBalance;
+  final bool canSync;
 
   @override
   Widget build(BuildContext context) {
     return Dismissible(
       key: ValueKey(key), 
+      direction: canSync ? DismissDirection.horizontal : DismissDirection.startToEnd,
       background: Container(
         alignment: Alignment.centerLeft,
         padding: EdgeInsets.symmetric(horizontal: 20),
