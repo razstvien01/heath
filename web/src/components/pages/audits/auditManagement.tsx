@@ -1,68 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { AuditRow } from "./auditRow";
-import { BookPlus } from "lucide-react";
-import Audit from "@/models/Audit";
+import { useState } from "react";
 import { LoginForm } from "@/components/loginForm";
-import { confirmOwnerLoginReq } from "@/services/ownerService";
+import { confirmOwnerLoginReq, getOwnerReq } from "@/services/ownerService";
 import { ProfileHeader } from "../owners/profileHeader";
+import Owner from "@/models/Owner";
+import { AuditList } from "./auditList";
 
-export function AuditManagement({ guid }: { guid: string }) {
+interface AuditManagementProps {
+  guid: string;
+}
+
+export function AuditManagement({ guid }: AuditManagementProps) {
   const role = "owner";
   const [loggedInState, setLoggedInState] = useState(false);
-  const [addAuditNameInput, setAuditNameInput] = useState("");
-  const [auditList, setAuditList] = useState<Audit[]>([]);
+  const [currentOwner, setCurrentOwner] = useState<Owner | undefined>(
+    undefined
+  );
 
-  const fetchAudits = useCallback(async () => {
-    const getOwnersUrl =
-      process.env.NEXT_PUBLIC_API_URL + "/api/audit/auditList";
-
-    const formData = new FormData();
-    formData.append("guid", guid);
-
-    fetch(getOwnersUrl, {
-      method: "POST",
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setAuditList(data);
-      });
-  }, [guid]);
-
-  useEffect(() => {
-    if (loggedInState) {
-      fetchAudits();
-    }
-  }, [loggedInState, fetchAudits]);
-
-  const addAudit = async () => {
-    const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/addAudit";
-
-    const formData = new FormData();
-    formData.append("guid", guid);
-    formData.append("name", addAuditNameInput);
-
-    const res = await fetch(fetchUrl, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (res.ok) {
-      fetchAudits();
-    }
-  };
-
-  const onAddAuditNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAuditNameInput(e.target.value);
-  };
-
-  const handleLoginSuccess = () => {
-    // setCurrentAdmin(admin);
+  const handleLoginSuccess = async () => {
     setLoggedInState(true);
+
+    const owner = await getOwnerReq(guid);
+    setCurrentOwner(owner);
   };
 
   const handleLogout = () => {
@@ -89,54 +49,12 @@ export function AuditManagement({ guid }: { guid: string }) {
             </p>
           </div>
           <ProfileHeader
-            profile={{ name: "Owner" }}
+            profile={currentOwner}
             onLogout={handleLogout}
             role="Owner"
           />
+          <AuditList />
         </div>
-        // <div className="flex flex-col h-screen">
-        //   <h1 className="h-35">Audits</h1>
-
-        //   <div className="flex flex-row">
-        //     <Input
-        //       value={addAuditNameInput}
-        //       onChange={onAddAuditNameChange}
-        //       placeholder="Audit Name"
-        //     />
-        //     <Button onClick={addAudit} className="bg-emerald-500">
-        //       <BookPlus />
-        //     </Button>
-        //   </div>
-
-        //   <table>
-        //     <thead>
-        //       <tr>
-        //         <th>Audit Name</th>
-        //         <th>Entries</th>
-        //         <th>Public Guid</th>
-        //         <th>Actions</th>
-        //       </tr>
-        //     </thead>
-        //     <tbody>
-        //       {auditList?.length > 0 ? (
-        //         auditList?.map((audit) => (
-        //           <AuditRow
-        //             key={audit.id}
-        //             audit={audit}
-        //             onSubmitDone={fetchAudits}
-        //             onDelete={fetchAudits}
-        //           />
-        //         ))
-        //       ) : (
-        //         <tr>
-        //           <td colSpan={5} className="text-center">
-        //             No Audits Found
-        //           </td>
-        //         </tr>
-        //       )}
-        //     </tbody>
-        //   </table>
-        // </div>
       )}
     </>
   );
