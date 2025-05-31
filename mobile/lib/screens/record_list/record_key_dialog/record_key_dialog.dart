@@ -5,7 +5,9 @@ import 'package:mobile/screens/record_list/record_key_dialog/record_key_tile.dar
 import 'package:mobile/utils/box_names.dart';
 
 class RecordKeyDialog extends StatefulWidget {
-  const RecordKeyDialog({super.key});
+  const RecordKeyDialog({required this.offlineMode, super.key});
+
+  final ValueNotifier<bool> offlineMode;
 
   @override
   State<RecordKeyDialog> createState() => RecordKeyDialogState();
@@ -26,73 +28,77 @@ class RecordKeyDialogState extends State<RecordKeyDialog> {
 
   @override
   Widget build(BuildContext context) => 
-    Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: guidController,
-              decoration: InputDecoration(
-                hintText: 'Input Records GUID here',
+    ValueListenableBuilder(
+      valueListenable: widget.offlineMode, 
+      builder: (context, isOffline, _) => Dialog(
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if(!isOffline) TextField(
+                controller: guidController,
+                decoration: InputDecoration(
+                  hintText: 'Input Records GUID here',
+                ),
               ),
-            ),
-            Row(
-              children: [
-                Expanded(child: Text("Save")),
-                Switch(value: shouldSave, onChanged: (val) => setState(() => shouldSave = val)),
-              ]
-            ),
-            if(shouldSave) TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                hintText: 'Input Name here',
+              if(!isOffline) Row(
+                children: [
+                  Expanded(child: Text("Save")),
+                  Switch(value: shouldSave, onChanged: (val) => setState(() => shouldSave = val)),
+                ]
               ),
-            ),
-            Row(
-              children: [
-                Expanded(child: Text("Select from saved keys")),
-                Switch(value: selectKeys, onChanged: (val) => setState(() => selectKeys = val)),
-              ]
-            ),
-            if(selectKeys) FutureBuilder<List<Widget>>(
-                future: getKeyPairs((result) { 
-                  if(result != null) {
-                    Navigator.pop(context, result);
-                  }
-                }, (result) {
-                  if(result != null) {
-                    setState(() {
-                      var keyBox = Hive.box(BoxNames.keys);
-                      keyBox.delete(result.name);
-                    });
-                  }
-                }),
-                builder: (context, snapshot) { 
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(child: Text("No saved keys."));
-                  }
+              if(shouldSave) TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  hintText: 'Input Name here',
+                ),
+              ),
+              if(!isOffline) Row(
+                children: [
+                  Expanded(child: Text("Select from saved keys")),
+                  Switch(value: selectKeys, onChanged: (val) => setState(() => selectKeys = val)),
+                ]
+              ),
+              if(isOffline) Text("Select Saved keys"),
+              if(isOffline || selectKeys) FutureBuilder<List<Widget>>(
+                  future: getKeyPairs((result) { 
+                    if(result != null) {
+                      Navigator.pop(context, result);
+                    }
+                  }, (result) {
+                    if(result != null) {
+                      setState(() {
+                        var keyBox = Hive.box(BoxNames.keys);
+                        keyBox.delete(result.name);
+                      });
+                    }
+                  }),
+                  builder: (context, snapshot) { 
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(child: Text("No saved keys."));
+                    }
 
-                  return ListView(
-                    shrinkWrap: true,
-                    children: snapshot.data!
-                  );
-                }
-            ),
-            TextButton(
-              onPressed: () {
-                final result = RecordKeyDialogResult(key: guidController.text, name: shouldSave ? nameController.text : null);
-                Navigator.pop(context, result);
-              },
-              child: const Text('Confirm')
-            ),
-          ],
-        ),
+                    return ListView(
+                      shrinkWrap: true,
+                      children: snapshot.data!
+                    );
+                  }
+              ),
+              TextButton(
+                onPressed: () {
+                  final result = RecordKeyDialogResult(key: guidController.text, name: shouldSave ? nameController.text : null);
+                  Navigator.pop(context, result);
+                },
+                child: isOffline ? Text("Cancel") : Text('Confirm')
+              ),
+            ],
+          ),
+        )
       )
-  );
+    );
 }

@@ -111,7 +111,7 @@ class _RecordListState extends State<RecordList> {
   }
 
   void retrieveGuid() async {
-    var result = await showDialog<RecordKeyDialogResult>(context: context, builder: (context) => RecordKeyDialog());
+    var result = await showDialog<RecordKeyDialogResult>(context: context, builder: (context) => RecordKeyDialog(offlineMode: offlineMode));
     String? currentName;
     if(result != null) {
       guid = result.key;
