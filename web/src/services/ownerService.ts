@@ -3,7 +3,7 @@ import { OwnerFilterDto } from "@/dto/owner";
 import axios from "axios";
 
 export async function fetchOwnersReq(filter: OwnerFilterDto) {
-  const getOwnersUrl = OwnerRoutes.GET_OWNERS_ROUTE;
+  const getOwnersUrl = OwnerRoutes.GET_OWNERS;
   const queryParams = new URLSearchParams();
 
   (Object.keys(filter) as (keyof OwnerFilterDto)[]).forEach((key) => {
@@ -22,7 +22,7 @@ export async function fetchOwnersReq(filter: OwnerFilterDto) {
 }
 
 export async function addOwnerReq(formData: FormData) {
-  const addOwnerUrl = OwnerRoutes.ADD_OWNER_ROUTE;
+  const addOwnerUrl = OwnerRoutes.ADD_OWNER;
 
   try {
     const res = await axios.post(addOwnerUrl, formData);
@@ -35,7 +35,7 @@ export async function addOwnerReq(formData: FormData) {
 }
 
 export async function updateOwnerReq(formData: FormData) {
-  const updateOwnerUrl = OwnerRoutes.UPDATE_OWNER_ROUTE;
+  const updateOwnerUrl = OwnerRoutes.UPDATE_OWNER;
   try {
     const res = await axios.put(updateOwnerUrl, formData);
 
@@ -47,7 +47,7 @@ export async function updateOwnerReq(formData: FormData) {
 }
 
 export async function deleteOwnerReq(formData: FormData) {
-  const deleteOwnerUrl = OwnerRoutes.DELETE_OWNER_ROUTE;
+  const deleteOwnerUrl = OwnerRoutes.DELETE_OWNER;
   try {
     const res = await axios.delete(deleteOwnerUrl, {
       data: formData,
@@ -87,7 +87,7 @@ export const confirmOwnerLoginReq = async (
   formData.append("password", password);
 
   try {
-    const res = await axios.post(OwnerRoutes.CONFIRM_OWNER_URL, formData, {
+    const res = await axios.post(OwnerRoutes.CONFIRM_OWNER_LOGIN, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -97,4 +97,19 @@ export const confirmOwnerLoginReq = async (
   } catch {
     return false;
   }
+};
+
+export const getOwnerReq = async (guid: string) => {
+  const fetchOwnerByGuid = OwnerRoutes.FETCH_OWNER_BY_GUID;
+  const formData = new FormData();
+
+  formData.append("guid", guid);
+
+  const res = await axios.post(fetchOwnerByGuid, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return res.data;
 };
