@@ -1,0 +1,59 @@
+import 'package:hive/hive.dart';
+import 'package:mobile/models/api_models/record_model.dart';
+import 'package:mobile/models/hive_models/stored_record.dart';
+import 'package:mobile/models/service_results/result.dart';
+import 'package:mobile/utils/box_names.dart';
+
+class RecordOfflineService {
+  Future<Result<List<RecordModel>>> fetchLastOnlineRecords(String guid) async {
+    List<RecordModel> onlineRecords = [];
+    if (await isGuidStored(guid)) {
+      final onlineKey = getOnlineBoxKey(guid);
+      final boxExists = await Hive.boxExists(onlineKey);
+      if (boxExists) {
+        final box = await Hive.openBox(onlineKey);
+        onlineRecords = box.values
+            .map((val) => RecordModel.fromLocal(val, true))
+            .toList();
+      }
+    }
+    var result = Result(onlineRecords);
+    return result;
+  }
+
+  Future<void> storeLastOnlineData(String guid, Result<List<RecordModel>> result) async {
+    final box = await Hive.openBox(getOnlineBoxKey(guid));
+    await box.clear();
+    await box.addAll(result.value.map((record) => StoredRecord(
+        guid: guid,
+        reason: record.reason,
+        amount: record.amount,
+        receipt: record.receipt,
+        signature: record.signature,
+        createdAt: record.createdAt,
+        isSynced: true,
+      )));
+  }
+
+  Future<List<RecordModel>> fetchOfflineRecords(String guid) async {
+    List<RecordModel> offlineRecords = [];
+    if (await isGuidStored(guid)) {
+      final boxExists = await Hive.boxExists(getOfflineBoxKey(guid));
+      if (boxExists) {
+        final box = await Hive.openBox(getOfflineBoxKey(guid));
+        offlineRecords = box.values
+            .map((val) => RecordModel.fromLocal(val, false))
+            .toList();
+      }
+    }
+    return offlineRecords;
+  }
+  
+  String getOfflineBoxKey(String guid) => "${guid}_offline";
+  String getOnlineBoxKey(String guid) => "${guid}_online";
+
+  Future<bool> isGuidStored(String guid) async {
+    var keyBox = await Hive.openBox(BoxNames.keys);
+    return keyBox.values.any((key) => key == guid);
+  }
+}
