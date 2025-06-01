@@ -1,6 +1,6 @@
 import { CreateConnection } from "@/config/mariadbConfig";
 import { RecordDto } from "@/dto/record";
-import { CreateRecordSchema } from "@/dto/record/CreateRecordReqDto";
+import { CreateBackdatedSchema } from "@/dto/record/CreateBackdatedReqDto";
 import { RecordSchema } from "@/dto/record/RecordDto";
 import { AuditRepository, RecordRepository } from "@/repositories/mariaDb";
 
@@ -53,22 +53,24 @@ export async function POST(request: Request): Promise<Response> {
         receiptFile instanceof File
           ? Buffer.from(await receiptFile.arrayBuffer())
           : null;
-
-      const parsedRecord = CreateRecordSchema.safeParse({
+          
+      const createdAtDate = record.createdAt ? new Date(record.createdAt) : new Date();
+      const parsedRecord = CreateBackdatedSchema.safeParse({
         auditId,
         amount: Number(record.amount),
         reason: record.reason,
         receipt,
         signature: record.signature,
         approved: 0,
-        createdAt: record.createdAt || new Date(),
+        createdAt: createdAtDate,
+        updatedAt: createdAtDate,
       });
       if (!parsedRecord.success) {
         console.warn(`Skipping record[${i}]:`, parsedRecord.error.issues);
         continue;
       }
 
-      const success = await recordRepository.addRecord(parsedRecord.data);
+      const success = await recordRepository.addBackdated(parsedRecord.data);
       if (!success) console.warn(`Failed to insert record[${i}]`);
     }
 
