@@ -1,4 +1,5 @@
 import {
+  CreateBackdatedReqDto,
   CreateRecordReqDto,
   RecordDto,
   RecordFilterDto,
@@ -8,6 +9,7 @@ import { FieldPacket, QueryResult } from "mysql2/promise";
 
 export interface IRecordRepository {
   addRecord(dto: CreateRecordReqDto): Promise<[QueryResult, FieldPacket[]]>;
+  addBackdated(dto: CreateBackdatedReqDto): Promise<[QueryResult, FieldPacket[]]>;
   getRecordList(
     auditId: number,
     filters: RecordFilterDto
