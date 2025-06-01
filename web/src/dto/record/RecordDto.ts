@@ -10,6 +10,7 @@ export const RecordSchema = z.object({
   approved: z.number().optional(),
   createdAt: z.date().default(new Date()).optional(),
   updatedAt: z.date().default(new Date()).optional(),
+  guid: z.string().uuid("Public Guid must be a valid UUID").optional()
 });
 
 export type RecordDto = z.infer<typeof RecordSchema>;
