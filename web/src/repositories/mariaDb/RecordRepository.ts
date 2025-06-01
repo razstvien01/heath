@@ -1,4 +1,5 @@
 import {
+  CreateBackdatedReqDto,
   CreateRecordReqDto,
   RecordDto,
   RecordFilterDto,
@@ -20,6 +21,26 @@ export class RecordRepository implements IRecordRepository {
 
   constructor(db: Connection) {
     this._db = db;
+  }
+  async addBackdated(
+    dto: CreateBackdatedReqDto
+  ): Promise<[QueryResult, FieldPacket[]]> {
+    const query =
+      "INSERT INTO Records (auditId, amount, reason, receipt, signature, approved, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    const values = [
+      dto.auditId,
+      dto.amount,
+      dto.reason,
+      dto.receipt,
+      dto.signature,
+      dto.approved,
+      dto.createdAt,
+      dto.createdAt,
+    ];
+
+    const result = await this._db.execute(query, values);
+
+    return result;
   }
   async isRecordExists(id: number): Promise<boolean> {
     const query = "SELECT 1 FROM Records WHERE id = ?";
@@ -50,7 +71,6 @@ export class RecordRepository implements IRecordRepository {
     auditId: number,
     filters: RecordFilterDto
   ): Promise<RecordDto[]> {
-    // const query = "SELECT * FROM Records WHERE auditId = ?";
     let query = "SELECT * FROM Records";
     const conditions: string[] = [];
     const values: (string | number)[] = [];
