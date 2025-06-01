@@ -36,7 +36,8 @@ class _RecordAddState extends State<RecordAdd> {
       amount: amountController.text, 
       reason: reasonController.text, 
       receipt: fileInput, 
-      signature: signatureInput));
+      signature: signatureInput,
+      createdAt: DateTime.now()));
 
     if(!context.mounted) return;
     onSuccess();
@@ -69,7 +70,6 @@ class _RecordAddState extends State<RecordAdd> {
               labelText: "Reason",
               hintText: "Enter reason"
             )
-
           ),
           Align(alignment: Alignment.centerLeft, child: Text("Receipt", style: TextStyle(fontSize: 16))),
           CompactImageInput(onInput: (input) => fileInput = input),
