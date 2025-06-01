@@ -8,8 +8,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const formData = await request.formData();
     const recordJson = formData.get("records");
-    const allReceipts = formData.getAll("receipts");
-    
+
     if (!recordJson)
       return new Response("Missing records data", {
         status: 400,
@@ -48,15 +47,13 @@ export async function POST(request: Request): Promise<Response> {
         continue;
       }
 
-      // const receiptFile = formData.get(`receipt-${i}`);
-      const receiptFile = allReceipts[i];
-      console.log(`receiptFile ${i}:`, receiptFile);
+      const receiptFile = formData.get(`receipt-${i}`);
 
       const receipt =
         receiptFile instanceof File
           ? Buffer.from(await receiptFile.arrayBuffer())
           : null;
-      
+
       const parsedRecord = CreateRecordSchema.safeParse({
         auditId,
         amount: Number(record.amount),
