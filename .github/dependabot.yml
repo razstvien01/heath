@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Web project (using npm)
+  - package-ecosystem: "npm"
+    directory: "/web"
+    schedule:
+      interval: "weekly"
+
+  # Mobile project (Flutter / Dart using pubspec.yaml)
+  - package-ecosystem: "pub"
+    directory: "/mobile"
+    schedule:
+      interval: "weekly"
