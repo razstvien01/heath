@@ -44,7 +44,7 @@ class StoredRecord extends HiveObject {
     amount: double.parse(input.amount), 
     receiptFilePath: input.receipt?.path,
     signature: input.signature ?? "", 
-    createdAt: DateTime.now(),
+    createdAt: input.createdAt,
     isSynced: false,
     viewModelGuid: Uuid().v4()
   );

@@ -130,17 +130,13 @@ class _RecordListState extends State<RecordList> {
 
   void syncAll() async {
     var offlineItems = await RecordOfflineService().removeAllOfflineRecords(guid);
-    List<Future<void>> addRecordFutures = [];
-    for(var item in offlineItems) {
-      addRecordFutures.add(RecordService().addRecord(RecordInputModel.fromStorage(guid, item)));
-    }
-    Future.wait(addRecordFutures);
+    await RecordService().addRecords(offlineItems.map((item) => RecordInputModel.fromStorage(guid, item)).toList());
     fetchRecords();
   }
 
   void syncOne(String viewModelGuid) async {
     var removedRecord = await recordOfflineService.removeOfflineRecord(guid, viewModelGuid);
-    RecordService().addRecord(RecordInputModel.fromStorage(guid, removedRecord));
+    await RecordService().addRecords([RecordInputModel.fromStorage(guid, removedRecord)]);
     fetchRecords();
   }
 

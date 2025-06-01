@@ -55,33 +55,47 @@ class RecordService {
     return result;
   }
 
-  Future<Result<void>> addRecord(RecordInputModel recordModel) async {
+  Future<Result<void>> addRecords(List<RecordInputModel> inputModels) async {
     Result<void> result = Result(null);
+    List<Map<String, dynamic>> records = [];
 
-    if(recordModel.reason.isEmpty) {
-      result.exceptions.add(Exception("Reason is not provided"));
+    var request = http.MultipartRequest('POST', Uri.http(dotenv.env[EnvKeys.baseUrl]!, ApiPaths.syncUrl));
+
+    for(int i = 0; i < inputModels.length; i++)
+    {
+      var inputModel = inputModels[i];
+
+      if(inputModel.reason.isEmpty) {
+        result.exceptions.add(Exception("Reason is not provided on one of the data"));
+        return result;
+      } 
+
+      Map<String, dynamic> jsonData = {
+        'guid': inputModel.guid,
+        'amount': inputModel.amount,
+        'reason': inputModel.reason,
+        'createdAt': inputModel.createdAt.toUtc().toIso8601String()
+      };
+
+      if(inputModel.signature != null) {
+        jsonData['signature'] = inputModel.signature!;
+      }
+
+      records.add(jsonData);
+
+      if(inputModel.receipt != null) {
+        request.files.add(await http.MultipartFile.fromPath('receipt-$i', inputModel.receipt!.path));
+      }
     }
-
-    var request = http.MultipartRequest('POST', Uri.http(dotenv.env[EnvKeys.baseUrl]!, ApiPaths.addRecordUrl));
 
     request.fields.addAll({
-      'guid': recordModel.guid,
-      'amount': recordModel.amount,
-      'reason': recordModel.reason,
+      'records': jsonEncode(records)
     });
-
-    if(recordModel.signature != null) {
-      request.fields['signature'] = recordModel.signature!;
-    }
-
-    if(recordModel.receipt != null) {
-      request.files.add(await http.MultipartFile.fromPath('receipt', recordModel.receipt!.path));
-    }
 
     var response = await request.send();
 
     if (response.statusCode != 200) {
-      result.exceptions.add(Exception("Failed to add Record"));
+      result.exceptions.add(Exception("Failed to sync Record"));
     } 
 
     return result;
