@@ -89,7 +89,7 @@ class _RecordAddState extends State<RecordAdd> {
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return "Amount is required";
+                    return "Reason is required";
                   }
                   return null;
                 },
