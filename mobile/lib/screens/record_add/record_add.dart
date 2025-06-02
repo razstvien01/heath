@@ -18,8 +18,9 @@ class RecordAdd extends StatefulWidget {
 }
 
 class _RecordAddState extends State<RecordAdd> {
-  final TextEditingController amountController = TextEditingController();
-  final TextEditingController reasonController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final amountController = TextEditingController();
+  final reasonController = TextEditingController();
   File? fileInput;
   String? signatureInput;
 
@@ -30,16 +31,22 @@ class _RecordAddState extends State<RecordAdd> {
     signatureInput = null;
   }
 
-  void onSubmit(Function(Queue<Exception>) onErrors, Function() onSuccess) async {
-    await RecordOfflineService().addOfflineRecord(RecordInputModel(
-      guid: widget.recordGuid, 
-      amount: amountController.text, 
-      reason: reasonController.text, 
-      receipt: fileInput, 
-      signature: signatureInput,
-      createdAt: DateTime.now()));
+  void onSubmit(
+    Function(Queue<Exception>) onErrors,
+    Function() onSuccess,
+  ) async {
+    await RecordOfflineService().addOfflineRecord(
+      RecordInputModel(
+        guid: widget.recordGuid,
+        amount: amountController.text,
+        reason: reasonController.text,
+        receipt: fileInput,
+        signature: signatureInput,
+        createdAt: DateTime.now(),
+      ),
+    );
 
-    if(!context.mounted) return;
+    if (!context.mounted) return;
     onSuccess();
   }
 
@@ -48,52 +55,84 @@ class _RecordAddState extends State<RecordAdd> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Record Add')
+        title: Text('Record Add'),
       ),
-      body: Column(
-        spacing: 10,
-        children: [
-          TextField(
-            controller: amountController,
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            spacing: 10,
+            children: [
+              TextFormField(
+                controller: amountController,
+                keyboardType: TextInputType.numberWithOptions(signed: true),
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*$')),
+                ],
+                decoration: InputDecoration(
+                  labelText: "Amount",
+                  hintText: "Enter amount",
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Amount is required";
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: reasonController,
+                decoration: InputDecoration(
+                  labelText: "Reason",
+                  hintText: "Enter reason",
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Reason is required";
+                  }
+                  return null;
+                },
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Receipt", style: TextStyle(fontSize: 16)),
+              ),
+              CompactImageInput(onInput: (input) => fileInput = input),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Signature", style: TextStyle(fontSize: 16)),
+              ),
+              CompactSignatureInput(onInput: (input) => signatureInput = input),
+              SizedBox(
+                width: double.maxFinite,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      onSubmit(
+                        (exceptions) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "An error occurred: ${exceptions.first}",
+                              ),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        },
+                        () {
+                          Navigator.pop(context, true);
+                        },
+                      );
+                    }
+                  },
+                  child: Text("Save"),
+                ),
+              ),
             ],
-            decoration: InputDecoration(
-              labelText: "Amount",
-              hintText: "Enter amount"
-            )
           ),
-          TextField(
-            controller: reasonController,
-            decoration: InputDecoration(
-              labelText: "Reason",
-              hintText: "Enter reason"
-            )
-          ),
-          Align(alignment: Alignment.centerLeft, child: Text("Receipt", style: TextStyle(fontSize: 16))),
-          CompactImageInput(onInput: (input) => fileInput = input),
-          Align(alignment: Alignment.centerLeft, child: Text("Signature", style: TextStyle(fontSize: 16))),
-          CompactSignatureInput(onInput: (input) => signatureInput = input),
-          SizedBox(
-            width: double.maxFinite,
-            child: ElevatedButton(
-              onPressed: () => onSubmit((exceptions) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text("An error occurred: ${exceptions.first}"),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              },
-              () {
-                Navigator.pop(context, true);
-              }), 
-              child: Text("Save")
-            ),
-          )
-        ]
-      )
+        ),
+      ),
     );
   }
 }
