@@ -19,14 +19,19 @@ export function AuditManagement({ guid }: AuditManagementProps) {
   );
 
   const handleLoginSuccess = async () => {
-    setLoggedInState(true);
-
     const owner = await getOwnerReq(guid);
+
+    if (!owner) {
+      throw new Error("Owner not found");
+    }
+
+    setLoggedInState(true);
     setCurrentOwner(owner);
   };
 
   const handleLogout = () => {
     setLoggedInState(false);
+    setCurrentOwner(undefined);
   };
 
   return (
