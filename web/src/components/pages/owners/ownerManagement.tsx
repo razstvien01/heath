@@ -1,40 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import type { AdminDto } from "@/dto/admin";
 import { OwnerList } from "./ownerList";
-import { confirmAdminLoginReq } from "@/services/adminService";
+import { confirmAdminLoginReq, getAdminReq } from "@/services/adminService";
 import { LoginForm } from "@/components/loginForm";
 import { ProfileHeader } from "./profileHeader";
+import Admin from "@/models/Admin";
 
 interface OwnerManagementProps {
   guid: string;
-  admin: AdminDto;
 }
 
-export function OwnerManagement({ guid, admin }: OwnerManagementProps) {
+export function OwnerManagement({ guid }: OwnerManagementProps) {
   const role = "admin";
   const [loggedInState, setLoggedInState] = useState(false);
-  const [currentAdmin, setCurrentAdmin] = useState<AdminDto>({
-    id: undefined,
-    name: undefined,
-    password: undefined,
-    ownerManagementGuid: undefined,
-  });
+  const [currentAdmin, setCurrentAdmin] = useState<Admin | undefined>(
+    undefined
+  );
 
-  const handleLoginSuccess = () => {
-    setCurrentAdmin(admin);
+  const handleLoginSuccess = async () => {
+    const admin = await getAdminReq(guid);
+    
+    if (!admin) {
+      throw new Error("Admin not found");
+    }
+
     setLoggedInState(true);
+    setCurrentAdmin(admin);
   };
 
   const handleLogout = () => {
     setLoggedInState(false);
-    setCurrentAdmin({
-      id: undefined,
-      name: undefined,
-      password: undefined,
-      ownerManagementGuid: undefined,
-    });
+    setCurrentAdmin(undefined);
   };
 
   return (
