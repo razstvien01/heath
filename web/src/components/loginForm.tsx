@@ -46,9 +46,11 @@ export function LoginForm({
 
       if (res) {
         setShowLoginSuccess(true);
-        setUsername("");
-        setPassword("");
-        onLoginSuccess();
+        setTimeout(() => {
+          setUsername("");
+          setPassword("");
+          onLoginSuccess();
+        }, 1000);
       } else {
         setInvalidLoginState(true);
       }
