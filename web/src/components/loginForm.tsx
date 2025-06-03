@@ -32,9 +32,8 @@ export function LoginForm({
   const [password, setPassword] = useState("");
   const [invalidLoginState, setInvalidLoginState] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoginSuccess, setShowLoginSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const disabledShowPass = isLoading || invalidLoginState || !password;
 
   const confirmLogin = async () => {
     if (!username || !password) return;
@@ -46,6 +45,7 @@ export function LoginForm({
       const res = await onLoginRequest(guid, username, password);
 
       if (res) {
+        setShowLoginSuccess(true);
         setUsername("");
         setPassword("");
         onLoginSuccess();
@@ -101,9 +101,9 @@ export function LoginForm({
             size="sm"
             className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
             onClick={() => setShowPassword((prev) => !prev)}
-            disabled={disabledShowPass}
+            disabled={showPassword}
           >
-            {showPassword && !disabledShowPass ? (
+            {showPassword ? (
               <EyeIcon className="h-4 w-4" aria-hidden="true" />
             ) : (
               <EyeOffIcon className="h-4 w-4" aria-hidden="true" />
@@ -116,6 +116,11 @@ export function LoginForm({
         {invalidLoginState && (
           <p className="text-red-500 text-sm text-center">
             Invalid {roleLabel.toLowerCase()} login credentials
+          </p>
+        )}
+        {showLoginSuccess && (
+          <p className="text-secondary-foreground text-sm text-center">
+            The {roleLabel.toLowerCase()} logged in successfully
           </p>
         )}
       </CardContent>
