@@ -14,8 +14,7 @@ export async function isAdminGuidReq(guid: string): Promise<boolean> {
     });
 
     return res.status === 200;
-  } catch (error) {
-    console.error("Error checking admin GUID:", error);
+  } catch {
     return false;
   }
 }
