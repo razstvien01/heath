@@ -12,7 +12,7 @@ export class AdminRepository implements IAdminRepository {
   }
   async isGuidValid(ownerManagementGuid: string): Promise<boolean> {
     const query =
-      "SELECT COUNT(*) as count FROM Admins WHERE ownerManagementGuid = ?";
+      "SELECT 1 FROM Admins WHERE ownerManagementGuid = ?";
 
     try {
       const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(
