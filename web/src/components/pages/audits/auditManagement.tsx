@@ -56,9 +56,9 @@ export function AuditManagement({ guid }: AuditManagementProps) {
           <ProfileHeader
             profile={currentOwner}
             onLogout={handleLogout}
-            role="Owner"
+            role={role !== "owner" ? "Administrator" : "Owner"}
           />
-          <AuditList />
+          <AuditList guid={guid} />
         </div>
       )}
     </>
