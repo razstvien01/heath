@@ -125,6 +125,75 @@ export class RecordRepository implements IRecordRepository {
     return records;
   }
 
+  async getRecords(
+    auditId: number,
+    filters: RecordFilterDto
+  ): Promise<RecordDto[]> {
+    let query =
+      "SELECT amount, reason, signature, approved, createdAt, updatedAt, auditId, id FROM Records";
+    const conditions: string[] = [];
+    const values: (string | number)[] = [];
+
+    if (filters.reason) {
+      conditions.push("reason LIKE ?");
+      values.push(`%${filters.reason}%`);
+    }
+
+    if (filters.createdFrom) {
+      conditions.push("createdAt >= ?");
+      values.push(filters.createdFrom);
+    }
+
+    if (filters.createdTo) {
+      conditions.push("createdAt <= ?");
+      values.push(filters.createdTo);
+    }
+
+    if (filters.updatedFrom) {
+      conditions.push("updatedAt >= ?");
+      values.push(filters.updatedFrom);
+    }
+
+    if (filters.updatedTo) {
+      conditions.push("updatedAt <= ?");
+      values.push(filters.updatedTo);
+    }
+
+    if (auditId) {
+      conditions.push("auditId = ?");
+      values.push(auditId);
+    }
+
+    if (conditions.length > 0) query += " WHERE " + conditions.join(" AND ");
+
+    if (filters.orderBy) {
+      const dir =
+        filters.orderDirection?.toUpperCase() === "DESC" ? "DESC" : "ASC";
+      query += ` ORDER BY ${filters.orderBy} ${dir}`;
+    }
+
+    const [rows] = await this._db.query<Record[] & RowDataPacket[]>(
+      query,
+      values
+    );
+
+    const records: RecordDto[] = rows.map((row) => {
+      return {
+        amount: row.amount ?? 0,
+        reason: row.reason ?? "",
+        signature: row.signature ?? "",
+        approved: row.approved ?? 0,
+        createdAt: row.createdAt ?? new Date(),
+        updatedAt: row.updatedAt ?? new Date(),
+        auditId: row.auditId ?? 0,
+        id: row.id ?? 0,
+        imageURL: "api/image/" + row.id,
+      };
+    });
+
+    return records;
+  }
+
   async updateRecord(
     dto: UpdateRecordReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
