@@ -74,7 +74,7 @@ export async function POST(request: Request): Promise<Response> {
 
     const filters = parsedFilter.data;
     const recordRepository = new RecordRepository(db);
-    const records = await recordRepository.getRecordList(auditId, filters);
+    const records = await recordRepository.getRecords(auditId, filters);
 
     if (!records || records.length === 0)
       return new Response(JSON.stringify({ message: "No Records found" }), {
