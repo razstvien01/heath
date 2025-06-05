@@ -14,6 +14,10 @@ export interface IRecordRepository {
     auditId: number,
     filters: RecordFilterDto
   ): Promise<RecordDto[]>;
+  getRecords(
+    auditId: number,
+    filters: RecordFilterDto
+  ): Promise<RecordDto[]>;
   updateRecord(dto: UpdateRecordReqDto): Promise<[QueryResult, FieldPacket[]]>;
   deleteRecordById(id: number): Promise<[QueryResult, FieldPacket[]]>;
   isRecordExists(id: number): Promise<boolean>;
