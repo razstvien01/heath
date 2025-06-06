@@ -132,7 +132,7 @@ export class RecordRepository implements IRecordRepository {
     );
 
     const records: RecordDto[] = rows.map((row) => {
-      return RecordMapper.toOwnerDto(row);
+      return RecordMapper.toRecordDto(row);
     });
 
     return records;
@@ -191,17 +191,7 @@ export class RecordRepository implements IRecordRepository {
     );
 
     const records: RecordDto[] = rows.map((row) => {
-      return {
-        amount: row.amount ?? 0,
-        reason: row.reason ?? "",
-        signature: row.signature ?? "",
-        approved: row.approved ?? 0,
-        createdAt: row.createdAt ?? new Date(),
-        updatedAt: row.updatedAt ?? new Date(),
-        auditId: row.auditId ?? 0,
-        id: row.id ?? 0,
-        imageURL: "api/image/" + row.id,
-      };
+      return RecordMapper.toRecordUrlDto(row);;
     });
 
     return records;
