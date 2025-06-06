@@ -1,9 +1,10 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:mobile/models/hive_models/stored_record.dart';
 
 class RecordModel {
-  const RecordModel({
+  RecordModel({
     required this.createdAt, 
     required this.amount,
     required this.reason,
@@ -11,30 +12,27 @@ class RecordModel {
     required this.signature,
     this.receiptFile,
     this.viewModelGuid,
-    required this.isSynced
+    required this.isSynced,
+    this.receiptUrl,
+    required this.guid
   });
 
   final DateTime createdAt;
   final String reason;
   final double amount;
-  final Map<String, dynamic>? receipt;
+  Uint8List? receipt;
+  final String? receiptUrl;
   final String signature;
   final File? receiptFile;
   final bool isSynced;
   final String? viewModelGuid;
+  final String guid;
 
   bool hasReceipt() {
-    if(receipt != null) {
-      dynamic receiptValue = receipt!['data'];
-      if(receiptValue is List) {
-        return receiptValue.isNotEmpty;
-      }
-    }
-
-    return receiptFile != null;
+    return (receiptUrl != null && receiptUrl!.isNotEmpty) || (receipt != null) || (receiptFile != null);
   }
 
-  factory RecordModel.fromServer(Map<String, dynamic> json) {
+  factory RecordModel.fromServer(String guid, Map<String, dynamic> json) {
     dynamic amountJson = json['amount'];
     double amountValue;
     if(amountJson is int) {
@@ -49,9 +47,10 @@ class RecordModel {
       createdAt: DateTime.parse(json['createdAt']),
       reason: json['reason'],
       amount: amountValue,
-      receipt: json['receipt'],
       signature: json['signature'],
-      isSynced: true
+      isSynced: true,
+      receiptUrl: json['receiptUrl'],
+      guid: guid
     );
   }
 
@@ -64,7 +63,8 @@ class RecordModel {
       receipt: record.receipt,
       signature: record.signature,
       isSynced: isSynced,
-      viewModelGuid: record.viewModelGuid
+      viewModelGuid: record.viewModelGuid,
+      guid: record.guid
     );
   }
 }

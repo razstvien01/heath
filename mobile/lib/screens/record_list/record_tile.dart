@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/models/api_models/record_model.dart';
 import 'package:mobile/screens/record_list/record_list.dart';
+import 'package:mobile/services/record_offline_service.dart';
+import 'package:mobile/services/server_service.dart';
 import 'package:mobile/widgets/check_label.dart';
 
-class RecordTile extends StatelessWidget {
+class RecordTile extends StatefulWidget {
   const RecordTile({
     required this.record, 
     this.runningBalance,
@@ -16,6 +18,26 @@ class RecordTile extends StatelessWidget {
 
   final RecordModel record;
   final double? runningBalance;
+
+  @override
+  State<RecordTile> createState() => _RecordTileState();
+}
+
+class _RecordTileState extends State<RecordTile> {
+  late RecordModel record;
+  bool isLoadingReceipt = false;
+
+  @override
+  void initState() {
+    super.initState();
+    record = widget.record;
+    if(record.receiptUrl != null) {
+      setState(() {
+        isLoadingReceipt = true;
+      });
+      loadImage();
+    }
+  }
 
   String formatDate(DateTime dateTime) {
     DateTime localTime = dateTime.toLocal();
@@ -27,9 +49,18 @@ class RecordTile extends StatelessWidget {
     return '${balance.toStringAsFixed(2)} Php';
   }
 
-  Image getImageFromBuffer(Map<String, dynamic> bufferData) {
-    final List<dynamic> intList = bufferData['data'];
-    final Uint8List bytes = Uint8List.fromList(intList.cast<int>());
+  void loadImage() async {
+    final file = await ServerService().getImage(record.receiptUrl!);
+    if (!mounted) return;
+
+    setState(() {
+      RecordOfflineService().updateReceiptImageDataOfOnlineRecord(record.guid, record.receiptUrl!, file.value);
+      record.receipt = file.value;
+      isLoadingReceipt = false;
+    });
+  }
+
+  Image getImageFromBytes(Uint8List bytes) {
     return Image.memory(bytes);
   }
 
@@ -55,7 +86,7 @@ class RecordTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if(record.isSynced) getImageFromBuffer(record.receipt!) else getImageFromFile(record.receiptFile!),
+                if(record.isSynced) getImageFromBytes(record.receipt!) else getImageFromFile(record.receiptFile!),
                 const SizedBox(height: 15),
                 TextButton(
                   onPressed: () => Navigator.pop(context), 
@@ -133,7 +164,7 @@ class RecordTile extends StatelessWidget {
                     Text(formatDate(record.createdAt)),
                   ])
                 ),
-                Text(formatBalance(runningBalance ?? 0))
+                Text(formatBalance(0)) //TODO: Running Balance
               ]
             ),
             Row(
@@ -146,7 +177,7 @@ class RecordTile extends StatelessWidget {
             )
           ]
         ),
-        trailing: buildTrailing(context),
+        trailing: isLoadingReceipt ? CircularProgressIndicator() : buildTrailing(context),
         isThreeLine: true
       ),
     );

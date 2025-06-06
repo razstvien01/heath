@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 import 'package:mobile/models/api_models/record_input_model.dart';
 import 'package:mobile/models/api_models/record_model.dart';
@@ -26,6 +28,7 @@ class RecordOfflineService {
     final box = await Hive.openBox(getOnlineBoxKey(guid));
     await box.clear();
     await box.addAll(result.value.map((record) => StoredRecord.fromRecord(guid, record)));
+    await box.close();
   }
 
   Future<List<RecordModel>> fetchOfflineRecords(String guid) async {
@@ -40,6 +43,21 @@ class RecordOfflineService {
       }
     }
     return offlineRecords;
+  }
+
+  Future updateReceiptImageDataOfOnlineRecord(String guid, String imageUrl, Uint8List imageData) async {
+    if (await isGuidStored(guid)) {
+      final boxExists = await Hive.boxExists(getOnlineBoxKey(guid));
+      if (boxExists) {
+        final box = await Hive.openBox<StoredRecord>(getOnlineBoxKey(guid));
+        final onlineModel = box.values.firstWhere((onlineData) => onlineData.receiptUrl == imageUrl);
+        onlineModel.receipt = imageData;
+        onlineModel.save();
+        box.close();
+        return;
+      }
+      throw Exception("Online box ${getOnlineBoxKey(guid)} is not found");
+    }
   }
 
   Future<List<StoredRecord>> removeAllOfflineRecords(String guid) async {

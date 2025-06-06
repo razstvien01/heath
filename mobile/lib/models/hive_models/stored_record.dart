@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:hive/hive.dart';
 import 'package:mobile/models/api_models/record_input_model.dart';
 import 'package:mobile/models/api_models/record_model.dart';
@@ -14,7 +16,7 @@ class StoredRecord extends HiveObject {
   @HiveField(2)
   double amount;
   @HiveField(3)
-  Map<String, dynamic>? receipt;
+  Uint8List? receipt;
   @HiveField(4)
   String? receiptFilePath;
   @HiveField(5)
@@ -25,6 +27,8 @@ class StoredRecord extends HiveObject {
   bool isSynced;
   @HiveField(8)
   String? viewModelGuid;
+  @HiveField(9)
+  String? receiptUrl;
 
   StoredRecord({
     required this.guid,
@@ -32,6 +36,7 @@ class StoredRecord extends HiveObject {
     required this.amount,
     this.receipt,
     this.receiptFilePath,
+    this.receiptUrl,
     this.viewModelGuid,
     required this.signature,
     required this.createdAt,
@@ -57,6 +62,7 @@ class StoredRecord extends HiveObject {
     signature: record.signature,
     createdAt: record.createdAt,
     isSynced: true,
-    viewModelGuid: record.viewModelGuid
+    viewModelGuid: record.viewModelGuid,
+    receiptUrl: record.receiptUrl
   );
 }
