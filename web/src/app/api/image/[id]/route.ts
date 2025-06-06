@@ -6,9 +6,10 @@ export async function GET(
   { params }: { params: { id: string } }
 ): Promise<Response> {
   try {
-    const id = await params.id;
+    const { id } = await params;
     const db = await CreateConnection();
     const recordRepository = new RecordRepository(db);
+    
     const recordId = Number(id);
     
     if (isNaN(recordId) || recordId <= 0) {
