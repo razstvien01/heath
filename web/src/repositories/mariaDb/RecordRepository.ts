@@ -22,6 +22,19 @@ export class RecordRepository implements IRecordRepository {
   constructor(db: Connection) {
     this._db = db;
   }
+  async getReceiptById(id: number): Promise<Buffer | null> {
+    if (!(await this.isRecordExists(id))) {
+      throw new Error(
+        `Record with id ${id} not found. Receipt retrieval aborted.`
+      );
+    }
+    const query = "SELECT receipt FROM Records WHERE id = ?";
+    const values = [id];
+
+    const [rows] = await this._db.query<RowDataPacket[]>(query, values);
+    return rows.length > 0 ? (rows[0].receipt as Buffer) : null;
+  }
+
   async addBackdated(
     dto: CreateBackdatedReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
