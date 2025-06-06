@@ -107,6 +107,12 @@ class _RecordListState extends State<RecordList> {
   Future<Result<List<RecordModel>>> combineAndSortRecords(List<RecordModel> recordA, List<RecordModel> recordB) {
     var result = Result([...recordA, ...recordB]);
     result.value.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    
+    double runningBalance = 0;
+    for (var record in result.value.reversed) {
+      runningBalance += record.amount;
+      record.runningBalance = runningBalance;
+    }
     return Future.value(result);
   }
 

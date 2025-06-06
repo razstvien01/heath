@@ -14,7 +14,8 @@ class RecordModel {
     this.viewModelGuid,
     required this.isSynced,
     this.receiptUrl,
-    required this.guid
+    required this.guid,
+    this.runningBalance = 0
   });
 
   final DateTime createdAt;
@@ -27,6 +28,7 @@ class RecordModel {
   final bool isSynced;
   final String? viewModelGuid;
   final String guid;
+  double runningBalance;
 
   bool hasReceipt() {
     return (receiptUrl != null && receiptUrl!.isNotEmpty) || (receipt != null) || (receiptFile != null);

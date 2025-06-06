@@ -164,7 +164,7 @@ class _RecordTileState extends State<RecordTile> {
                     Text(formatDate(record.createdAt)),
                   ])
                 ),
-                Text(formatBalance(0)) //TODO: Running Balance
+                Text(formatBalance(record.runningBalance))
               ]
             ),
             Row(
