@@ -18,6 +18,53 @@ export class AuditRepository implements IAuditRepository {
   constructor(db: Connection) {
     this._db = db;
   }
+  async getAuditTotalCount(
+    ownerId: number,
+    filters: AuditFilterDto
+  ): Promise<number> {
+    let query = "SELECT COUNT(*) AS total FROM Audits";
+    const conditions: string[] = [];
+    const values: (string | number)[] = [];
+
+    //* Applying filters
+    if (filters.name) {
+      conditions.push("name LIKE ?");
+      values.push(`%${filters.name}%`);
+    }
+
+    if (filters.createdFrom) {
+      conditions.push("createdAt >= ?");
+      values.push(filters.createdFrom);
+    }
+
+    if (filters.createdTo) {
+      conditions.push("createdAt <= ?");
+      values.push(filters.createdTo);
+    }
+
+    if (filters.updatedFrom) {
+      conditions.push("updatedAt >= ?");
+      values.push(filters.updatedFrom);
+    }
+
+    if (filters.updatedTo) {
+      conditions.push("updatedAt <= ?");
+      values.push(filters.updatedTo);
+    }
+
+    if (ownerId) {
+      conditions.push("ownerId = ?");
+      values.push(ownerId);
+    }
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    const [rows] = await this._db.query<RowDataPacket[]>(query, values);
+
+    return rows[0]?.total || 0;
+  }
 
   async addAudit(
     dto: CreateAuditReqDto
@@ -179,7 +226,7 @@ export class AuditRepository implements IAuditRepository {
       if (queryResult.affectedRows === 0) {
         throw new Error(`Audit with ID ${dto.id} not found.`);
       }
-      
+
       return result;
     } catch (error) {
       console.error("Error updating an audit:", error);
