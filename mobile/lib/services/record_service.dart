@@ -20,7 +20,7 @@ class RecordService {
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonList = jsonDecode(response.body);
-      result.value = jsonList.map((e) => RecordModel.fromServer(e)).toList();
+      result.value = jsonList.map((e) => RecordModel.fromServer(guid, e)).toList();
     } 
     else if(response.statusCode != 404) {
       result.exceptions.add(Exception("Failed to fetch Records"));
