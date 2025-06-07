@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         }
       );
     }
-    
+
     const db = await CreateConnection();
     const ownerRepository = new OwnerRepository(db);
     const ownerId = await ownerRepository.getOwnerIdFromManagementGuid(
@@ -86,6 +86,7 @@ export async function POST(request: Request) {
     const filters = parsedFilter.data;
     const auditRepository = new AuditRepository(db);
     const audits = await auditRepository.getAuditList(ownerId, filters);
+    const total = await auditRepository.getAuditTotalCount(ownerId, filters);
 
     if (!audits || audits.length === 0) {
       return new Response(JSON.stringify({ message: "No Audits found" }), {
@@ -96,7 +97,7 @@ export async function POST(request: Request) {
       });
     }
 
-    return new Response(JSON.stringify(audits), {
+    return new Response(JSON.stringify({ audits, total }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
