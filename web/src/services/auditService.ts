@@ -36,7 +36,7 @@ export async function addAuditReq(formData: FormData) {
         "Content-Type": "multipart/form-data",
       },
     });
-    
+
     return res.status === 200;
   } catch {
     return null;
