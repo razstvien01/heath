@@ -1,4 +1,4 @@
-class Admin {
+export class Admin {
   id: number | undefined;
   name: string = "";
   password: string = "";
@@ -6,5 +6,3 @@ class Admin {
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
 }
-
-export default Admin

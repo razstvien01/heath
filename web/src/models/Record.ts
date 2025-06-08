@@ -1,4 +1,4 @@
-class Record {
+export class Record {
   id?: number | undefined;
   auditId?: number | undefined;
   amount?: number | undefined;
@@ -9,5 +9,3 @@ class Record {
   createdAt?: Date;
   updatedAt?: Date;
 }
-
-export default Record;

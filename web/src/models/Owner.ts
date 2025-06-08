@@ -1,4 +1,4 @@
-class Owner {
+export class Owner {
   id: number = 0;
   name: string = "";
   managementGuid: string = "";
@@ -6,5 +6,3 @@ class Owner {
   createdAt: Date = new Date();
   updatedAt: Date = new Date();
 }
-
-export default Owner;
