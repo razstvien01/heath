@@ -4,8 +4,8 @@ import { useState } from "react";
 import { LoginForm } from "@/components/loginForm";
 import { confirmOwnerLoginReq, getOwnerReq } from "@/services/ownerService";
 import { ProfileHeader } from "../owners/profileHeader";
-import Owner from "@/models/Owner";
 import { AuditList } from "./auditList";
+import { Owner } from "@/models";
 
 interface AuditManagementProps {
   guid: string;
@@ -46,18 +46,21 @@ export function AuditManagement({ guid }: AuditManagementProps) {
           />
         </div>
       ) : (
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Audit</h1>
-            <p className="text-muted-foreground">
-              Manage owner accounts and permissions
-            </p>
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Audit Management</h1>
+              <p className="text-muted-foreground">
+                Review audit trails and monitor activity history
+              </p>
+            </div>
+
+            <ProfileHeader
+              profile={currentOwner}
+              onLogout={handleLogout}
+              role={role !== "owner" ? "Administrator" : "Owner"}
+            />
           </div>
-          <ProfileHeader
-            profile={currentOwner}
-            onLogout={handleLogout}
-            role={role !== "owner" ? "Administrator" : "Owner"}
-          />
           <AuditList guid={guid} />
         </div>
       )}
