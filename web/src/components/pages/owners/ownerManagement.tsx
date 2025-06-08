@@ -5,7 +5,7 @@ import { OwnerList } from "./ownerList";
 import { confirmAdminLoginReq, getAdminReq } from "@/services/adminService";
 import { LoginForm } from "@/components/loginForm";
 import { ProfileHeader } from "./profileHeader";
-import Admin from "@/models/Admin";
+import { Admin } from "@/models";
 
 interface OwnerManagementProps {
   guid: string;
@@ -20,7 +20,7 @@ export function OwnerManagement({ guid }: OwnerManagementProps) {
 
   const handleLoginSuccess = async () => {
     const admin = await getAdminReq(guid);
-    
+
     if (!admin) {
       throw new Error("Admin not found");
     }
