@@ -26,3 +26,19 @@ export async function fetchAuditsReq(
     return null;
   }
 }
+
+export async function addAuditReq(formData: FormData) {
+  const addAuditUrl = AuditRoutes.ADD_AUDIT;
+
+  try {
+    const res = await axios.post(addAuditUrl, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    
+    return res.status === 200;
+  } catch {
+    return null;
+  }
+}
