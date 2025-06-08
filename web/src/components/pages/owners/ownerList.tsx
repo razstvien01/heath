@@ -11,7 +11,7 @@ import {
   Search,
   UserPlus,
 } from "lucide-react";
-import type Owner from "@/models/Owner";
+import { Owner } from "@/models";
 import { addOwnerReq, fetchOwnersReq } from "@/services/ownerService";
 import {
   Card,
@@ -93,15 +93,13 @@ export function OwnerList() {
         setIsLoading(false);
         return true;
       }
-      setIsLoading(false);
-      return false;
     } catch (error) {
       console.error("Error adding owner:", error);
       setIsLoading(false);
-      return false;
     } finally {
       setIsLoading(false);
     }
+    return false;
   };
 
   const toggleSort = (field: SortField) => {
@@ -180,8 +178,10 @@ export function OwnerList() {
     <Card>
       <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full border">
         <div>
-          <CardTitle>Owner List</CardTitle>
-          <CardDescription>Manage existing owner accounts</CardDescription>
+          <CardTitle>Owner Directory</CardTitle>
+          <CardDescription>
+            Browse, update, or remove owner accounts from the system
+          </CardDescription>
         </div>
 
         <div className="sm:ml-auto mt-4 sm:mt-0">
