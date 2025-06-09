@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Edit, ExternalLink, Trash } from "lucide-react";
 import Link from "next/link";
-import type Owner from "@/models/Owner";
+import { Owner } from "@/models/Owner";
 import { deleteOwnerReq, updateOwnerReq } from "@/services/ownerService";
 import { DialogForm } from "@/components/dialogForm";
 
