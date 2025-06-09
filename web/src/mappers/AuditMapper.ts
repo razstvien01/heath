@@ -1,6 +1,6 @@
 import { CreateAuditReqDto, UpdateAuditReqDto } from "@/dto/audit";
 import { AuditDto } from "@/dto/audit/AuditDto";
-import Audit from "@/models/Audit";
+import { Audit } from "@/models/Audit";
 
 export default class AuditMapper {
   public static toAuditDto(data: Audit): AuditDto {
