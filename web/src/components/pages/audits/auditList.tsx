@@ -53,9 +53,9 @@ export function AuditList({ guid }: AuditListProps) {
     direction: "asc",
   });
   const [isAddAuditDialogOpen, setIsAddAuditDialogOpen] = useState(false);
-  const [debounceQuery, setDebouncedQuery] = useState(searchQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
   const [totalCount, setTotalCount] = useState(0);
-
+  
   const fetchAudits = useCallback(async () => {
     setIsLoading(true);
 
@@ -148,10 +148,37 @@ export function AuditList({ guid }: AuditListProps) {
   };
 
   useEffect(() => {
-    if (loggedInState) {
-      fetchAudits();
-    }
-  }, [loggedInState, fetchAudits]);
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setFilterAuditList((prev) => {
+      const newFilter = {
+        ...prev,
+        name: debouncedQuery || undefined,
+        managementGuid: debouncedQuery || undefined,
+        page: 1,
+      };
+
+      // Avoid redundant state updates - still called the fetchOwners twice
+      if (
+        prev.name === newFilter.name &&
+        prev.page === newFilter.page
+      ) {
+        return prev;
+      }
+
+      return newFilter;
+    });
+  }, [debouncedQuery]);
+
+  useEffect(() => {
+    fetchAudits();
+  }, [fetchAudits]);
 
   return (
     <Card>
@@ -219,7 +246,7 @@ export function AuditList({ guid }: AuditListProps) {
             )}
           </div>
         </div>
-
+            {/* // Audit Name	Entries	Public Guid */}
         {isLoading ? (
           <div className="flex justify-center py-8">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
@@ -231,16 +258,16 @@ export function AuditList({ guid }: AuditListProps) {
                 <thead className="border-b">
                   <tr className="border-b transition-colors hover:bg-muted/50">
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Username
+                      Audit Name
                     </th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Password
+                      Entries
                     </th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       Guid
                     </th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Date Created
+                      Public Guid
                     </th>
                     <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
                       Actions
@@ -249,15 +276,15 @@ export function AuditList({ guid }: AuditListProps) {
                 </thead>
                 <tbody>
                   {auditList.length > 0 ? (
-                    // auditList.map((owner) => (
-                    //   <AuditRow
-                    //     key={owner.id}
-                    //     owner={owner}
-                    //     onSubmitDone={fetchOwners}
-                    //     onDelete={fetchOwners}
-                    //   />
-                    // ))
-                    <></>
+                    auditList.map((audit: Audit) => (
+                      <AuditRow
+                        key={audit.id}
+                        audit={audit}
+                        onSubmitDone={fetchAudits}
+                        onDelete={fetchAudits}
+                      />
+                    ))
+                    // <></>
                   ) : (
                     <tr className="border-b transition-colors hover:bg-muted/50">
                       <td
