@@ -8,9 +8,9 @@ export default async function AuditManagementPage({
   params: { guid: string };
 }) {
   const { guid } = await params;
-  const isAdminGuidRes = await isOwnerGuid(guid);
+  const isOwnerGuidRes = await isOwnerGuid(guid);
 
-  if (!isAdminGuidRes) {
+  if (!isOwnerGuidRes) {
     notFound();
   }
 
