@@ -11,6 +11,12 @@ export const AuditSchema = z.object({
     .optional(),
   publicGuid: z.string().uuid("Public Guid must be a valid UUID").optional(),
   createdAt: z.date().default(new Date()).optional(),
+  entries: z
+    .number()
+    .int()
+    .min(0, "Entries must be a non-negative integer")
+    .default(0)
+    .optional(),
 });
 
 export type AuditDto = z.infer<typeof AuditSchema>;
