@@ -1,8 +1,7 @@
 import { AuditDto, CreateAuditReqDto, UpdateAuditReqDto } from "@/dto/audit";
 import { AuditFilterDto } from "@/dto/audit/AuditFilterDto";
 import { IAuditRepository } from "@/interfaces";
-import AuditMapper from "@/mappers/AuditMapper";
-import Audit from "@/models/Audit";
+import { Audit } from "@/models/Audit";
 import {
   Connection,
   FieldPacket,
@@ -88,7 +87,17 @@ export class AuditRepository implements IAuditRepository {
     ownerId: number,
     filters: AuditFilterDto
   ): Promise<AuditDto[]> {
-    let query = "SELECT *, 0 AS ENTRIES FROM Audits";
+    let query = `
+    SELECT 
+        a.*, 
+        (
+            SELECT COUNT(*) 
+            FROM Records r 
+            WHERE r.auditId = a.id
+        ) AS entries 
+    FROM Audits a
+`;
+
     const conditions: string[] = [];
     const values: (string | number)[] = [];
 
@@ -146,13 +155,13 @@ export class AuditRepository implements IAuditRepository {
       );
 
       const audits: AuditDto[] = rows.map((row: Audit) => {
-        return AuditMapper.toAuditDto(row);
+        return row;
       });
 
       return audits;
     } catch (error) {
       console.error("Error fetching audits:", error);
-      throw new Error("Failed to fetch owners");
+      throw new Error("Failed to fetch audits");
     }
   }
 
