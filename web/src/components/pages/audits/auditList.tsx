@@ -23,19 +23,19 @@ import {
 } from "@/components/ui/card";
 import { DialogForm } from "@/components/dialogForm";
 import { Badge } from "@/components/ui/badge";
+import { AuditDto } from "@/dto/audit";
 
 interface AuditListProps {
   guid: string;
 }
 
-// Audit Name	Entries	Public Guid
 type SortField = "name" | "createdAt";
 type SortDirection = "asc" | "desc";
 
 export function AuditList({ guid }: AuditListProps) {
   const [addAuditNameInput, setAuditNameInput] = useState("");
   const [loggedInState, setLoggedInState] = useState(false);
-  const [auditList, setAuditList] = useState<Audit[]>([]);
+  const [auditList, setAuditList] = useState<AuditDto[]>([]);
   const [filterAuditList, setFilterAuditList] = useState<AuditFilterDto>({
     name: undefined,
     page: 1,
@@ -55,7 +55,7 @@ export function AuditList({ guid }: AuditListProps) {
   const [isAddAuditDialogOpen, setIsAddAuditDialogOpen] = useState(false);
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
   const [totalCount, setTotalCount] = useState(0);
-  
+
   const fetchAudits = useCallback(async () => {
     setIsLoading(true);
 
@@ -165,10 +165,7 @@ export function AuditList({ guid }: AuditListProps) {
       };
 
       // Avoid redundant state updates - still called the fetchOwners twice
-      if (
-        prev.name === newFilter.name &&
-        prev.page === newFilter.page
-      ) {
+      if (prev.name === newFilter.name && prev.page === newFilter.page) {
         return prev;
       }
 
@@ -246,7 +243,7 @@ export function AuditList({ guid }: AuditListProps) {
             )}
           </div>
         </div>
-            {/* // Audit Name	Entries	Public Guid */}
+        {/* // Audit Name	Entries	Public Guid */}
         {isLoading ? (
           <div className="flex justify-center py-8">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
@@ -276,15 +273,13 @@ export function AuditList({ guid }: AuditListProps) {
                 </thead>
                 <tbody>
                   {auditList.length > 0 ? (
-                    auditList.map((audit: Audit) => (
+                    auditList.map((audit: AuditDto) => (
                       <AuditRow
                         key={audit.id}
                         audit={audit}
                         onSubmitDone={fetchAudits}
-                        onDelete={fetchAudits}
                       />
                     ))
-                    // <></>
                   ) : (
                     <tr className="border-b transition-colors hover:bg-muted/50">
                       <td
