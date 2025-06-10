@@ -42,3 +42,19 @@ export async function addAuditReq(formData: FormData) {
     return null;
   }
 }
+
+export async function updateAuditReq(formData: FormData): Promise<boolean> {
+  const updateAuditUrl = AuditRoutes.UPDATE_AUDIT;
+
+  try {
+    const res = await axios.put(updateAuditUrl, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.status === 200;
+  } catch {
+    return false;
+  }
+}
