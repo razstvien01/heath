@@ -69,9 +69,17 @@ export class AuditRepository implements IAuditRepository {
     dto: CreateAuditReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
     const query =
-      "INSERT INTO Audits (ownerId, name, publicGuid, ownerGuid) VALUES " +
-      "(?, ?, ?, ?)";
-    const values = [dto.ownerId, dto.name, uuidv4(), uuidv4()];
+      "INSERT INTO Audits (ownerId, name, publicGuid, ownerGuid, description, createdAt, updatedAt) VALUES " +
+      "(?, ?, ?, ?, ?, ?, ?)";
+    const values = [
+      dto.ownerId,
+      dto.name,
+      uuidv4(),
+      uuidv4(),
+      dto.description,
+      dto.createdAt,
+      dto.createdAt,
+    ];
 
     try {
       const result = await this._db.execute(query, values);
