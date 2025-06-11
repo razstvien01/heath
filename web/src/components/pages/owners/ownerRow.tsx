@@ -158,18 +158,22 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
             id: "username",
             label: "Username",
             placeholder: "Enter username",
+            required: true,
+            value: owner.name
           },
           {
             id: "password",
             label: "Password",
             type: "password",
             placeholder: "Enter password",
+            required: true,
           },
           {
             id: "confirmPassword",
             label: "Confirm Password",
             type: "password",
             placeholder: "Re-enter password",
+            required: true
           },
         ]}
       />
