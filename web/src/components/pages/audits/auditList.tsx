@@ -33,8 +33,6 @@ type SortField = "name" | "createdAt";
 type SortDirection = "asc" | "desc";
 
 export function AuditList({ guid }: AuditListProps) {
-  const [addAuditNameInput, setAuditNameInput] = useState("");
-  const [loggedInState, setLoggedInState] = useState(false);
   const [auditList, setAuditList] = useState<AuditDto[]>([]);
   const [filterAuditList, setFilterAuditList] = useState<AuditFilterDto>({
     name: undefined,
@@ -82,16 +80,18 @@ export function AuditList({ guid }: AuditListProps) {
   const handleAddAudit = async (
     values: Record<string, string>
   ): Promise<boolean> => {
-    const { title, description, auditDate } = values;
-
+    const { name, description, date } = values;
+    
     setIsLoading(true);
 
     const formData = new FormData();
     formData.append("guid", guid);
-    formData.append("name", title);
+    formData.append("name", name);
     formData.append("description", description);
+    formData.append("date", date);
 
-    if (auditDate) formData.append("auditDate", auditDate);
+    if (date) formData.append("createdAt", date);
+    else formData.append("createdAt", Date.now().toString());
 
     try {
       const res = await addAuditReq(formData);
@@ -266,6 +266,10 @@ export function AuditList({ guid }: AuditListProps) {
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       Public Guid
                     </th>
+                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                      Date Created
+                    </th>
+                    
                     <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
                       Actions
                     </th>
@@ -320,20 +324,24 @@ export function AuditList({ guid }: AuditListProps) {
         submitText="Add Audit"
         fields={[
           {
-            id: "auditTitle",
+            id: "name",
             label: "Audit Title",
             placeholder: "Enter audit title",
+            required: true,
           },
           {
             id: "description",
             label: "Description",
             placeholder: "Enter audit description",
+            required: false,
           },
           {
-            id: "auditDate",
+            id: "date",
             label: "Audit Date",
             type: "date",
             placeholder: "Select audit date",
+            value: new Date().toISOString().split("T")[0],
+            required: true,
           },
         ]}
       />
