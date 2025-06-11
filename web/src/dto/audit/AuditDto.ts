@@ -17,6 +17,7 @@ export const AuditSchema = z.object({
     .min(0, "Entries must be a non-negative integer")
     .default(0)
     .optional(),
+  description: z.string().optional(),
 });
 
 export type AuditDto = z.infer<typeof AuditSchema>;
