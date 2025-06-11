@@ -11,7 +11,6 @@ import {
   Search,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { Audit } from "@/models";
 import { AuditFilterDto } from "@/dto/audit/AuditFilterDto";
 import { addAuditReq, fetchAuditsReq } from "@/services/auditService";
 import {
@@ -163,8 +162,7 @@ export function AuditList({ guid }: AuditListProps) {
         managementGuid: debouncedQuery || undefined,
         page: 1,
       };
-
-      // Avoid redundant state updates - still called the fetchOwners twice
+      
       if (prev.name === newFilter.name && prev.page === newFilter.page) {
         return prev;
       }
