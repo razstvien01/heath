@@ -9,9 +9,11 @@ export async function POST(request: Request): Promise<Response> {
     const formData = await request.formData();
     const managementGuid = formData.get("guid");
     const name = formData.get("name");
-
-    if (!name || !managementGuid) {
-      return new Response("Guid and name are required.", {
+    const description = formData.get("description");
+    const createdAt = formData.get("date");
+  
+    if (!name || !managementGuid || !createdAt) {
+      return new Response("Guid, name, and createdAt are required.", {
         status: 400,
       });
     }
@@ -33,8 +35,13 @@ export async function POST(request: Request): Promise<Response> {
     const ownerId = await ownerRepository.getOwnerIdFromManagementGuid(
       managementGuid as string
     );
-    
-    const parsedAudit = CreateAuditSchema.safeParse({ name, ownerId });
+
+    const parsedAudit = CreateAuditSchema.safeParse({
+      name,
+      ownerId,
+      description,
+      createdAt: new Date(createdAt as string)
+    });
 
     if (!parsedAudit.success) {
       return new Response(
