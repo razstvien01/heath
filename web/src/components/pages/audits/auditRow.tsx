@@ -5,8 +5,8 @@ import { useState } from "react";
 import { DialogForm } from "@/components/dialogForm";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AuditDto } from "@/dto/audit";
-import { Edit, ExternalLink } from "lucide-react";
-import { updateAuditReq } from "@/services/auditService";
+import { Edit, ExternalLink, Trash } from "lucide-react";
+import { deleteAuditReq, updateAuditReq } from "@/services/auditService";
 import Link from "next/link";
 
 interface AuditRowProps {
@@ -17,6 +17,7 @@ interface AuditRowProps {
 export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditAuditDialogOpen, setIsEditAuditDialogOpen] = useState(false);
+  const [isDeleteAuditDialogOpen, setIsDeleteAuditDialogOpen] = useState(false);
 
   const handleEditAudit = async (
     values: Record<string, string>
@@ -50,46 +51,29 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
     }
   };
 
-  // const onSubmit = async () => {
-  //   const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/updateAudit";
+  const handleDeleteAudit = async (): Promise<boolean> => {
+    setIsLoading(true);
 
-  //   const formData = new FormData();
-  //   formData.append("name", name);
-  //   formData.append("id", id.toString());
+    const formData = new FormData();
+    formData.append("id", String(audit.id));
 
-  //   const res = await fetch(fetchUrl, {
-  //     method: "PUT",
-  //     body: formData,
-  //   });
+    try {
+      const res = await deleteAuditReq(formData);
 
-  //   if (res.ok) {
-  //     setEditMode(false);
-  //     onSubmitDone();
-  //   }
-  // };
-
-  // const onDeleteClicked = async () => {
-  //   const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/audit/deleteAudit";
-
-  //   const formData = new FormData();
-  //   formData.append("id", audit.id?.toString() || "");
-
-  //   const res = await fetch(apiUrl, {
-  //     method: "DELETE",
-  //     body: formData,
-  //   });
-
-  //   if (res.ok) {
-  //     if (onDelete) {
-  //       onDelete();
-  //     }
-  //   }
-  // };
-
-  // const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setName(e.target.value);
-  // };
-
+      if (res) {
+        onSubmitDone();
+        setIsLoading(false);
+        return true;
+      }
+      setIsLoading(false);
+      return false;
+    } catch (error) {
+      console.error("Failed to update owner:", error);
+      setIsLoading(false);
+      return false;
+    }
+  };
+  
   return (
     <TableRow key={audit.id}>
       <TableCell>{audit.name}</TableCell>
@@ -149,17 +133,17 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
                 </span>
               </Link>
             </Button>
-            {/* <Button
+            <Button
               size="sm"
               disabled={isLoading}
               variant="destructive"
-              onClick={() => setIsDeleteDialogOpen(true)}
+              onClick={() => setIsDeleteAuditDialogOpen(true)}
             >
               <Trash className="h-4 w-4 mr-1" />
               <span className="sr-only sm:not-sr-only sm:inline-block">
                 Delete
               </span>
-            </Button> */}
+            </Button>
           </>
         </div>
       </TableCell>
@@ -202,19 +186,19 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
         ]}
       />
 
-      {/* <DialogForm
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        onSubmit={handleDeleteOwner}
+      <DialogForm
+        open={isDeleteAuditDialogOpen}
+        onOpenChange={setIsDeleteAuditDialogOpen}
+        onSubmit={handleDeleteAudit}
         isLoading={isLoading}
-        title="Delete Owner"
-        description="Delete the owner account permanently. This action cannot be undone."
+        title="Delete Audit"
+        description="Delete the audit permanently. This action cannot be undone."
         icon={<Trash className="h-5 w-5 text-red-500" />}
-        successMessage="Owner deleted successfully!"
-        errorMessage="Failed to delete the owner. Please try again."
-        submitText="Delete Owner"
+        successMessage="Audit deleted successfully!"
+        errorMessage="Failed to delete the audit. Please try again."
+        submitText="Delete Audit"
         fields={[]}
-      /> */}
+      />
     </TableRow>
   );
 }
