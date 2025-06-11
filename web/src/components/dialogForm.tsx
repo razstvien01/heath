@@ -29,6 +29,8 @@ interface FieldConfig {
   label: string;
   type?: string;
   placeholder?: string;
+  value?: string;
+  required: boolean;
 }
 
 interface DialogFormProps {
@@ -65,10 +67,12 @@ export function DialogForm({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [localLoading, setLocalLoading] = useState(false);
-  
+
   const schema = z.object(
     fields.reduce((acc, field) => {
-      acc[field.id] = z.string().min(1, `${field.label} is required`);
+      acc[field.id] = field.required
+        ? z.string().min(1, `${field.label} is required`)
+        : z.string().optional();
       return acc;
     }, {} as Record<string, z.ZodTypeAny>)
   );
@@ -89,7 +93,7 @@ export function DialogForm({
       }
     },
     defaultValues: fields.reduce((acc, field) => {
-      acc[field.id] = "";
+      acc[field.id] = field.value ?? "";
       return acc;
     }, {} as Record<string, string>),
   });
@@ -124,7 +128,7 @@ export function DialogForm({
   useEffect(() => {
     if (!open) {
       const emptyFields = Object.fromEntries(
-        fields.map((field) => [field.id, ""])
+        fields.map((field) => [field.id, field.value ?? ""])
       );
       form.reset(emptyFields);
     }
@@ -167,7 +171,13 @@ export function DialogForm({
                 name={field.id}
                 render={({ field: fieldProps }) => (
                   <FormItem>
-                    <FormLabel>{field.label}</FormLabel>
+                    <FormLabel>
+                      {field.label}
+                      {field.required && (
+                        <span className="text-red-500 ml-1">*</span>
+                      )}
+                    </FormLabel>
+
                     <FormControl>
                       <Input
                         type={field.type || "text"}
