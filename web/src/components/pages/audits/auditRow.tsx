@@ -5,8 +5,9 @@ import { useState } from "react";
 import { DialogForm } from "@/components/dialogForm";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AuditDto } from "@/dto/audit";
-import { Edit } from "lucide-react";
+import { Edit, ExternalLink } from "lucide-react";
 import { updateAuditReq } from "@/services/auditService";
+import Link from "next/link";
 
 interface AuditRowProps {
   audit: AuditDto;
@@ -136,9 +137,9 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
               </span>
             </Button>
 
-            {/* <Button size="sm" asChild disabled={isLoading} variant="link">
+            <Button size="sm" asChild disabled={isLoading} variant="link">
               <Link
-                href={`/audits/${owner.managementGuid}`}
+                href={`/records/${audit.publicGuid}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -147,7 +148,7 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
                   Audits
                 </span>
               </Link>
-            </Button> */}
+            </Button>
             {/* <Button
               size="sm"
               disabled={isLoading}
