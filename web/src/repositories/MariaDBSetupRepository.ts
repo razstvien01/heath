@@ -89,6 +89,7 @@ export class MariaDBSetupRepository implements IMariaDBSetupRepository {
       id INT AUTO_INCREMENT PRIMARY KEY, 
       ownerId INT NOT NULL, 
       name VARCHAR(255), 
+      description VARCHAR(255),
       publicGuid VARCHAR(255), 
       ownerGuid VARCHAR(255),
       FOREIGN KEY (ownerId) REFERENCES Owners(id) ON DELETE CASCADE,
