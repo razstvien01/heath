@@ -9,5 +9,6 @@ const AUDIT_URL = BASE_URL + "/api/audit";
 export const AuditRoutes = Object.freeze({
   AUDIT_LIST: `${AUDIT_URL}/auditList`,
   ADD_AUDIT: `${AUDIT_URL}/addAudit`,
-  UPDATE_AUDIT: `${AUDIT_URL}/updateAudit`
+  UPDATE_AUDIT: `${AUDIT_URL}/updateAudit`,
+  DELETE_AUDIT: `${AUDIT_URL}/deleteAudit`
 })
