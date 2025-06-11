@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { ConfirmationDialog } from "@/components/confirmationDialog";
 import { DialogForm } from "@/components/dialogForm";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AuditDto } from "@/dto/audit";
@@ -30,6 +29,8 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
     const formData = new FormData();
     formData.append("id", String(audit.id));
     formData.append("name", title);
+    formData.append("description", description);
+    formData.append("date", date);
 
     try {
       const res = await updateAuditReq(formData);
@@ -107,6 +108,20 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
         </span>
       </TableCell>
       <TableCell>
+        <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
+          {audit?.createdAt
+            ? new Date(audit.createdAt).toLocaleString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+              })
+            : "N/A"}
+        </span>
+      </TableCell>
+      <TableCell>
         <div className="flex items-center gap-2 justify-end">
           <>
             <Button
@@ -163,20 +178,29 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
             id: "title",
             label: "Audit Title",
             placeholder: "Enter audit title",
+            value: audit.name,
+            required: true,
           },
           {
             id: "description",
             label: "Audit Description",
             placeholder: "Enter audit description",
+            value: audit.description,
+            required: false,
           },
           {
             id: "date",
             label: "Audit Date",
             type: "date",
             placeholder: "Select audit date",
+            value: audit.createdAt
+              ? new Date(audit.createdAt).toISOString().split("T")[0]
+              : "",
+            required: true,
           },
         ]}
       />
+
       {/* <DialogForm
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
