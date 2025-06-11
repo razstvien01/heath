@@ -22,8 +22,8 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { OwnerFilterDto } from "@/dto/owner";
-import { OwnerTableFooter } from "./ownerTableFooter";
 import { DialogForm } from "@/components/dialogForm";
+import { TableFooter } from "@/components/tableFooter";
 
 type SortField = "name" | "createdAt";
 type SortDirection = "asc" | "desc";
@@ -296,8 +296,8 @@ export function OwnerList() {
           </div>
         )}
         {!isLoading && ownerList.length > 0 && (
-          <OwnerTableFooter
-            filterOwnerList={filterOwnerList}
+          <TableFooter
+            filterList={filterOwnerList}
             totalCount={totalCount}
             handleChangeTable={handleChangeTable}
             isLoading={isLoading}
@@ -321,18 +321,21 @@ export function OwnerList() {
             id: "username",
             label: "Username",
             placeholder: "Enter username",
+            required: true,
           },
           {
             id: "password",
             label: "Password",
             type: "password",
             placeholder: "Enter password",
+            required: true,
           },
           {
             id: "confirmPassword",
             label: "Confirm Password",
             type: "password",
             placeholder: "Re-enter password",
+            required: true,
           },
         ]}
       />

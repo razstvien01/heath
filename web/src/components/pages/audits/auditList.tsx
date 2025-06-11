@@ -23,6 +23,7 @@ import {
 import { DialogForm } from "@/components/dialogForm";
 import { Badge } from "@/components/ui/badge";
 import { AuditDto } from "@/dto/audit";
+import { TableFooter } from "@/components/tableFooter";
 
 interface AuditListProps {
   guid: string;
@@ -241,7 +242,6 @@ export function AuditList({ guid }: AuditListProps) {
             )}
           </div>
         </div>
-        {/* // Audit Name	Entries	Public Guid */}
         {isLoading ? (
           <div className="flex justify-center py-8">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
@@ -299,14 +299,14 @@ export function AuditList({ guid }: AuditListProps) {
             </div>
           </div>
         )}
-        {/* {!isLoading && ownerList.length > 0 && (
-          <AuditTableFooter
-            filterOwnerList={filterOwnerList}
+        {!isLoading && auditList.length > 0 && (
+          <TableFooter
+            filterList={filterAuditList}
             totalCount={totalCount}
             handleChangeTable={handleChangeTable}
             isLoading={isLoading}
           />
-        )} */}
+        )}
       </CardContent>
 
       <DialogForm
