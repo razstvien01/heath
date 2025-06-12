@@ -7,5 +7,7 @@ if (!BASE_URL) {
 const RECORD_URL = BASE_URL + "/api/record";
 
 export const RecordRoutes = Object.freeze({
-  IS_PUBLIC_GUID: `${RECORD_URL}/isPublicGuid`,
+  FETCH_RECORDS: `${RECORD_URL}/fetchRecords`,
+  ADD_RECORD: `${RECORD_URL}/addRecord`,
+  EDIT_RECORD: `${RECORD_URL}/editRecord`
 });
