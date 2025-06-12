@@ -1,5 +1,5 @@
 import PrivateRecordCrud from "@/components/pages/privateRecordCrud";
-import RecordCrud from "@/components/pages/records/recordCrud";
+import RecordManagement from "@/components/pages/records/recordManagement";
 import { isPublicGuid } from "@/services/recordService";
 import { notFound } from "next/navigation";
 
@@ -19,7 +19,7 @@ export default async function AuditManagementPage({
   return (
     <div>
       {!isPublicGuidRes.isPublic && <PrivateRecordCrud guid={guid} />}
-      {isPublicGuidRes.isPublic && <RecordCrud guid={guid} />}
+      {isPublicGuidRes.isPublic && <RecordManagement guid={guid} />}
     </div>
   );
 }
