@@ -8,7 +8,7 @@ export const RecordFilterSchema = z.object({
   createdTo: z.string().date().optional(),
   updatedFrom: z.string().date().optional(),
   updatedTo: z.string().date().optional(),
-  orderBy: z.enum(["name", "createdAt", "updatedAt"]).optional(),
+  orderBy: z.enum(["reason", "createdAt", "updatedAt"]).optional(),
   orderDirection: z.enum(["asc", "desc"]).optional(),
 });
 
