@@ -1,4 +1,5 @@
-import { AuditRoutes } from "@/constants";
+import { AuditRoutes, RecordRoutes } from "@/constants";
+import { RecordFilterDto } from "@/dto/record";
 import axios from "axios";
 
 interface PageInfo {
@@ -7,7 +8,7 @@ interface PageInfo {
 }
 
 export async function isPublicGuid(guid: string) {
-  const isPublicGuidUrl = AuditRoutes.IS_PUBLIC_GUID
+  const isPublicGuidUrl = AuditRoutes.IS_PUBLIC_GUID;
 
   const formData = new FormData();
   formData.append("guid", guid);
@@ -35,4 +36,29 @@ export async function isPublicGuid(guid: string) {
   };
 
   return output;
+}
+
+export async function fetchRecordsReq(
+  formData: FormData,
+  filter: RecordFilterDto
+) {
+  const getRecordsUrl = RecordRoutes.FETCH_RECORDS;
+  const queryParams = new URLSearchParams();
+
+  (Object.keys(filter) as (keyof RecordFilterDto)[]).forEach((key) => {
+    const value = filter[key];
+    if (value !== undefined && value !== null && value !== "")
+      queryParams.append(key, String(value));
+  });
+
+  try {
+    const res = await axios.post(
+      `${getRecordsUrl}?${queryParams.toString()}`,
+      formData
+    );
+
+    return res;
+  } catch {
+    return null;
+  }
 }
