@@ -10,5 +10,6 @@ export const AuditRoutes = Object.freeze({
   AUDIT_LIST: `${AUDIT_URL}/auditList`,
   ADD_AUDIT: `${AUDIT_URL}/addAudit`,
   UPDATE_AUDIT: `${AUDIT_URL}/updateAudit`,
-  DELETE_AUDIT: `${AUDIT_URL}/deleteAudit`
+  DELETE_AUDIT: `${AUDIT_URL}/deleteAudit`,
+  IS_PUBLIC_GUID: `${AUDIT_URL}/isPublicGuid`
 })
