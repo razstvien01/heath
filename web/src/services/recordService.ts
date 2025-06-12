@@ -78,3 +78,14 @@ export async function addRecordReq(formData: FormData) {
     return null;
   }
 }
+
+export async function editRecordReq(formData: FormData) {
+  const editRecordUrl = RecordRoutes.EDIT_RECORD;
+  try {
+    const res = await axios.put(editRecordUrl, formData);
+
+    return res.status === 200;
+  } catch {
+    return null;
+  }
+}
