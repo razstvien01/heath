@@ -62,3 +62,19 @@ export async function fetchRecordsReq(
     return null;
   }
 }
+
+export async function addRecordReq(formData: FormData) {
+  const addRecordUrl = RecordRoutes.ADD_RECORD;
+
+  try {
+    const res = await axios.post(addRecordUrl, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return res.status === 200;
+  } catch {
+    return null;
+  }
+}
