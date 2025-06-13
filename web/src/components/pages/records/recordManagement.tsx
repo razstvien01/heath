@@ -67,7 +67,6 @@ export default function RecordManagement({ guid }: { guid: string }) {
       const res = await fetchRecordsReq(formData, filterRecordList);
 
       if (res && res.data.records && res.data.total) {
-        console.log("records:", res.data.records);
         let currentBalance: number | null = null;
 
         res.data.records.forEach(
@@ -100,7 +99,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
     values: Record<string, string>
   ): Promise<boolean> => {
     const { amount, reason, receipt, signature } = values;
-    console.log("Triggered add record");
+    
     try {
       const formData = new FormData();
       formData.append("guid", guid);
@@ -110,15 +109,13 @@ export default function RecordManagement({ guid }: { guid: string }) {
       if (receipt) formData.append("receipt", receipt);
 
       if (signature) formData.append("signature", signature);
-
-      console.log("receipt:", receipt);
-
+      
       const res = await addRecordReq(formData);
 
       if (res) {
-        // fetchRecords();
-        // setIsLoading(false);
-        // return true;
+        fetchRecords();
+        setIsLoading(false);
+        return true;
       }
     } catch {
       console.error("Failed to add record");
