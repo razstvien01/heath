@@ -75,6 +75,16 @@ export async function POST(request: Request): Promise<Response> {
     const filters = parsedFilter.data;
     const recordRepository = new RecordRepository(db);
     const records = await recordRepository.getRecords(auditId, filters);
+    const total = await recordRepository.getRecordTotalCount(auditId, filters);
+    
+    if(!records || records.length === 0){
+      return new Response(JSON.stringify({ message: "No Records found "}), {
+        status: 404,
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+    }
 
     if (!records || records.length === 0)
       return new Response(JSON.stringify({ message: "No Records found" }), {
@@ -84,7 +94,7 @@ export async function POST(request: Request): Promise<Response> {
         },
       });
 
-    return new Response(JSON.stringify(records), {
+    return new Response(JSON.stringify({ records, total }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
