@@ -42,7 +42,7 @@ export async function fetchRecordsReq(
   formData: FormData,
   filter: RecordFilterDto
 ) {
-  const getRecordsUrl = RecordRoutes.FETCH_RECORDS;
+  const getRecordsUrl = RecordRoutes.RECORD_LIST;
   const queryParams = new URLSearchParams();
 
   (Object.keys(filter) as (keyof RecordFilterDto)[]).forEach((key) => {
