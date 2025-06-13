@@ -220,134 +220,145 @@ export default function RecordManagement({ guid }: { guid: string }) {
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full border">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <CardTitle>Public Audit Records</CardTitle>
-          <CardDescription>
-            View and submit entries to the public audit trail. All submissions
-            are open and transparent.
-          </CardDescription>
+          <h1 className="text-3xl font-bold">Public Audit Records</h1>
+          <p className="text-muted-foreground">
+            Review audit trails and monitor activity history
+          </p>
         </div>
-
-        <div className="sm:ml-auto mt-4 sm:mt-0">
-          <Button
-            onClick={() => setIsAddRecordDialogOpen(true)}
-            disabled={isLoading}
-          >
-            <FilePlus className="h-4 w-4 mr-2" />
-            Add Record
-          </Button>
-        </div>
-      </CardHeader>
-
-      <CardContent>
-        <div className="mb-4 space-y-4 pt-4">
-          {/* Search bar */}
-          <div className="flex items-center gap-2 w-full ">
-            <Input
-              placeholder="Search by name or GUID..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value.trim())}
-            />
-            <Button size="icon" variant="outline" disabled={true}>
-              <Search className="h-4 w-4" />
-            </Button>
+      </div>
+      <Card>
+        <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full border">
+          <div>
+            <CardTitle>Record List</CardTitle>
+            <CardDescription>
+              View and submit entries to the public audit trail. All submissions
+              are open and transparent.
+            </CardDescription>
           </div>
 
-          {/* Sort controls */}
-          <div className="flex flex-wrap gap-2">
-            <span className="text-sm text-muted-foreground self-center">
-              Sort by:
-            </span>
+          <div className="sm:ml-auto mt-4 sm:mt-0">
             <Button
-              variant={sortState.field === "reason" ? "default" : "outline"}
-              size="sm"
-              onClick={() => toggleSort("reason")}
-              className="flex items-center gap-1"
+              onClick={() => setIsAddRecordDialogOpen(true)}
+              disabled={isLoading}
             >
-              {getSortIcon("reason")}
-              Name
+              <FilePlus className="h-4 w-4 mr-2" />
+              Add Record
             </Button>
-            <Button
-              variant={sortState.field === "createdAt" ? "default" : "outline"}
-              size="sm"
-              onClick={() => toggleSort("createdAt")}
-              className="flex items-center gap-1"
-            >
-              {getSortIcon("createdAt")}
-              Date Created
-            </Button>
-
-            {searchQuery && (
-              <Badge variant="outline" className="ml-auto">
-                {recordList.length} results
-              </Badge>
-            )}
           </div>
-        </div>
+        </CardHeader>
 
-        {isLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          </div>
-        ) : (
-          <div className="rounded-md border">
-            <div className="w-full overflow-auto">
-              <table className="w-full caption-bottom text-sm">
-                <thead className="border-b">
-                  <tr className="border-b transition-colors hover:bg-muted/50">
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Balance
-                    </th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Reason
-                    </th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Receipt
-                    </th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Signature
-                    </th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Running Balance
-                    </th>
-                    <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                      Date Created
-                    </th>
+        <CardContent>
+          <div className="mb-4 space-y-4 pt-4">
+            {/* Search bar */}
+            <div className="flex items-center gap-2 w-full ">
+              <Input
+                placeholder="Search by name or GUID..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value.trim())}
+              />
+              <Button size="icon" variant="outline" disabled={true}>
+                <Search className="h-4 w-4" />
+              </Button>
+            </div>
 
-                    <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recordList.length > 0 ? (
-                    recordList.map((record) => (
-                      <RecordRow
-                        key={record.id}
-                        record={recordList}
-                        onSubmitDone={fetchRecords}
-                      />
-                    ))
-                  ) : (
-                    <tr className="border-b transition-colors hover:bg-muted/50">
-                      <td
-                        colSpan={5}
-                        className="p-4 align-middle text-center text-muted-foreground"
-                      >
-                        {searchQuery
-                          ? "No matching records found"
-                          : "No record found"}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            {/* Sort controls */}
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm text-muted-foreground self-center">
+                Sort by:
+              </span>
+              <Button
+                variant={sortState.field === "reason" ? "default" : "outline"}
+                size="sm"
+                onClick={() => toggleSort("reason")}
+                className="flex items-center gap-1"
+              >
+                {getSortIcon("reason")}
+                Name
+              </Button>
+              <Button
+                variant={
+                  sortState.field === "createdAt" ? "default" : "outline"
+                }
+                size="sm"
+                onClick={() => toggleSort("createdAt")}
+                className="flex items-center gap-1"
+              >
+                {getSortIcon("createdAt")}
+                Date Created
+              </Button>
+
+              {searchQuery && (
+                <Badge variant="outline" className="ml-auto">
+                  {recordList.length} results
+                </Badge>
+              )}
             </div>
           </div>
-        )}
-        {/* {!isLoading && ownerList.length > 0 && (
+
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <div className="w-full overflow-auto">
+                <table className="w-full caption-bottom text-sm">
+                  <thead className="border-b">
+                    <tr className="border-b transition-colors hover:bg-muted/50">
+                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                        Balance
+                      </th>
+                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                        Reason
+                      </th>
+                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                        Receipt
+                      </th>
+                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                        Signature
+                      </th>
+                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                        Running Balance
+                      </th>
+                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
+                        Date Created
+                      </th>
+
+                      <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recordList.length > 0 ? (
+                      recordList.map((record) => (
+                        <RecordRow
+                          key={record.id}
+                          record={recordList}
+                          onSubmitDone={fetchRecords}
+                        />
+                      ))
+                    ) : (
+                      <tr className="border-b transition-colors hover:bg-muted/50">
+                        <td
+                          colSpan={5}
+                          className="p-4 align-middle text-center text-muted-foreground"
+                        >
+                          {searchQuery
+                            ? "No matching records found"
+                            : "No record found"}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          {/* {!isLoading && ownerList.length > 0 && (
           <TableFooter
             filterList={filterOwnerList}
             totalCount={totalCount}
@@ -355,9 +366,9 @@ export default function RecordManagement({ guid }: { guid: string }) {
             isLoading={isLoading}
           />
         )} */}
-      </CardContent>
+        </CardContent>
 
-      {/* <DialogForm
+        {/* <DialogForm
         open={isAddOwnerDialogOpen}
         onOpenChange={setIsAddOwnerDialogOpen}
         onSubmit={handleAddOwner}
@@ -391,8 +402,8 @@ export default function RecordManagement({ guid }: { guid: string }) {
           },
         ]}
       /> */}
-    </Card>
-    // <div>
+      </Card>
+    </div> // <div>
     //   <div className="flex flex-col h-screen">
     //     <div className="flex flex-row">
     //       <h1 className="h-35">Auditss</h1>
