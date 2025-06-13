@@ -3,7 +3,6 @@
 import { SetStateAction, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ImageDialog } from "../../imageDialog";
 import { SignatureDialog } from "../../signatureDialog";
 import {
   FilePlus,
@@ -12,7 +11,6 @@ import {
   ArrowDownAZ,
   ArrowUpAZ,
 } from "lucide-react";
-import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog";
 import { RecordRow } from "./recordRow";
 import {
   Card,
@@ -26,6 +24,7 @@ import { RecordFilterDto } from "@/dto/record";
 import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
 import { addRecordReq, fetchRecordsReq } from "@/services/recordService";
 import { DialogForm } from "@/components/dialogForm";
+import { TableFooter } from "@/components/tableFooter";
 
 type SortField = "reason" | "createdAt";
 type SortDirection = "asc" | "desc";
@@ -56,6 +55,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
     orderDirection: "asc",
   });
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchRecords = useCallback(async () => {
     setIsLoading(true);
@@ -67,6 +67,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
       const res = await fetchRecordsReq(formData, filterRecordList);
 
       if (res && res.data.records && res.data.total) {
+        console.log("records:", res.data.records);
         let currentBalance: number | null = null;
 
         res.data.records.forEach(
@@ -86,6 +87,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
 
         setCurrentBalance(currentBalance ?? 0);
         setRecordList(res.data.records);
+        setTotalCount(res.data.total);
       }
     } catch (error) {
       console.error("Failed to fetch records:", error);
@@ -109,12 +111,14 @@ export default function RecordManagement({ guid }: { guid: string }) {
 
       if (signature) formData.append("signature", signature);
 
+      console.log("receipt:", receipt);
+
       const res = await addRecordReq(formData);
 
       if (res) {
-        fetchRecords();
-        setIsLoading(false);
-        return true;
+        // fetchRecords();
+        // setIsLoading(false);
+        // return true;
       }
     } catch {
       console.error("Failed to add record");
@@ -308,7 +312,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
                         Reason
                       </th>
                       <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                        Receipt
+                        Has Receipt
                       </th>
                       <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                         Signature
@@ -351,14 +355,14 @@ export default function RecordManagement({ guid }: { guid: string }) {
               </div>
             </div>
           )}
-          {/* {!isLoading && ownerList.length > 0 && (
-          <TableFooter
-            filterList={filterOwnerList}
-            totalCount={totalCount}
-            handleChangeTable={handleChangeTable}
-            isLoading={isLoading}
-          />
-        )} */}
+          {!isLoading && recordList.length > 0 && (
+            <TableFooter<RecordFilterDto>
+              filterList={filterRecordList}
+              totalCount={totalCount}
+              handleChangeTable={handleChangeTable}
+              isLoading={isLoading}
+            />
+          )}
         </CardContent>
 
         <DialogForm
@@ -387,13 +391,13 @@ export default function RecordManagement({ guid }: { guid: string }) {
               placeholder: "Enter reason for the record",
               required: true,
             },
-            // {
-            //   id: "receipt",
-            //   label: "Receipt (Optional)",
-            //   type: "file",
-            //   accept: ".png,.jpg,.jpeg",
-            //   required: false,
-            // },
+            {
+              id: "receipt",
+              label: "Receipt",
+              type: "file",
+              accept: ".png,.jpg,.jpeg",
+              required: false,
+            },
             // {
             //   id: "signature",
             //   label: "Signature (Optional)",
