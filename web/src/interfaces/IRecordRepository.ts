@@ -21,4 +21,8 @@ export interface IRecordRepository {
   deleteRecordById(id: number): Promise<[QueryResult, FieldPacket[]]>;
   isRecordExists(id: number): Promise<boolean>;
   getReceiptById(id: number): Promise<Buffer | null>;
+  getRecordTotalCount(
+    auditId: number,
+    filters: RecordFilterDto
+  ): Promise<number>;
 }
