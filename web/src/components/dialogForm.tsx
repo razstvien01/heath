@@ -23,6 +23,7 @@ import { CheckCircle2, AlertCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import * as z from "zod";
+import { SignatureDialog } from "./signatureDialog";
 
 interface FieldConfig {
   id: string;
@@ -31,6 +32,8 @@ interface FieldConfig {
   placeholder?: string;
   value?: string;
   required: boolean;
+  accept?: string;
+  customComponent?: React.ReactNode;
 }
 
 interface DialogFormProps {
@@ -71,7 +74,13 @@ export function DialogForm({
   const schema = z.object(
     fields.reduce((acc, field) => {
       acc[field.id] = field.required
-        ? z.string().min(1, `${field.label} is required`)
+        ? field.type === "file"
+          ? z.instanceof(File, { message: `${field.label} is required` })
+          : field.type === "signature"
+          ? z.string().min(1, `${field.label} is required`)
+          : z.string().min(1, `${field.label} is required`)
+        : field.type === "file"
+        ? z.instanceof(File).optional()
         : z.string().optional();
       return acc;
     }, {} as Record<string, z.ZodTypeAny>)
@@ -92,10 +101,15 @@ export function DialogForm({
         return { values: {}, errors: {} };
       }
     },
+    // defaultValues: fields.reduce((acc, field) => {
+    //   acc[field.id] = field.value ?? "";
+    //   return acc;
+    // }, {} as Record<string, string>),
     defaultValues: fields.reduce((acc, field) => {
-      acc[field.id] = field.value ?? "";
+      const isStringType = !["file", "signature"].includes(field.type || "");
+      acc[field.id] = isStringType ? field.value ?? "" : field.value ?? null;
       return acc;
-    }, {} as Record<string, string>),
+    }, {} as Record<string, unknown>),
   });
 
   const handleFormSubmit = async (values: Record<string, string>) => {
@@ -179,13 +193,31 @@ export function DialogForm({
                     </FormLabel>
 
                     <FormControl>
-                      <Input
-                        type={field.type || "text"}
-                        placeholder={field.placeholder}
-                        disabled={localLoading || isLoading || success}
-                        {...fieldProps}
-                      />
+                      {field.type === "signature" ? (
+                        <SignatureDialog
+                          value={fieldProps.value}
+                          onChange={(e) => fieldProps.onChange(e.base64)}
+                        />
+                      ) : field.type === "file" ? (
+                        <Input
+                          type="file"
+                          accept={field.accept}
+                          disabled={localLoading || isLoading || success}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            fieldProps.onChange(file); // Manually update file input
+                          }}
+                        />
+                      ) : (
+                        <Input
+                          type={field.type || "text"}
+                          placeholder={field.placeholder}
+                          disabled={localLoading || isLoading || success}
+                          {...fieldProps}
+                        />
+                      )}
                     </FormControl>
+
                     <FormMessage />
                   </FormItem>
                 )}
