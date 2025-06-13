@@ -6,11 +6,6 @@ import { Input } from "@/components/ui/input";
 import { ImageDialog } from "../../imageDialog";
 import { SignatureDialog } from "../../signatureDialog";
 import {
-  Edit,
-  SquareArrowOutUpRight,
-  SquarePen,
-  Trash,
-  UserPlus,
   FilePlus,
   Search,
   ArrowDownUp,
@@ -30,7 +25,6 @@ import { Badge } from "@/components/ui/badge";
 import { RecordFilterDto } from "@/dto/record";
 import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
 import { addRecordReq, fetchRecordsReq } from "@/services/recordService";
-import { z } from "zod";
 import { DialogForm } from "@/components/dialogForm";
 
 type SortField = "reason" | "createdAt";
@@ -63,39 +57,6 @@ export default function RecordManagement({ guid }: { guid: string }) {
   });
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
-  // const fetchRecords = async () => {
-  //   const formData = new FormData();
-  //   formData.append("guid", guid);
-
-  //   const getOwnersUrl =
-  //     process.env.NEXT_PUBLIC_API_URL + "/api/record/recordList";
-  //   fetch(getOwnersUrl, {
-  //     method: "POST",
-  //     body: formData,
-  //   })
-  //     .then((res) => res.json())
-  //     .then((dataList) => {
-  //       let currentBalance: number | null = null;
-  //       dataList.forEach(
-  //         (currentValue: {
-  //           createdAt: Date;
-  //           amount: number | null;
-  //           runningBalance: number | null;
-  //         }) => {
-  //           if (!currentBalance) {
-  //             currentBalance = currentValue.amount;
-  //           } else {
-  //             currentBalance += currentValue.amount ?? 0;
-  //           }
-  //           currentValue.runningBalance = currentBalance;
-  //           currentValue.createdAt = new Date(currentValue.createdAt);
-  //         }
-  //       );
-  //       setCurrentBalance(currentBalance ?? 0);
-  //       setRecordList(dataList);
-  //     });
-  // };
-
   const fetchRecords = useCallback(async () => {
     setIsLoading(true);
 
@@ -104,13 +65,8 @@ export default function RecordManagement({ guid }: { guid: string }) {
       formData.append("guid", guid);
 
       const res = await fetchRecordsReq(formData, filterRecordList);
-      
-      
-      console.log(res?.data.records)
-      console.log(res?.data)
-      
+
       if (res && res.data.records && res.data.total) {
-        
         let currentBalance: number | null = null;
 
         res.data.records.forEach(
@@ -138,39 +94,11 @@ export default function RecordManagement({ guid }: { guid: string }) {
     }
   }, [filterRecordList, guid]);
 
-  // const addRecord = async () => {
-  //   const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/record/addRecord";
-
-  //   const formData = new FormData();
-  //   formData.append("guid", guid);
-  //   formData.append("amount", addBalanceInput);
-  //   formData.append("reason", reasonInput);
-  //   if (receiptInput) {
-  //     formData.append("receipt", receiptInput);
-  //   }
-  //   if (signatureInput) {
-  //     formData.append("signature", signatureInput);
-  //   }
-
-  //   const res = await fetch(fetchUrl, {
-  //     method: "POST",
-  //     body: formData,
-  //   });
-
-  //   if (res.ok) {
-  //     setBalanceInput("");
-  //     setReasonInput("");
-  //     setReceiptInput(null);
-  //     setSignatureInput(null);
-  //     fetchRecords();
-  //   }
-  // };
-
   const handleAddRecord = async (
     values: Record<string, string>
   ): Promise<boolean> => {
     const { amount, reason, receipt, signature } = values;
-    console.log("Triggered add record")
+    console.log("Triggered add record");
     try {
       const formData = new FormData();
       formData.append("guid", guid);
@@ -182,7 +110,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
       if (signature) formData.append("signature", signature);
 
       const res = await addRecordReq(formData);
-      
+
       if (res) {
         fetchRecords();
         setIsLoading(false);
@@ -402,7 +330,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
                       recordList.map((record) => (
                         <RecordRow
                           key={record.id}
-                          record={recordList}
+                          record={record}
                           onSubmitDone={fetchRecords}
                         />
                       ))
