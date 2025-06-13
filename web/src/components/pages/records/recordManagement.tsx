@@ -59,10 +59,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
     orderBy: "reason",
     orderDirection: "asc",
   });
-
-  useEffect(() => {
-    fetchRecords();
-  }, []);
+  const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
 
   // const fetchRecords = async () => {
   //   const formData = new FormData();
@@ -105,7 +102,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
       formData.append("guid", guid);
 
       const res = await fetchRecordsReq(formData, filterRecordList);
-
+      
       if (res && res.data.records && res.data.total) {
         let currentBalance: number | null = null;
 
@@ -219,6 +216,35 @@ export default function RecordManagement({ guid }: { guid: string }) {
     );
   };
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setFilterRecordList((prev) => {
+      const newFilter = {
+        ...prev,
+        name: debouncedQuery || undefined,
+        managementGuid: debouncedQuery || undefined,
+        page: 1,
+      };
+
+      if (prev.reason === newFilter.reason && prev.page === newFilter.page) {
+        return prev;
+      }
+
+      return newFilter;
+    });
+  }, [debouncedQuery]);
+
+  useEffect(() => {
+    fetchRecords();
+  }, [fetchRecords]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -255,7 +281,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
             {/* Search bar */}
             <div className="flex items-center gap-2 w-full ">
               <Input
-                placeholder="Search by name or GUID..."
+                placeholder="Search by reason..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value.trim())}
               />
