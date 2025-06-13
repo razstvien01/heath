@@ -7,7 +7,7 @@ import {
 } from "@/dto/record";
 import { IRecordRepository } from "@/interfaces";
 import RecordMapper from "@/mappers/RecordMapper";
-import Record from "@/models/Record";
+import { Record } from "@/models";
 import {
   Connection,
   QueryResult,
@@ -21,6 +21,54 @@ export class RecordRepository implements IRecordRepository {
 
   constructor(db: Connection) {
     this._db = db;
+  }
+  async getRecordTotalCount(
+    auditId: number,
+    filters: RecordFilterDto
+  ): Promise<number> {
+    let query = "SELECT COUNT(*) AS total FROM Records";
+
+    const conditions: string[] = [];
+    const values: (string | number)[] = [];
+
+    //* Applying filters
+    if (filters.reason) {
+      conditions.push("reason LIKE ?");
+      values.push(`%${filters.reason}%`);
+    }
+
+    if (filters.createdFrom) {
+      conditions.push("createdAt >= ?");
+      values.push(filters.createdFrom);
+    }
+
+    if (filters.createdTo) {
+      conditions.push("createdAt <= ?");
+      values.push(filters.createdTo);
+    }
+
+    if (filters.updatedFrom) {
+      conditions.push("updatedAt >= ?");
+      values.push(filters.updatedFrom);
+    }
+
+    if (filters.updatedTo) {
+      conditions.push("updatedAt <= ?");
+      values.push(filters.updatedTo);
+    }
+
+    if (auditId) {
+      conditions.push("auditId = ?");
+      values.push(auditId);
+    }
+
+    if (conditions.length > 0) {
+      query += " WHERE " + conditions.join(" AND ");
+    }
+
+    const [rows] = await this._db.query<RowDataPacket[]>(query, values);
+
+    return rows[0]?.total || 0;
   }
   async getReceiptById(id: number): Promise<Buffer | null> {
     if (!(await this.isRecordExists(id))) {
@@ -191,7 +239,7 @@ export class RecordRepository implements IRecordRepository {
     );
 
     const records: RecordDto[] = rows.map((row) => {
-      return RecordMapper.toRecordUrlDto(row);;
+      return RecordMapper.toRecordUrlDto(row);
     });
 
     return records;
