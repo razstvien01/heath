@@ -1,23 +1,23 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import type { OwnerFilterDto } from "@/dto/owner";
-import { AuditFilterDto } from "@/dto/audit";
+interface Pagination {
+  page: number;
+  pageSize: number;
+}
 
-interface TableFooterProps {
-  filterList: OwnerFilterDto | AuditFilterDto;
+interface TableFooterProps<T extends Pagination> {
+  filterList: T;
   totalCount: number;
-  handleChangeTable: (
-    changes: Partial<OwnerFilterDto | AuditFilterDto>
-  ) => void;
+  handleChangeTable: (changes: Partial<T>) => void;
   isLoading?: boolean;
 }
 
-export function TableFooter({
+export function TableFooter<T extends Pagination>({
   filterList,
   totalCount,
   handleChangeTable,
   isLoading = false,
-}: TableFooterProps) {
+}: TableFooterProps<T>) {
   const totalPages = Math.max(1, Math.ceil(totalCount / filterList.pageSize));
   const startEntry = (filterList.page - 1) * filterList.pageSize + 1;
   const endEntry = Math.min(filterList.page * filterList.pageSize, totalCount);
@@ -30,7 +30,9 @@ export function TableFooter({
           className="h-8 rounded-md border border-input bg-background px-2 py-1 text-sm"
           value={filterList.pageSize}
           onChange={(e) =>
-            handleChangeTable({ pageSize: Number(e.target.value) })
+            handleChangeTable({
+              pageSize: Number(e.target.value),
+            } as Partial<T>)
           }
           disabled={isLoading}
         >
@@ -49,7 +51,9 @@ export function TableFooter({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleChangeTable({ page: filterList.page - 1 })}
+          onClick={() =>
+            handleChangeTable({ page: filterList.page - 1 } as Partial<T>)
+          }
           disabled={isLoading || filterList.page <= 1}
         >
           Previous
@@ -64,7 +68,9 @@ export function TableFooter({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => handleChangeTable({ page: filterList.page + 1 })}
+          onClick={() =>
+            handleChangeTable({ page: filterList.page + 1 } as Partial<T>)
+          }
           disabled={isLoading || filterList.page >= totalPages}
         >
           Next
