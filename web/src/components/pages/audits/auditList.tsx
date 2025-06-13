@@ -204,7 +204,7 @@ export function AuditList({ guid }: AuditListProps) {
             <Input
               placeholder="Search by name or GUID..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value.trim())}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <Button size="icon" variant="outline" disabled={true}>
               <Search className="h-4 w-4" />
