@@ -29,7 +29,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { RecordFilterDto } from "@/dto/record";
 import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
-import { fetchRecordsReq } from "@/services/recordService";
+import { addRecordReq, fetchRecordsReq } from "@/services/recordService";
+import { z } from "zod";
+import { DialogForm } from "@/components/dialogForm";
 
 type SortField = "reason" | "createdAt";
 type SortDirection = "asc" | "desc";
@@ -103,7 +105,12 @@ export default function RecordManagement({ guid }: { guid: string }) {
 
       const res = await fetchRecordsReq(formData, filterRecordList);
       
+      
+      console.log(res?.data.records)
+      console.log(res?.data)
+      
       if (res && res.data.records && res.data.total) {
+        
         let currentBalance: number | null = null;
 
         res.data.records.forEach(
@@ -131,32 +138,64 @@ export default function RecordManagement({ guid }: { guid: string }) {
     }
   }, [filterRecordList, guid]);
 
-  const addRecord = async () => {
-    const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/record/addRecord";
+  // const addRecord = async () => {
+  //   const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/record/addRecord";
 
-    const formData = new FormData();
-    formData.append("guid", guid);
-    formData.append("amount", addBalanceInput);
-    formData.append("reason", reasonInput);
-    if (receiptInput) {
-      formData.append("receipt", receiptInput);
-    }
-    if (signatureInput) {
-      formData.append("signature", signatureInput);
+  //   const formData = new FormData();
+  //   formData.append("guid", guid);
+  //   formData.append("amount", addBalanceInput);
+  //   formData.append("reason", reasonInput);
+  //   if (receiptInput) {
+  //     formData.append("receipt", receiptInput);
+  //   }
+  //   if (signatureInput) {
+  //     formData.append("signature", signatureInput);
+  //   }
+
+  //   const res = await fetch(fetchUrl, {
+  //     method: "POST",
+  //     body: formData,
+  //   });
+
+  //   if (res.ok) {
+  //     setBalanceInput("");
+  //     setReasonInput("");
+  //     setReceiptInput(null);
+  //     setSignatureInput(null);
+  //     fetchRecords();
+  //   }
+  // };
+
+  const handleAddRecord = async (
+    values: Record<string, string>
+  ): Promise<boolean> => {
+    const { amount, reason, receipt, signature } = values;
+    console.log("Triggered add record")
+    try {
+      const formData = new FormData();
+      formData.append("guid", guid);
+      formData.append("amount", amount);
+      formData.append("reason", reason);
+
+      if (receipt) formData.append("receipt", receipt);
+
+      if (signature) formData.append("signature", signature);
+
+      const res = await addRecordReq(formData);
+      
+      if (res) {
+        fetchRecords();
+        setIsLoading(false);
+        return true;
+      }
+    } catch {
+      console.error("Failed to add record");
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
 
-    const res = await fetch(fetchUrl, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (res.ok) {
-      setBalanceInput("");
-      setReasonInput("");
-      setReceiptInput(null);
-      setSignatureInput(null);
-      fetchRecords();
-    }
+    return false;
   };
 
   const onAddAuditNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -394,40 +433,47 @@ export default function RecordManagement({ guid }: { guid: string }) {
         )} */}
         </CardContent>
 
-        {/* <DialogForm
-        open={isAddOwnerDialogOpen}
-        onOpenChange={setIsAddOwnerDialogOpen}
-        onSubmit={handleAddOwner}
-        isLoading={isLoading}
-        title="Add New Owner"
-        description="Create a new owner account with username and password."
-        icon={<UserPlus className="h-5 w-5 text-emerald-500" />}
-        successMessage="Owner added successfully!"
-        errorMessage="Failed to add owner. Please try again."
-        submitText="Add Owner"
-        fields={[
-          {
-            id: "username",
-            label: "Username",
-            placeholder: "Enter username",
-            required: true,
-          },
-          {
-            id: "password",
-            label: "Password",
-            type: "password",
-            placeholder: "Enter password",
-            required: true,
-          },
-          {
-            id: "confirmPassword",
-            label: "Confirm Password",
-            type: "password",
-            placeholder: "Re-enter password",
-            required: true,
-          },
-        ]}
-      /> */}
+        <DialogForm
+          open={isAddRecordDialogOpen}
+          onOpenChange={setIsAddRecordDialogOpen}
+          onSubmit={handleAddRecord}
+          isLoading={isLoading}
+          title="Add New Record"
+          description="Submit a new entry to the public audit trail."
+          icon={<FilePlus className="h-5 w-5 text-emerald-500" />}
+          successMessage="Record added successfully!"
+          errorMessage="Failed to add record. Please try again."
+          submitText="Add Record"
+          fields={[
+            {
+              id: "amount",
+              label: "Amount",
+              type: "number",
+              placeholder: "Enter amount",
+              required: true,
+            },
+            {
+              id: "reason",
+              label: "Reason",
+              type: "text",
+              placeholder: "Enter reason for the record",
+              required: true,
+            },
+            // {
+            //   id: "receipt",
+            //   label: "Receipt (Optional)",
+            //   type: "file",
+            //   accept: ".png,.jpg,.jpeg",
+            //   required: false,
+            // },
+            // {
+            //   id: "signature",
+            //   label: "Signature (Optional)",
+            //   type: "signature",
+            //   required: false,
+            // },
+          ]}
+        />
       </Card>
     </div> // <div>
     //   <div className="flex flex-col h-screen">
