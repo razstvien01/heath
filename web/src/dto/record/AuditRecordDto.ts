@@ -6,12 +6,7 @@ export const AuditRecordSchema = z.object({
   amount: z.number(),
   createdAt: z.date(),
   runningBalance: z.number(),
-  receipt: z
-    .object({
-      data: z.array(z.any()),
-    })
-    .nullable()
-    .optional(),
+  receipt: z.instanceof(Buffer).optional(),
   signature: z.string().nullable(),
   hasReceipt: z.boolean(),
   hasSignature: z.boolean(),
