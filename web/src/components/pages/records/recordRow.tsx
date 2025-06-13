@@ -6,12 +6,18 @@ import { ImageDialog } from "@/components/imageDialog";
 import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog";
 import { RecordDto } from "@/dto/record";
 import { TableCell, TableRow } from "@/components/ui/table";
-import AuditRecord from "@/models/AuditRecord";
+import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
+import ReceiptViewer from "@/components/receiptViewer";
 
 interface RecordRowProps {
-  record: AuditRecord;
+  record: AuditRecordDto;
   onSubmitDone: () => void;
 }
+
+type SerializedBuffer = {
+  type: "Buffer";
+  data: number[];
+};
 
 export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
   const onEditSaved = async (
@@ -58,8 +64,14 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
     }
   };
 
-  console.log("REcord:", record);
-  console.log("Amount:", record.amount)
+  function isSerializedBuffer(obj: any): obj is { data: number[] } {
+    return (
+      obj &&
+      typeof obj === "object" &&
+      obj.type === "Buffer" &&
+      Array.isArray(obj.data)
+    );
+  }
 
   return (
     <TableRow key={record.id}>
@@ -70,10 +82,20 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
         </span>
       </TableCell>
       <TableCell>
-        <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
-          {record.receipt}
-        </span>
+        {isSerializedBuffer(record.receipt) &&
+        record.receipt.data.length > 0 ? (
+          <ReceiptViewer
+            src={`data:image/png;base64,${Buffer.from(
+              record.receipt.data
+            ).toString("base64")}`}
+          />
+        ) : (
+          <span className="font-mono text-xs text-muted-foreground">
+            No receipt
+          </span>
+        )}
       </TableCell>
+
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
           {record.signature}
@@ -81,7 +103,6 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       </TableCell>
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
-          {/* {record.ru} */}
           99999
         </span>
       </TableCell>
