@@ -15,7 +15,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@radix-ui/react-tooltip";
+} from "@/components/ui/tooltip";
 import { SignatureMaker } from "@docuseal/signature-maker-react";
 
 export function SignatureDialog({
@@ -27,24 +27,23 @@ export function SignatureDialog({
 }) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <div className="flex flex-row">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Button className={value ? "bg-green-500" : "bg-red-500"}>
-                  <Signature />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="bg-slate-900 text-slate-50 p-2">
-                  {value ? "Has Signature" : "No Signature"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-      </DialogTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DialogTrigger asChild>
+              <Button className={value ? "bg-green-500" : "bg-red-500"}>
+                <Signature />
+              </Button>
+            </DialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="bg-slate-900 text-slate-50 p-2">
+              {value ? "Has Signature" : "No Signature"}
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Set Signature</DialogTitle>
