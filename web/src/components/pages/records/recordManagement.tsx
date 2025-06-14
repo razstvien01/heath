@@ -395,12 +395,12 @@ export default function RecordManagement({ guid }: { guid: string }) {
               accept: ".png,.jpg,.jpeg",
               required: false,
             },
-            // {
-            //   id: "signature",
-            //   label: "Signature (Optional)",
-            //   type: "signature",
-            //   required: false,
-            // },
+            {
+              id: "signature",
+              label: "Signature",
+              type: "signature",
+              required: false,
+            },
           ]}
         />
       </Card>
