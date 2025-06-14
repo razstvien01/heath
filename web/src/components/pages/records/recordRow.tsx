@@ -9,6 +9,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
 import ReceiptViewer from "@/components/receiptViewer";
 import { useState } from "react";
+import { DialogForm } from "@/components/dialogForm";
 
 interface RecordRowProps {
   record: AuditRecordDto;
@@ -23,7 +24,8 @@ type SerializedBuffer = {
 export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditRecordDialogOpen, setIsEditRecordDialogOpen] = useState(false);
-  const [isDeleteRecordDialogOpen, setIsDeleteRecordDialogOpen] = useState(false);
+  const [isDeleteRecordDialogOpen, setIsDeleteRecordDialogOpen] =
+    useState(false);
 
   const onEditSaved = async (
     receipt: File | null,
@@ -37,6 +39,8 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
     if (receipt) {
       formData.append("receipt", receipt);
     }
+    
+    console.log(signature)
     if (signature) {
       formData.append("signature", signature);
     }
@@ -104,6 +108,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
           {record.signature}
+          {/* Sigmature */}
         </span>
       </TableCell>
       <TableCell>
@@ -152,20 +157,58 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
                 </span>
               </Link>
             </Button> */}
-            {/* <Button
+            <Button
               size="sm"
               disabled={isLoading}
               variant="destructive"
-              onClick={() => setIsDeleteAuditDialogOpen(true)}
+              onClick={() => setIsDeleteRecordDialogOpen(true)}
             >
               <Trash className="h-4 w-4 mr-1" />
               <span className="sr-only sm:not-sr-only sm:inline-block">
                 Delete
               </span>
-            </Button> */}
+            </Button>
           </>
         </div>
       </TableCell>
+      {/* <DialogForm
+        open={isEditRecordDialogOpen}
+        onOpenChange={setIsEditRecordDialogOpen}
+        onSubmit={handleEditRecord}
+        isLoading={isLoading}
+        title="Update Record"
+        description="Modify the record with the necessary details."
+        icon={<Edit className="h-5 w-5 text-blue-500" />}
+        successMessage="Record updated successfully!"
+        errorMessage="Failed to update the audit. Please try again."
+        submitText="Update Record"
+        fields={[
+          {
+            id: "title",
+            label: "Audit Title",
+            placeholder: "Enter audit title",
+            value: audit.name,
+            required: true,
+          },
+          {
+            id: "description",
+            label: "Audit Description",
+            placeholder: "Enter audit description",
+            value: audit.description,
+            required: false,
+          },
+          {
+            id: "date",
+            label: "Audit Date",
+            type: "date",
+            placeholder: "Select audit date",
+            value: audit.createdAt
+              ? new Date(audit.createdAt).toISOString().split("T")[0]
+              : "",
+            required: true,
+          },
+        ]}
+      /> */}
     </TableRow>
 
     // <tr key={audit.id} className="text-center">
