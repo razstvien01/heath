@@ -8,6 +8,7 @@ import { RecordDto } from "@/dto/record";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
 import ReceiptViewer from "@/components/receiptViewer";
+import { useState } from "react";
 
 interface RecordRowProps {
   record: AuditRecordDto;
@@ -20,6 +21,10 @@ type SerializedBuffer = {
 };
 
 export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEditRecordDialogOpen, setIsEditRecordDialogOpen] = useState(false);
+  const [isDeleteRecordDialogOpen, setIsDeleteRecordDialogOpen] = useState(false);
+
   const onEditSaved = async (
     receipt: File | null,
     signature: string | null,
@@ -123,9 +128,9 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       <TableCell>
         <div className="flex items-center gap-2 justify-end">
           <>
-            {/* <Button
+            <Button
               size="sm"
-              onClick={() => setIsEditAuditDialogOpen(true)}
+              onClick={() => setIsEditRecordDialogOpen(true)}
               variant="secondary"
               disabled={isLoading}
             >
@@ -133,7 +138,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
               <span className="sr-only sm:not-sr-only sm:inline-block">
                 Update
               </span>
-            </Button> */}
+            </Button>
 
             {/* <Button size="sm" asChild disabled={isLoading} variant="link">
               <Link
