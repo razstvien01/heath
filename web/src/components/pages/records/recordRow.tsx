@@ -1,25 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Edit, SquareArrowOutUpRight, Trash } from "lucide-react";
-import { ImageDialog } from "@/components/imageDialog";
-import { RecordAddReceiptSignatureDialog } from "./recordAddReceiptSignatureDialog";
-import { RecordDto } from "@/dto/record";
+import { Edit, Trash } from "lucide-react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
-import ReceiptViewer from "@/components/receiptViewer";
 import { useState } from "react";
-import { DialogForm } from "@/components/dialogForm";
+import ImageViewer from "@/components/imageViewer";
 
 interface RecordRowProps {
   record: AuditRecordDto;
   onSubmitDone: () => void;
 }
-
-type SerializedBuffer = {
-  type: "Buffer";
-  data: number[];
-};
 
 export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +31,6 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       formData.append("receipt", receipt);
     }
     
-    console.log(signature)
     if (signature) {
       formData.append("signature", signature);
     }
@@ -93,7 +83,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       <TableCell>
         {isSerializedBuffer(record.receipt) &&
         record.receipt.data.length > 0 ? (
-          <ReceiptViewer
+          <ImageViewer
             src={`data:image/png;base64,${Buffer.from(
               record.receipt.data
             ).toString("base64")}`}
@@ -106,11 +96,18 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       </TableCell>
 
       <TableCell>
-        <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
-          {record.signature}
-          {/* Sigmature */}
-        </span>
+        {record.signature ? (
+          <ImageViewer
+            src={`data:image/png;base64,${record.signature}`}
+            alt="Signature"
+          />
+        ) : (
+          <span className="font-mono text-xs text-muted-foreground">
+            No signature
+          </span>
+        )}
       </TableCell>
+
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
           99999
@@ -144,19 +141,6 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
                 Update
               </span>
             </Button>
-
-            {/* <Button size="sm" asChild disabled={isLoading} variant="link">
-              <Link
-                href={`/records/${audit.publicGuid}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLink className="h-4 w-4 mr-1" />
-                <span className="sr-only sm:not-sr-only sm:inline-block">
-                  Audits
-                </span>
-              </Link>
-            </Button> */}
             <Button
               size="sm"
               disabled={isLoading}
