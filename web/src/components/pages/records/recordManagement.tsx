@@ -60,7 +60,7 @@ export default function RecordManagement({
       if (res && res.data.records && res.data.total) {
         let currentBalance: number | null = null;
 
-        res.data.records.forEach(
+        res.data.records.reverse().forEach(
           (currentValue: {
             createdAt: Date;
             amount: number | null;
@@ -76,7 +76,7 @@ export default function RecordManagement({
         );
 
         setCurrentBalance(currentBalance ?? 0);
-        setRecordList(res.data.records);
+        setRecordList(res.data.records.reverse());
         setTotalCount(res.data.total);
       }
     } catch (error) {
