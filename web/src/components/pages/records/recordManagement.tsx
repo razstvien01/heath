@@ -251,7 +251,7 @@ export default function RecordManagement({
                 className="flex items-center gap-1"
               >
                 {getSortIcon("reason")}
-                Name
+                Reason
               </Button>
               <Button
                 variant={
