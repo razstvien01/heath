@@ -20,7 +20,7 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
   const [isDeleteAuditDialogOpen, setIsDeleteAuditDialogOpen] = useState(false);
 
   const handleEditAudit = async (
-    values: Record<string, string>
+    values: Record<string, string | File | undefined>
   ): Promise<boolean> => {
     const { title, description, date } = values;
 
@@ -31,8 +31,8 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
     const formData = new FormData();
     formData.append("id", String(audit.id));
     formData.append("name", title);
-    formData.append("description", description);
-    formData.append("date", date);
+    formData.append("description", String(description));
+    formData.append("date", String(date));
 
     try {
       const res = await updateAuditReq(formData);
@@ -73,7 +73,7 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
       return false;
     }
   };
-  
+
   return (
     <TableRow key={audit.id}>
       <TableCell>{audit.name}</TableCell>
