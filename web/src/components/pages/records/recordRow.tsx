@@ -14,57 +14,33 @@ import { isSerializedBuffer } from "@/utils/typeCheck";
 interface RecordRowProps {
   record: AuditRecordDto;
   onSubmitDone: () => void;
+  mode: string;
 }
 
-export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
+export function RecordRow({ record, onSubmitDone, mode }: RecordRowProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditRecordDialogOpen, setIsEditRecordDialogOpen] = useState(false);
   const [isDeleteRecordDialogOpen, setIsDeleteRecordDialogOpen] =
     useState(false);
 
-  const onEditSaved = async (
-    receipt: File | null,
-    signature: string | null,
-    id: number
-  ): Promise<void> => {
-    const fetchUrl = process.env.NEXT_PUBLIC_API_URL + "/api/record/editRecord";
-
-    const formData = new FormData();
-    formData.append("id", id.toString());
-    if (receipt) {
-      formData.append("receipt", receipt);
-    }
-
-    if (signature) {
-      formData.append("signature", signature);
-    }
-
-    const res = await fetch(fetchUrl, {
-      method: "PUT",
-      body: formData,
-    });
-
-    if (res.ok && onSubmitDone) {
-      onSubmitDone();
-    }
-  };
-
   const handleEditRecord = async (
     values: Record<string, string | File | undefined>
   ): Promise<boolean> => {
-    const { receipt, signature } = values;
+    const { reason, amount, receipt, signature } = values;
 
     try {
       const formData = new FormData();
       formData.append("id", String(record.id));
 
+      if (mode === "private") {
+        formData.append("reason", String(reason));
+        formData.append("amount", String(amount));
+      }
+
       if (receipt) formData.append("receipt", receipt);
+      else formData.append("receipt", String(record.receipt));
 
       if (signature) formData.append("signature", signature);
-
-      console.log("id", String(record.id));
-      console.log("receipt", receipt);
-      console.log("signatuere", signature);
 
       const res = await editRecordReq(formData);
 
@@ -104,7 +80,23 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       return false;
     }
   };
-  
+
+  function getImageDataUrl(input: any): string | null {
+    if (!input) return null;
+
+    if (typeof input === "string" && input.startsWith("data:image/")) {
+      return input; // already a base64 URL
+    }
+
+    if (input?.data) {
+      return `data:image/png;base64,${Buffer.from(input.data).toString(
+        "base64"
+      )}`;
+    }
+
+    return null;
+  }
+
   return (
     <TableRow key={record.id}>
       <TableCell>{formatCurrency(record.amount)}</TableCell>
@@ -197,43 +189,59 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
         successMessage="Record updated successfully!"
         errorMessage="Failed to update the audit. Please try again."
         submitText="Update Record"
-        fields={[
-          {
-            id: "amount",
-            label: "Amount",
-            type: "number",
-            placeholder: "Enter amount",
-            required: true,
-            value: String(record.amount),
-          },
-          {
-            id: "reason",
-            label: "Reason",
-            type: "text",
-            placeholder: "Enter reason for the record",
-            required: true,
-            value: String(record.reason),
-          },
-          {
-            id: "receipt",
-            label: "Receipt",
-            type: "file",
-            accept: ".png,.jpg,.jpeg",
-            required: false,
-            value: record.receipt
-              ? `data:image/png;base64,${Buffer.from(
-                  record.receipt.data
-                ).toString("base64")}`
-              : null,
-          },
-          {
-            id: "signature",
-            label: "Signature",
-            type: "signature",
-            required: false,
-            value: record.signature || "",
-          },
-        ]}
+        fields={
+          mode === "private"
+            ? [
+                {
+                  id: "amount",
+                  label: "Amount",
+                  type: "number",
+                  placeholder: "Enter amount",
+                  required: true,
+                  value: String(record.amount),
+                },
+                {
+                  id: "reason",
+                  label: "Reason",
+                  type: "text",
+                  placeholder: "Enter reason for the record",
+                  required: true,
+                  value: String(record.reason),
+                },
+                {
+                  id: "receipt",
+                  label: "Receipt",
+                  type: "file",
+                  accept: ".png,.jpg,.jpeg",
+                  required: false,
+                  value: getImageDataUrl(record.receipt),
+                },
+                {
+                  id: "signature",
+                  label: "Signature",
+                  type: "signature",
+                  required: false,
+                  value: record.signature || "",
+                },
+              ]
+            : [
+                {
+                  id: "receipt",
+                  label: "Receipt",
+                  type: "file",
+                  accept: ".png,.jpg,.jpeg",
+                  required: false,
+                  value: getImageDataUrl(record.receipt),
+                },
+                {
+                  id: "signature",
+                  label: "Signature",
+                  type: "signature",
+                  required: false,
+                  value: record.signature || "",
+                },
+              ]
+        }
       />
 
       <DialogForm
