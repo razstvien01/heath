@@ -24,13 +24,14 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import * as z from "zod";
 import { SignatureMaker } from "@docuseal/signature-maker-react";
+import ImageViewer from "./imageViewer";
 
 interface FieldConfig {
   id: string;
   label: string;
   type?: string;
   placeholder?: string;
-  value?: string;
+  value?: string | null;
   required: boolean;
   accept?: string;
   customComponent?: React.ReactNode;
@@ -203,6 +204,17 @@ export function DialogForm({
                     <FormControl>
                       {field.type === "signature" ? (
                         <div className="space-y-2">
+                          {fieldProps.value && (
+                            <ImageViewer
+                              src={
+                                typeof fieldProps.value === "string"
+                                  ? `data:image/png;base64,${fieldProps.value}`
+                                  : ""
+                              }
+                              alt="Current Signature"
+                              label="View Current Signature"
+                            />
+                          )}
                           <SignatureMaker
                             onChange={(e) => fieldProps.onChange(e.base64)}
                             withSubmit={false}
@@ -216,15 +228,24 @@ export function DialogForm({
                           </p>
                         </div>
                       ) : field.type === "file" ? (
-                        <Input
-                          type="file"
-                          accept={field.accept}
-                          disabled={localLoading || isLoading || success}
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            fieldProps.onChange(file);
-                          }}
-                        />
+                        <div className="space-y-2">
+                          {field.value && (
+                            <ImageViewer
+                              src={field.value}
+                              label="View Current Receipt"
+                            />
+                          )}
+
+                          <Input
+                            type="file"
+                            accept={field.accept}
+                            disabled={localLoading || isLoading || success}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              fieldProps.onChange(file);
+                            }}
+                          />
+                        </div>
                       ) : (
                         <Input
                           type={field.type || "text"}
