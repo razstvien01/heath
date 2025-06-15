@@ -252,8 +252,10 @@ export class RecordRepository implements IRecordRepository {
       "UPDATE Records SET " +
       "receipt = ?, " +
       "signature = ? " +
+      "amount = ?" +
+      "reason = ?" +
       "WHERE id = ?";
-    const values = [dto.receipt, dto.signature, dto.id];
+    const values = [dto.receipt, dto.signature, dto.id, dto.amount, dto.reason];
     const result = await this._db.execute(query, values);
     const queryResult = result[0] as ResultSetHeader;
 
