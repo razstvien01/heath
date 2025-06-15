@@ -8,7 +8,8 @@ import { useState } from "react";
 import ImageViewer from "@/components/imageViewer";
 import { formatCurrency } from "@/utils/format";
 import { DialogForm } from "@/components/dialogForm";
-import { deleteRecordReq } from "@/services/recordService";
+import { deleteRecordReq, editRecordReq } from "@/services/recordService";
+import { isSerializedBuffer } from "@/utils/typeCheck";
 
 interface RecordRowProps {
   record: AuditRecordDto;
@@ -47,7 +48,41 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       onSubmitDone();
     }
   };
-  
+
+  const handleEditRecord = async (
+    values: Record<string, string | File | undefined>
+  ): Promise<boolean> => {
+    const { receipt, signature } = values;
+
+    try {
+      const formData = new FormData();
+      formData.append("id", String(record.id));
+
+      if (receipt) formData.append("receipt", receipt);
+
+      if (signature) formData.append("signature", signature);
+
+      console.log("id", String(record.id));
+      console.log("receipt", receipt);
+      console.log("signatuere", signature);
+
+      const res = await editRecordReq(formData);
+
+      if (res) {
+        onSubmitDone();
+        setIsLoading(false);
+        return true;
+      }
+    } catch {
+      console.error("Failed to edit record");
+      setIsLoading(false);
+    } finally {
+      setIsLoading(false);
+    }
+
+    return false;
+  };
+
   const handleDeleteRecord = async (): Promise<boolean> => {
     setIsLoading(true);
 
@@ -69,16 +104,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       return false;
     }
   };
-
-  function isSerializedBuffer(obj: unknown): obj is { type: string; data: number[] } {
-    return (
-      typeof obj === "object" &&
-      obj !== null &&
-      (obj as { type?: string }).type === "Buffer" &&
-      Array.isArray((obj as { data?: unknown }).data)
-    );
-  }
-
+  
   return (
     <TableRow key={record.id}>
       <TableCell>{formatCurrency(record.amount)}</TableCell>
@@ -160,7 +186,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
         </div>
       </TableCell>
 
-      {/* <DialogForm
+      <DialogForm
         open={isEditRecordDialogOpen}
         onOpenChange={setIsEditRecordDialogOpen}
         onSubmit={handleEditRecord}
@@ -173,31 +199,42 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
         submitText="Update Record"
         fields={[
           {
-            id: "title",
-            label: "Audit Title",
-            placeholder: "Enter audit title",
-            value: audit.name,
+            id: "amount",
+            label: "Amount",
+            type: "number",
+            placeholder: "Enter amount",
             required: true,
+            value: String(record.amount),
           },
           {
-            id: "description",
-            label: "Audit Description",
-            placeholder: "Enter audit description",
-            value: audit.description,
+            id: "reason",
+            label: "Reason",
+            type: "text",
+            placeholder: "Enter reason for the record",
+            required: true,
+            value: String(record.reason),
+          },
+          {
+            id: "receipt",
+            label: "Receipt",
+            type: "file",
+            accept: ".png,.jpg,.jpeg",
             required: false,
+            value: record.receipt
+              ? `data:image/png;base64,${Buffer.from(
+                  record.receipt.data
+                ).toString("base64")}`
+              : null,
           },
           {
-            id: "date",
-            label: "Audit Date",
-            type: "date",
-            placeholder: "Select audit date",
-            value: audit.createdAt
-              ? new Date(audit.createdAt).toISOString().split("T")[0]
-              : "",
-            required: true,
+            id: "signature",
+            label: "Signature",
+            type: "signature",
+            required: false,
+            value: record.signature || "",
           },
         ]}
-      /> */}
+      />
 
       <DialogForm
         open={isDeleteRecordDialogOpen}
