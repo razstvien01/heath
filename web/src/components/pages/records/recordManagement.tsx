@@ -96,20 +96,20 @@ export default function RecordManagement({ guid }: { guid: string }) {
   }, [filterRecordList, guid]);
 
   const handleAddRecord = async (
-    values: Record<string, string>
+    values: Record<string, string | File | undefined>
   ): Promise<boolean> => {
     const { amount, reason, receipt, signature } = values;
-    
+
     try {
       const formData = new FormData();
       formData.append("guid", guid);
-      formData.append("amount", amount);
-      formData.append("reason", reason);
-
+      formData.append("amount", String(amount));
+      formData.append("reason", String(reason));
+      
       if (receipt) formData.append("receipt", receipt);
 
       if (signature) formData.append("signature", signature);
-      
+
       const res = await addRecordReq(formData);
 
       if (res) {
