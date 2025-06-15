@@ -36,7 +36,6 @@ export default function RecordManagement({
   mode: string;
 }) {
   const [currentBalance, setCurrentBalance] = useState(0);
-  const [runningBalance, setRunningBalance] = useState(0);
   const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [recordList, setRecordList] = useState<AuditRecordDto[]>([]);

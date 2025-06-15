@@ -1,7 +1,7 @@
 import { AdminDto, ConfirmAdminReqDto } from "@/dto/admin";
 import { IAdminRepository } from "@/interfaces";
 import AdminMapper from "@/mappers/AdminMapper";
-import Admin from "@/models/Admin";
+import { Admin } from "@/models";
 import { Connection, FieldPacket, RowDataPacket } from "mysql2/promise";
 
 export class AdminRepository implements IAdminRepository {
@@ -11,8 +11,7 @@ export class AdminRepository implements IAdminRepository {
     this._db = db;
   }
   async isGuidValid(ownerManagementGuid: string): Promise<boolean> {
-    const query =
-      "SELECT 1 FROM Admins WHERE ownerManagementGuid = ?";
+    const query = "SELECT 1 FROM Admins WHERE ownerManagementGuid = ?";
 
     try {
       const [rows]: [RowDataPacket[], FieldPacket[]] = await this._db.query(

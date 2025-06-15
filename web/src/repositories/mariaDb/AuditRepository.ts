@@ -206,10 +206,7 @@ export class AuditRepository implements IAuditRepository {
     const values = [guid];
     try {
       const [rows] = await this._db.query<[RowDataPacket[]]>(query, values);
-
-      console.log(rows.values);
-      console.log(rows.length);
-
+      
       return rows.length > 0;
     } catch (error) {
       console.error("Error validating Audit Public guid:", error);

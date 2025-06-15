@@ -248,8 +248,6 @@ export class RecordRepository implements IRecordRepository {
   async updateRecord(
     dto: UpdateRecordReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
-    console.log(dto)
-    console.log("updating")
     const query =
       "UPDATE Records SET " +
       "receipt = ?, " +
