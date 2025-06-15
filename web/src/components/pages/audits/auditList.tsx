@@ -78,17 +78,17 @@ export function AuditList({ guid }: AuditListProps) {
   }, [filterAuditList, guid]);
 
   const handleAddAudit = async (
-    values: Record<string, string>
+    values: Record<string, string | File | undefined>
   ): Promise<boolean> => {
     const { name, description, date } = values;
-    
+
     setIsLoading(true);
 
     const formData = new FormData();
     formData.append("guid", guid);
-    formData.append("name", name);
-    formData.append("description", description);
-    formData.append("date", date);
+    formData.append("name", String(name));
+    formData.append("description", String(description));
+    formData.append("date", String(date));
 
     if (date) formData.append("createdAt", date);
     else formData.append("createdAt", Date.now().toString());
@@ -163,7 +163,7 @@ export function AuditList({ guid }: AuditListProps) {
         managementGuid: debouncedQuery || undefined,
         page: 1,
       };
-      
+
       if (prev.name === newFilter.name && prev.page === newFilter.page) {
         return prev;
       }
@@ -267,7 +267,7 @@ export function AuditList({ guid }: AuditListProps) {
                     <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
                       Date Created
                     </th>
-                    
+
                     <th className="h-12 px-4 text-right align-middle font-medium text-muted-foreground">
                       Actions
                     </th>
