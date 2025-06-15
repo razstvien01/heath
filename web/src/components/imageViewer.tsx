@@ -7,9 +7,11 @@ import { Eye } from "lucide-react";
 export default function ImageViewerButton({
   src,
   alt = "Image",
+  label = "View"
 }: {
   src: string;
   alt?: string;
+  label?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -21,7 +23,7 @@ export default function ImageViewerButton({
         onClick={() => setOpen(true)}
         className="text-muted-foreground hover:text-primary"
       >
-        <Eye className="w-4 h-4" /> View
+        <Eye className="w-4 h-4" /> {label}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
