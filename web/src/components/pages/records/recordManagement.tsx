@@ -24,6 +24,7 @@ import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
 import { addRecordReq, fetchRecordsReq } from "@/services/recordService";
 import { DialogForm } from "@/components/dialogForm";
 import { TableFooter } from "@/components/tableFooter";
+import { formatCurrency } from "@/utils/format";
 
 type SortField = "reason" | "createdAt";
 type SortDirection = "asc" | "desc";
@@ -44,14 +45,14 @@ export default function RecordManagement({
     field: SortField;
     direction: SortDirection;
   }>({
-    field: "reason",
+    field: "createdAt",
     direction: "asc",
   });
   const [filterRecordList, setFilterRecordList] = useState<RecordFilterDto>({
     reason: undefined,
     page: 1,
     pageSize: 10,
-    orderBy: "reason",
+    orderBy: "createdAt",
     orderDirection: "asc",
   });
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
@@ -210,7 +211,7 @@ export default function RecordManagement({
           <div className="space-y-1">
             <CardTitle className="text-xl font-semibold">Record List</CardTitle>
             <h2 className="text-lg font-medium text-primary">
-              Current Balance: {currentBalance}
+              Current Balance: {formatCurrency(currentBalance)}
             </h2>
             <CardDescription className="text-sm text-muted-foreground max-w-md">
               View and submit entries to the {mode} audit trail. All submissions
