@@ -75,7 +75,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
 
   return (
     <TableRow key={record.id}>
-      <TableCell>{record.amount}</TableCell>
+      <TableCell>{formatCurrency(record.amount)}</TableCell>
       <TableCell>
         <span className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
           {record.reason}
@@ -109,11 +109,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
         )}
       </TableCell>
 
-      <TableCell>
-        <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
-          {formatCurrency(record.runningBalance)}
-        </span>
-      </TableCell>
+      <TableCell>{formatCurrency(record.runningBalance)}</TableCell>
 
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
