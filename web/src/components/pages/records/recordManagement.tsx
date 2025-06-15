@@ -28,7 +28,13 @@ import { TableFooter } from "@/components/tableFooter";
 type SortField = "reason" | "createdAt";
 type SortDirection = "asc" | "desc";
 
-export default function RecordManagement({ guid }: { guid: string }) {
+export default function RecordManagement({
+  guid,
+  mode,
+}: {
+  guid: string;
+  mode: string;
+}) {
   const [currentBalance, setCurrentBalance] = useState(0);
   const [runningBalance, setRunningBalance] = useState(0);
   const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
@@ -100,7 +106,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
       formData.append("guid", guid);
       formData.append("amount", String(amount));
       formData.append("reason", String(reason));
-      
+
       if (receipt) formData.append("receipt", receipt);
 
       if (signature) formData.append("signature", signature);
@@ -121,7 +127,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
 
     return false;
   };
-  
+
   const toggleSort = (field: SortField) => {
     const isSameField = sortState.field === field;
     const newDirection: SortDirection =
@@ -192,7 +198,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Public Audit Records</h1>
+          <h1 className="text-3xl font-bold">{mode === "public" ? "Public" :  "Private"} Audit Records</h1>
           <p className="text-muted-foreground">
             Review audit trails and monitor activity history
           </p>
@@ -308,6 +314,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
                           key={record.id}
                           record={record}
                           onSubmitDone={fetchRecords}
+                          mode={mode}
                         />
                       ))
                     ) : (
