@@ -1,4 +1,3 @@
-import PrivateRecordCrud from "@/components/pages/privateRecordCrud";
 import RecordManagement from "@/components/pages/records/recordManagement";
 import { isPublicGuid } from "@/services/recordService";
 import { notFound } from "next/navigation";
@@ -18,11 +17,11 @@ export default async function AuditManagementPage({
 
   return (
     <div className="flex-1 container mx-auto py-8 px-4">
-      {isPublicGuidRes.isPublic ? (
-        <RecordManagement key="public" guid={guid} />
-      ) : (
-        <PrivateRecordCrud key="private" guid={guid} />
-      )}
+      <RecordManagement
+        key="public"
+        guid={guid}
+        mode={isPublicGuidRes.isPublic ? "public" : "private"}
+      />
     </div>
   );
 }
