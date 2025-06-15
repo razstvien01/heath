@@ -4,7 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 
-export default function ReceiptViewer({ src }: { src: string }) {
+export default function ImageViewerButton({
+  src,
+  alt = "Image",
+}: {
+  src: string;
+  alt?: string;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -20,14 +26,20 @@ export default function ReceiptViewer({ src }: { src: string }) {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-fit p-0">
-          <DialogTitle>Receipt Image</DialogTitle>
-          <Image
-            src={src}
-            alt="Receipt"
-            width={800}
-            height={600}
-            className="rounded-lg"
-          />
+          <DialogTitle>{alt}</DialogTitle>
+          <div
+            className={`rounded-lg ${
+              alt.toLowerCase().includes("signature") ? "bg-white" : ""
+            }`}
+          >
+            <Image
+              src={src}
+              alt={alt}
+              width={800}
+              height={600}
+              className="rounded-lg"
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </>
