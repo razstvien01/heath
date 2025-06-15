@@ -23,7 +23,7 @@ import { CheckCircle2, AlertCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import * as z from "zod";
-import { SignatureDialog } from "./signatureDialog";
+import { SignatureMaker } from "@docuseal/signature-maker-react";
 
 interface FieldConfig {
   id: string;
@@ -164,7 +164,7 @@ export function DialogForm({
             {icon}
             {title}
           </DialogTitle>
-          {description && <DialogDescription>{description}</DialogDescription>}
+          <DialogDescription>{description || ""}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -202,10 +202,19 @@ export function DialogForm({
 
                     <FormControl>
                       {field.type === "signature" ? (
-                        <SignatureDialog
-                          value={fieldProps.value}
-                          onChange={(e) => fieldProps.onChange(e.base64)}
-                        />
+                        <div className="space-y-2">
+                          <SignatureMaker
+                            onChange={(e) => fieldProps.onChange(e.base64)}
+                            withSubmit={false}
+                            withDrawn={true}
+                            canvasClass="bg-white border border-base-300 rounded-2xl w-full h-30"
+                          />
+                          <p className="text-xs text-muted-foreground">
+                            {fieldProps.value
+                              ? "Signature captured"
+                              : "No signature yet"}
+                          </p>
+                        </div>
                       ) : field.type === "file" ? (
                         <Input
                           type="file"
