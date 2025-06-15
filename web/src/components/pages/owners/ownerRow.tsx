@@ -21,7 +21,7 @@ export function OwnerRow({ owner, onSubmitDone, onDelete }: OwnerRowProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleEditOwner = async (
-    values: Record<string, string>
+    values: Record<string, string | File | undefined>
   ): Promise<boolean> => {
     const { username, password } = values;
 
