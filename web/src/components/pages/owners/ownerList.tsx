@@ -72,7 +72,7 @@ export function OwnerList() {
   }, [filterOwnerList]);
 
   const handleAddOwner = async (
-    values: Record<string, string>
+    values: Record<string, string | File | undefined>
   ): Promise<boolean> => {
     const { username, password, confirmPassword } = values;
 
