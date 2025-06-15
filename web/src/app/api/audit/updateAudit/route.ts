@@ -10,7 +10,7 @@ export async function PUT(request: Request): Promise<Response> {
     const nameFD = formData.get("name");
 
     if (!nameFD || !idFD) {
-      return new Response("The id and nbame are required.", {
+      return new Response("The id and name are required.", {
         status: 400,
       });
     }
