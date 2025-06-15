@@ -7,6 +7,8 @@ import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
 import { useState } from "react";
 import ImageViewer from "@/components/imageViewer";
 import { formatCurrency } from "@/utils/format";
+import { DialogForm } from "@/components/dialogForm";
+import { deleteRecordReq } from "@/services/recordService";
 
 interface RecordRowProps {
   record: AuditRecordDto;
@@ -45,22 +47,26 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
       onSubmitDone();
     }
   };
-
-  const onDeleteClicked = async () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/record/deleteRecord";
+  
+  const handleDeleteRecord = async (): Promise<boolean> => {
+    setIsLoading(true);
 
     const formData = new FormData();
     formData.append("id", String(record.id));
 
-    const res = await fetch(apiUrl, {
-      method: "DELETE",
-      body: formData,
-    });
+    try {
+      const res = await deleteRecordReq(formData);
 
-    if (res.ok) {
-      if (onSubmitDone) {
+      setIsLoading(false);
+      if (res) {
         onSubmitDone();
+        return true;
       }
+      return false;
+    } catch (error) {
+      console.error("Failed to delete record:", error);
+      setIsLoading(false);
+      return false;
     }
   };
 
@@ -153,6 +159,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
           </>
         </div>
       </TableCell>
+
       {/* <DialogForm
         open={isEditRecordDialogOpen}
         onOpenChange={setIsEditRecordDialogOpen}
@@ -191,44 +198,20 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
           },
         ]}
       /> */}
-    </TableRow>
 
-    // <tr key={audit.id} className="text-center">
-    //   <td>{audit.amount}</td>
-    //   <td>{audit.reason}</td>
-    //   <td>
-    //     {audit.receipt === null ? (
-    //       "No"
-    //     ) : (
-    //       <ImageDialog value={audit.receipt.data} />
-    //     )}
-    //   </td>
-    //   <td>
-    //     {audit.signature === null ? (
-    //       "No"
-    //     ) : (
-    //       <ImageDialog value={audit.signature} />
-    //     )}
-    //   </td>
-    //   <td>{audit.runningBalance}</td>
-    //   <td>{audit.createdAt.toLocaleString()}</td>
-    //   <td>
-    //     <Button className="bg-sky-400">
-    //       <SquareArrowOutUpRight />
-    //     </Button>
-    //     <RecordAddReceiptSignatureDialog
-    //       onSave={(receipt, signature) =>
-    //         onEditSaved(receipt, signature, audit.id)
-    //       }
-    //     >
-    //       <Button className="bg-amber-500">
-    //         <Edit />
-    //       </Button>
-    //     </RecordAddReceiptSignatureDialog>
-    //     <Button className="bg-red-500" onClick={onDeleteClicked}>
-    //       <Trash />
-    //     </Button>
-    //   </td>
-    // </tr>
+      <DialogForm
+        open={isDeleteRecordDialogOpen}
+        onOpenChange={setIsDeleteRecordDialogOpen}
+        onSubmit={handleDeleteRecord}
+        isLoading={isLoading}
+        title="Delete Record"
+        description="Delete the record permanently. This action cannot be undone."
+        icon={<Trash className="h-5 w-5 text-red-500" />}
+        successMessage="Record deleted successfully!"
+        errorMessage="Failed to delete the record. Please try again."
+        submitText="Delete Record"
+        fields={[]}
+      />
+    </TableRow>
   );
 }
