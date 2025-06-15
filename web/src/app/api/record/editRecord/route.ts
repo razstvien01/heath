@@ -8,8 +8,10 @@ export async function PUT(request: Request): Promise<Response> {
     const recordId = formData.get("id");
     const receiptFile = formData.get("receipt");
     const signature = formData.get("signature");
+    const amount = formData.get("amount");
+    const reason = formData.get("reason");
 
-    if (!recordId) {
+    if (!recordId || !reason || !amount) {
       return new Response("Missing required fields", {
         status: 400,
       });
@@ -24,6 +26,8 @@ export async function PUT(request: Request): Promise<Response> {
       id: Number(recordId),
       receipt,
       signature,
+      amount,
+      reason,
     });
 
     if (!parsedRecord.success)
