@@ -81,6 +81,7 @@ export async function addRecordReq(formData: FormData) {
 
 export async function editRecordReq(formData: FormData) {
   const editRecordUrl = RecordRoutes.EDIT_RECORD;
+
   try {
     const res = await axios.put(editRecordUrl, formData);
 
