@@ -70,12 +70,12 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
     }
   };
 
-  function isSerializedBuffer(obj: any): obj is { data: number[] } {
+  function isSerializedBuffer(obj: unknown): obj is { type: string; data: number[] } {
     return (
-      obj &&
       typeof obj === "object" &&
-      obj.type === "Buffer" &&
-      Array.isArray(obj.data)
+      obj !== null &&
+      (obj as { type?: string }).type === "Buffer" &&
+      Array.isArray((obj as { data?: unknown }).data)
     );
   }
 
