@@ -60,10 +60,10 @@ export async function updateAuditReq(formData: FormData): Promise<boolean> {
 }
 
 export async function deleteAuditReq(formData: FormData): Promise<boolean> {
-  const deleteAudit = AuditRoutes.DELETE_AUDIT;
+  const deleteAuditUrl = AuditRoutes.DELETE_AUDIT;
 
   try {
-    const res = await axios.delete(deleteAudit, { data: formData });
+    const res = await axios.delete(deleteAuditUrl, { data: formData });
 
     return res.status === 200;
   } catch {
