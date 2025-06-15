@@ -26,8 +26,8 @@ export async function PUT(request: Request): Promise<Response> {
       id: Number(recordId),
       receipt,
       signature,
-      amount,
-      reason,
+      amount: Number(amount),
+      reason
     });
 
     if (!parsedRecord.success)
