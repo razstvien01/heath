@@ -60,15 +60,14 @@ export function AuditRow({ audit, onSubmitDone }: AuditRowProps) {
     try {
       const res = await deleteAuditReq(formData);
 
+      setIsLoading(false);
       if (res) {
         onSubmitDone();
-        setIsLoading(false);
         return true;
       }
-      setIsLoading(false);
       return false;
     } catch (error) {
-      console.error("Failed to update owner:", error);
+      console.error("Failed to delete audit:", error);
       setIsLoading(false);
       return false;
     }
