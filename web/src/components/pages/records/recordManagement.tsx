@@ -29,11 +29,7 @@ type SortField = "reason" | "createdAt";
 type SortDirection = "asc" | "desc";
 
 export default function RecordManagement({ guid }: { guid: string }) {
-  const [addBalanceInput, setBalanceInput] = useState("");
   const [currentBalance, setCurrentBalance] = useState(0);
-  const [reasonInput, setReasonInput] = useState("");
-  const [receiptInput, setReceiptInput] = useState<File | null>();
-  const [signatureInput, setSignatureInput] = useState(null);
   const [runningBalance, setRunningBalance] = useState(0);
   const [isAddRecordDialogOpen, setIsAddRecordDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,27 +121,7 @@ export default function RecordManagement({ guid }: { guid: string }) {
 
     return false;
   };
-
-  const onAddAuditNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBalanceInput(e.target.value);
-  };
-
-  const onReasonInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setReasonInput(e.target.value);
-  };
-
-  const onReceiptInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      let file = e.target.files[0];
-
-      setReceiptInput(file);
-    }
-  };
-
-  const onSignatureInputChange = (e: { base64: SetStateAction<null> }) => {
-    setSignatureInput(e.base64);
-  };
-
+  
   const toggleSort = (field: SortField) => {
     const isSameField = sortState.field === field;
     const newDirection: SortDirection =
