@@ -202,7 +202,7 @@ export function AuditList({ guid }: AuditListProps) {
           {/* Search bar */}
           <div className="flex items-center gap-2 w-full ">
             <Input
-              placeholder="Search by name or GUID..."
+              placeholder="Search by name"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

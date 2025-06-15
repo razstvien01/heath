@@ -6,9 +6,6 @@ import { Input } from "@/components/ui/input";
 import {
   FilePlus,
   Search,
-  ArrowDownUp,
-  ArrowDownAZ,
-  ArrowUpAZ,
 } from "lucide-react";
 import { RecordRow } from "./recordRow";
 import {
@@ -41,19 +38,12 @@ export default function RecordManagement({
   const [isLoading, setIsLoading] = useState(false);
   const [recordList, setRecordList] = useState<AuditRecordDto[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortState, setSortState] = useState<{
-    field: SortField;
-    direction: SortDirection;
-  }>({
-    field: "createdAt",
-    direction: "asc",
-  });
   const [filterRecordList, setFilterRecordList] = useState<RecordFilterDto>({
     reason: undefined,
     page: 1,
     pageSize: 10,
     orderBy: "createdAt",
-    orderDirection: "asc",
+    orderDirection: "desc",
   });
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery);
   const [totalCount, setTotalCount] = useState(0);
@@ -127,42 +117,13 @@ export default function RecordManagement({
 
     return false;
   };
-
-  const toggleSort = (field: SortField) => {
-    const isSameField = sortState.field === field;
-    const newDirection: SortDirection =
-      isSameField && sortState.direction === "asc" ? "desc" : "asc";
-
-    const newSortState = {
-      field,
-      direction: newDirection,
-    };
-
-    setSortState(newSortState);
-
-    handleChangeTable({
-      orderBy: field,
-      orderDirection: newSortState.direction,
-    });
-  };
-
+  
   const handleChangeTable = (changes: Partial<RecordFilterDto>) => {
     setFilterRecordList((prev) => ({
       ...prev,
       ...changes,
       ...(changes.pageSize && { page: 1 }),
     }));
-  };
-
-  const getSortIcon = (field: SortField) => {
-    if (sortState.field !== field) {
-      return <ArrowDownUp className="h-4 w-4 opacity-50" />;
-    }
-    return sortState.direction === "asc" ? (
-      <ArrowDownAZ className="h-4 w-4" />
-    ) : (
-      <ArrowUpAZ className="h-4 w-4" />
-    );
   };
 
   useEffect(() => {
@@ -177,7 +138,7 @@ export default function RecordManagement({
     setFilterRecordList((prev) => {
       const newFilter = {
         ...prev,
-        name: debouncedQuery || undefined,
+        reason: debouncedQuery || undefined,
         managementGuid: debouncedQuery || undefined,
         page: 1,
       };
@@ -248,30 +209,7 @@ export default function RecordManagement({
 
             {/* Sort controls */}
             <div className="flex flex-wrap gap-2">
-              <span className="text-sm text-muted-foreground self-center">
-                Sort by:
-              </span>
-              <Button
-                variant={sortState.field === "reason" ? "default" : "outline"}
-                size="sm"
-                onClick={() => toggleSort("reason")}
-                className="flex items-center gap-1"
-              >
-                {getSortIcon("reason")}
-                Reason
-              </Button>
-              <Button
-                variant={
-                  sortState.field === "createdAt" ? "default" : "outline"
-                }
-                size="sm"
-                onClick={() => toggleSort("createdAt")}
-                className="flex items-center gap-1"
-              >
-                {getSortIcon("createdAt")}
-                Date Created
-              </Button>
-
+              
               {searchQuery && (
                 <Badge variant="outline" className="ml-auto">
                   {recordList.length} results
