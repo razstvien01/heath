@@ -18,8 +18,11 @@ export default async function AuditManagementPage({
 
   return (
     <div className="flex-1 container mx-auto py-8 px-4">
-      {!isPublicGuidRes.isPublic && <PrivateRecordCrud guid={guid} />}
-      {isPublicGuidRes.isPublic && <RecordManagement guid={guid} />}
+      {isPublicGuidRes.isPublic ? (
+        <RecordManagement key="public" guid={guid} />
+      ) : (
+        <PrivateRecordCrud key="private" guid={guid} />
+      )}
     </div>
   );
 }
