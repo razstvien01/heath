@@ -39,7 +39,9 @@ interface FieldConfig {
 interface DialogFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: Record<string, string>) => Promise<boolean>;
+  onSubmit: (
+    values: Record<string, string | File | undefined>
+  ) => Promise<boolean>;
   isLoading?: boolean;
   title: string;
   description?: string;
@@ -73,15 +75,21 @@ export function DialogForm({
 
   const schema = z.object(
     fields.reduce((acc, field) => {
-      acc[field.id] = field.required
-        ? field.type === "file"
-          ? z.instanceof(File, { message: `${field.label} is required` })
-          : field.type === "signature"
+      if (field.type === "file") {
+        acc[field.id] = z
+          .any()
+          .refine((val) => !field.required || val instanceof File, {
+            message: `${field.label} is required`,
+          });
+      } else if (field.type === "signature") {
+        acc[field.id] = field.required
           ? z.string().min(1, `${field.label} is required`)
-          : z.string().min(1, `${field.label} is required`)
-        : field.type === "file"
-        ? z.instanceof(File).optional()
-        : z.string().optional();
+          : z.string().optional();
+      } else {
+        acc[field.id] = field.required
+          ? z.string().min(1, `${field.label} is required`)
+          : z.string().optional();
+      }
       return acc;
     }, {} as Record<string, z.ZodTypeAny>)
   );
@@ -101,13 +109,13 @@ export function DialogForm({
         return { values: {}, errors: {} };
       }
     },
-    // defaultValues: fields.reduce((acc, field) => {
-    //   acc[field.id] = field.value ?? "";
-    //   return acc;
-    // }, {} as Record<string, string>),
     defaultValues: fields.reduce((acc, field) => {
       const isStringType = !["file", "signature"].includes(field.type || "");
-      acc[field.id] = isStringType ? field.value ?? "" : field.value ?? null;
+      acc[field.id] = isStringType
+        ? field.value ?? ""
+        : field.type === "file"
+        ? undefined
+        : field.value ?? null;
       return acc;
     }, {} as Record<string, unknown>),
   });
@@ -205,7 +213,7 @@ export function DialogForm({
                           disabled={localLoading || isLoading || success}
                           onChange={(e) => {
                             const file = e.target.files?.[0];
-                            fieldProps.onChange(file); // Manually update file input
+                            fieldProps.onChange(file);
                           }}
                         />
                       ) : (
