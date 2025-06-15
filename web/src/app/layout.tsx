@@ -53,9 +53,6 @@ export default function RootLayout({
               </div>
             </header>
             {children}
-            <footer className="w-full bg-muted p-4 text-center text-xs text-muted-foreground border-t">
-              © {new Date().getFullYear()} Heath App. All rights reserved.
-            </footer>
           </ThemeDataProvider>
         </NextThemesProvider>
       </body>
