@@ -89,3 +89,15 @@ export async function editRecordReq(formData: FormData) {
     return null;
   }
 }
+
+export async function deleteRecordReq(formData: FormData) {
+  const deleteRecordUrl = RecordRoutes.DELETE_RECORD;
+
+  try {
+    const res = await axios.delete(deleteRecordUrl, { data: formData });
+
+    return res.status === 200;
+  } catch {
+    return false;
+  }
+}
