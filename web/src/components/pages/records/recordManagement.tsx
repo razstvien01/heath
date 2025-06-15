@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -198,33 +198,40 @@ export default function RecordManagement({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">{mode === "public" ? "Public" :  "Private"} Audit Records</h1>
+          <h1 className="text-3xl font-bold">
+            {mode === "public" ? "Public" : "Private"} Audit Records
+          </h1>
           <p className="text-muted-foreground">
             Review audit trails and monitor activity history
           </p>
         </div>
       </div>
-      <Card>
-        <CardHeader className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full border">
-          <div>
-            <CardTitle>Record List</CardTitle>
-            <CardDescription>
-              View and submit entries to the public audit trail. All submissions
-              are open and transparent.
+      <Card className="border rounded-2xl shadow-sm">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full">
+          <div className="space-y-1">
+            <CardTitle className="text-xl font-semibold">Record List</CardTitle>
+            <h2 className="text-lg font-medium text-primary">
+              Current Balance: {currentBalance}
+            </h2>
+            <CardDescription className="text-sm text-muted-foreground max-w-md">
+              View and submit entries to the {mode} audit trail. All submissions
+              are{" "}
+              {mode === "public"
+                ? "open and transparent"
+                : "restricted and secure"}
+              .
             </CardDescription>
           </div>
 
-          <div className="sm:ml-auto mt-4 sm:mt-0">
-            <Button
-              onClick={() => setIsAddRecordDialogOpen(true)}
-              disabled={isLoading}
-            >
-              <FilePlus className="h-4 w-4 mr-2" />
-              Add Record
-            </Button>
-          </div>
+          <Button
+            onClick={() => setIsAddRecordDialogOpen(true)}
+            disabled={isLoading}
+            className="flex items-center gap-2"
+          >
+            <FilePlus className="h-4 w-4" />
+            Add Record
+          </Button>
         </CardHeader>
-
         <CardContent>
           <div className="mb-4 space-y-4 pt-4">
             {/* Search bar */}
