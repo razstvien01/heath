@@ -248,14 +248,16 @@ export class RecordRepository implements IRecordRepository {
   async updateRecord(
     dto: UpdateRecordReqDto
   ): Promise<[QueryResult, FieldPacket[]]> {
+    console.log(dto)
+    console.log("updating")
     const query =
       "UPDATE Records SET " +
       "receipt = ?, " +
-      "signature = ? " +
-      "amount = ?" +
-      "reason = ?" +
+      "signature = ?, " +
+      "amount = ?, " +
+      "reason = ? " +
       "WHERE id = ?";
-    const values = [dto.receipt, dto.signature, dto.id, dto.amount, dto.reason];
+    const values = [dto.receipt, dto.signature, dto.amount, dto.reason, dto.id];
     const result = await this._db.execute(query, values);
     const queryResult = result[0] as ResultSetHeader;
 
