@@ -6,6 +6,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { AuditRecordDto } from "@/dto/record/AuditRecordDto";
 import { useState } from "react";
 import ImageViewer from "@/components/imageViewer";
+import { formatCurrency } from "@/utils/format";
 
 interface RecordRowProps {
   record: AuditRecordDto;
@@ -30,7 +31,7 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
     if (receipt) {
       formData.append("receipt", receipt);
     }
-    
+
     if (signature) {
       formData.append("signature", signature);
     }
@@ -110,9 +111,10 @@ export function RecordRow({ record, onSubmitDone }: RecordRowProps) {
 
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
-          99999
+          {formatCurrency(record.runningBalance)}
         </span>
       </TableCell>
+
       <TableCell>
         <span className="font-mono text-xs text-muted-foreground truncate max-w-full inline-block">
           {record?.createdAt
